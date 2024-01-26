@@ -3,7 +3,7 @@ FROM node:16-alpine as build
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock) to workdir
+# Copy dependencies to workdir
 COPY package*.json ./
 
 RUN npm install
@@ -16,7 +16,7 @@ COPY . .
 # serve with nginx
 FROM nginx:alpine
 
-# copy build files to nginx server
+# copy build files to nginx
 # COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80

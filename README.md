@@ -1,5 +1,9 @@
 # day-trading
 
+Each microservice runs an express API in a nodejs container, and is accompanied by it's own mongo db instance. 
+
+The frontend is contained in the `react` container, which runs nginx to serve the React app.
+
 Starting all services via `docker-compose`
 ---
 1. Navigate to project root directory
@@ -26,4 +30,5 @@ Running a service manually
 2. Build the image `docker build -t ms_your_service .`
 3. Run the image `docker run -p 8000:3000 ms_your_service`
 4. Send a GET request to http://localhost:8000/ to verify your service is working and port forwarding
+
 

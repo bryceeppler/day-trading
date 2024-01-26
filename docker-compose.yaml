@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+
+  # User & Auth Microservice
+  ms_user:
+    build: ./ms_user
+    ports:
+      - "3001:3000"
+    links:
+      - user_db
+    environment:
+      MONGO_URI: mongodb://user_db:27017/ms_user_db
+
+  user_db:
+    image: mongo:latest
+    ports:
+      - "27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    volumes:
+      - user_db_data:/data/db
+
+    
+  # Order Execution Microservice
+  ms_order_execution:
+    build: ./ms_order_execution
+    ports:
+      - "3002:3000"
+    links:
+      - order_execution_db
+    environment:
+      MONGO_URI: mongodb://order_execution_db:27018/order_execution_db
+
+  order_execution_db:
+    image: mongo:latest
+    ports:
+      - "27018"
+    volumes:
+      - order_execution_db_data:/data/db
+
+
+volumes:
+  user_db_data:
+  order_execution_db_data:
+ 

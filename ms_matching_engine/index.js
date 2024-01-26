@@ -27,11 +27,6 @@ async function pingDb() {
   }
 }
 
-
-app.get("/", (req, res) => {
-  res.send("This is the matching engine microservice");
-});
-
 app.get("/healthcheck", async (req, res) => {
   try {
     await pingDb();
@@ -40,6 +35,10 @@ app.get("/healthcheck", async (req, res) => {
     console.error("MongoDB connection failed:", error);
     res.status(500).send("MongoDB connection failed");
   }
+});
+
+app.get("/", (req, res) => {
+  res.send("This is the matching engine microservice");
 });
 
 

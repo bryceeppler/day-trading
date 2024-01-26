@@ -43,12 +43,12 @@ services:
     links:
       - order_execution_db
     environment:
-      MONGO_URI: mongodb://order_execution_db:27018/order_execution_db
+      MONGO_URI: mongodb://order_execution_db:27017/order_execution_db
 
   order_execution_db:
     image: mongo:latest
     ports:
-      - "27018"
+      - "27017"
     volumes:
       - order_execution_db_data:/data/db
 
@@ -61,12 +61,12 @@ services:
     links:
       - order_creation_db
     environment:
-      MONGO_URI: mongodb://order_creation_db:27019/order_creation_db
+      MONGO_URI: mongodb://order_creation_db:27017/order_creation_db
 
   order_creation_db:
     image: mongo:latest
     ports:
-      - "27019"
+      - "27017"
     volumes:
       - order_creation_db_data:/data/db
 
@@ -78,12 +78,12 @@ services:
     links:
       - matching_engine_db
     environment:
-      MONGO_URI: mongodb://matching_engine_db:27020/matching_engine_db
+      MONGO_URI: mongodb://matching_engine_db:27017/matching_engine_db
 
   matching_engine_db:
     image: mongo:latest
     ports:
-      - "27020"
+      - "27017"
     volumes:
       - matching_engine_db_data:/data/db
 
@@ -95,12 +95,12 @@ services:
     links:
       - market_data_db
     environment:
-      MONGO_URI: mongodb://market_data_db:27021/market_data_db
+      MONGO_URI: mongodb://market_data_db:27017/market_data_db
     
   market_data_db:
     image: mongo:latest
     ports:
-      - "27021"
+      - "27017"
     volumes:
       - market_data_db_data:/data/db
 

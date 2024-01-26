@@ -10,8 +10,8 @@ services:
       - ms_user
       - ms_order_execution
       - ms_order_creation
-      - matching_engine
-      - market_data
+      - ms_matching_engine
+      - ms_market_data
 
     
   # User & Auth Microservice
@@ -71,8 +71,8 @@ services:
       - order_creation_db_data:/data/db
 
   # Matching Engine Microservice
-  matching_engine:
-    build: ./matching_engine
+  ms_matching_engine:
+    build: ./ms_matching_engine
     ports:
       - "8004:3000"
     links:
@@ -88,8 +88,8 @@ services:
       - matching_engine_db_data:/data/db
 
   # Market Data Microservice
-  market_data:
-    build: ./market_data
+  ms_market_data:
+    build: ./ms_market_data
     ports:
       - "8005:3000"
     links:

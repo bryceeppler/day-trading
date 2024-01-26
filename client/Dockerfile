@@ -11,13 +11,13 @@ RUN npm install
 COPY . .
 
 # build the react app
-RUN npm run build
+# RUN npm run build
 
 # serve with nginx
 FROM nginx:alpine
 
 # copy build files to nginx server
-COPY --from=build /app/build /usr/share/nginx/html
+# COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80
 

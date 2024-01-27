@@ -19,12 +19,43 @@ services:
     build: ./ms_user
     ports:
       - "8001:3000"
-    links:
-      - user_db
     environment:
-      MONGO_URI: mongodb://user_db:27017/ms_user_db
+      MONGO_URI: mongodb://mongo:27017/db
+    
+  # Order Execution Microservice
+  ms_order_execution:
+    build: ./ms_order_execution
+    ports:
+      - "8002:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
+  
+  # Order Creation Microservice
+  ms_order_creation:
+    build: ./ms_order_creation
+    ports:
+      - "8003:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
 
-  user_db:
+  # Matching Engine Microservice
+  ms_matching_engine:
+    build: ./ms_matching_engine
+    ports:
+      - "8004:3000"
+    environment:
+       MONGO_URI: mongodb://mongo:27017/db
+
+  # Market Data Microservice
+  ms_market_data:
+    build: ./ms_market_data
+    ports:
+      - "8005:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
+
+
+  mongo:
     image: mongo:latest
     ports:
       - "27017"
@@ -32,83 +63,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb
     volumes:
-      - user_db_data:/data/db
-
-    
-  # Order Execution Microservice
-  ms_order_execution:
-    build: ./ms_order_execution
-    ports:
-      - "8002:3000"
-    links:
-      - order_execution_db
-    environment:
-      MONGO_URI: mongodb://order_execution_db:27017/order_execution_db
-
-  order_execution_db:
-    image: mongo:latest
-    ports:
-      - "27017"
-    volumes:
-      - order_execution_db_data:/data/db
-
-  
-  # Order Creation Microservice
-  ms_order_creation:
-    build: ./ms_order_creation
-    ports:
-      - "8003:3000"
-    links:
-      - order_creation_db
-    environment:
-      MONGO_URI: mongodb://order_creation_db:27017/order_creation_db
-
-  order_creation_db:
-    image: mongo:latest
-    ports:
-      - "27017"
-    volumes:
-      - order_creation_db_data:/data/db
-
-  # Matching Engine Microservice
-  ms_matching_engine:
-    build: ./ms_matching_engine
-    ports:
-      - "8004:3000"
-    links:
-      - matching_engine_db
-    environment:
-      MONGO_URI: mongodb://matching_engine_db:27017/matching_engine_db
-
-  matching_engine_db:
-    image: mongo:latest
-    ports:
-      - "27017"
-    volumes:
-      - matching_engine_db_data:/data/db
-
-  # Market Data Microservice
-  ms_market_data:
-    build: ./ms_market_data
-    ports:
-      - "8005:3000"
-    links:
-      - market_data_db
-    environment:
-      MONGO_URI: mongodb://market_data_db:27017/market_data_db
-    
-  market_data_db:
-    image: mongo:latest
-    ports:
-      - "27017"
-    volumes:
-      - market_data_db_data:/data/db
-
+      - db_data:/data/db
 
 volumes:
-  user_db_data:
-  order_execution_db_data:
-  order_creation_db_data:
-  matching_engine_db_data:
-  market_data_db_data:
- 
+  db_data:
+  # user_db_data:
+  # order_execution_db_data:
+  # order_creation_db_data:
+  # matching_engine_db_data:
+  # market_data_db_data: 

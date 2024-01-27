@@ -1,6 +1,6 @@
 # day-trading
 
-Each microservice runs an express API in a nodejs container, and is accompanied by it's own mongo db instance. 
+Each microservice runs an express API in a nodejs container. All services connect to the same shared mongodb instance for now.
 
 The frontend is contained in the `react` container, which runs nginx to serve the React app.
 

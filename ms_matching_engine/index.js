@@ -4,9 +4,6 @@ var app = express();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const Orderbook = require("./orderbook.js");
 
-var orderBook = new Orderbook();
-orderBook.addOrder({ type: "buy", price: 100, quantity: 10 });
-
 
 // mongo db uri for this microservice's database
 const mongoUri = process.env.MONGO_URI;
@@ -19,6 +16,9 @@ const client = new MongoClient(mongoUri,  {
   }
 }
 );
+
+const db = client.db("matching_engine");
+const orderbook = new Orderbook(db);
 
 async function pingDb() {
   try {

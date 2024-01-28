@@ -1,48 +1,45 @@
-var express = require("express");
+const express = require('express');
+const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./docs/swagger');
+const fs = require('fs');
+const routes = require('./routes/stockRoutes');
 var app = express();
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-
-
-// mongo db uri for this microservice's database
+// local instance of environment variables
 const mongoUri = process.env.MONGO_URI;
-
-const client = new MongoClient(mongoUri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }
-}
-);
-
-async function pingDb() {
-  try {
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("successfully pinged mongo");
-  } finally {
-    await client.close();
-  }
-}
-
-app.get("/healthcheck", async (req, res) => {
-  try {
-    await pingDb();
-    res.send("MongoDB connection successful");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    res.status(500).send("MongoDB connection failed");
-  }
-});
-
-app.get("/", (req, res) => {
-  res.send("This is the market data microservice");
-});
-
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-  console.log(`Market data microservice on port ${port}...`);
-});
+// Force swagger UI to output file
+// const outputPath = './swagger.json';
+// fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2));
+
+app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/', routes);
+
+async function startup()
+{
+  try
+  {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log('Connected to MongoDB');
+
+    // Access your models and perform operations here
+
+  } catch (error)
+  {
+    console.error('Error connecting to MongoDB:', error);
+  }
+
+  app.listen(port, () =>
+  {
+    console.log(`Market data microservice on port ${port}...`);
+  });
+}
+
+startup();

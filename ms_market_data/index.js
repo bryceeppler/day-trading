@@ -20,21 +20,12 @@ app.use('/', routes);
 
 async function startup()
 {
-  try
-  {
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    console.log('Connected to MongoDB');
-
-    // Access your models and perform operations here
-
-  } catch (error)
-  {
-    console.error('Error connecting to MongoDB:', error);
-  }
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+    .then(console.log('Connected to MongoDB'))
+    .catch((error) => console.error('Error connecting to MongoDB:', error));
 
   app.listen(port, () =>
   {

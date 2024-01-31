@@ -1,5 +1,6 @@
 const express = require('express');
 const { createStock, getStockPrices, getAllStocks, updateStockPrice } = require('../controllers/stockController');
+const validation = require('./validations/stockValidation')
 const router = express.Router();
 
 /**
@@ -37,7 +38,7 @@ router.get('/', (req, res) =>
  *               - stock_name: Meta
  *                 current_price: 75.65
  */
-router.get('/getstockprices', getStockPrices);
+router.route('/getstockprices').get([validation.getStockPriceValidation], getStockPrices);
 
 /**
  * @swagger
@@ -56,7 +57,7 @@ router.get('/getstockprices', getStockPrices);
  *               - stock_name: Meta
  *                 current_price: 75.65
  */
-router.get('/getallstocks', getAllStocks);
+router.route('/getallstocks').get([validation.getAllStocksValidation]), getAllStocks);
 
 /**
  * @swagger
@@ -76,7 +77,7 @@ router.get('/getallstocks', getAllStocks);
  *             required:
  *               - stock_name
  */
-router.post('/createstock', createStock);
+router.route('/createstock').post([validation.createStockValidation], createStock);
 
 /**
  * @swagger
@@ -103,7 +104,7 @@ router.post('/createstock', createStock);
  *             required:
  *               - new_price
  */
-router.put('/updatestockprice/:stock_id', updateStockPrice);
+router.route('/updatestockprice/:stock_id').put([validation.updateStockPriceValidation], updateStockPrice);
 
 module.exports = router;
 

@@ -16,7 +16,7 @@ const router = express.Router();
  *           text/plain:
  *             example: This is the market data microservice
  */
-router.get('/', (req, res) =>
+router.route('/').get((req, res) =>
 {
     res.send("This is the market data microservice");
 });
@@ -38,7 +38,7 @@ router.get('/', (req, res) =>
  *               - stock_name: Meta
  *                 current_price: 75.65
  */
-router.route('/getstockprices').get([validation.getStockPriceValidation], getStockPrices);
+router.route('/getstockprices').get(getStockPrices);
 
 /**
  * @swagger
@@ -57,7 +57,7 @@ router.route('/getstockprices').get([validation.getStockPriceValidation], getSto
  *               - stock_name: Meta
  *                 current_price: 75.65
  */
-router.route('/getallstocks').get([validation.getAllStocksValidation]), getAllStocks);
+router.route('/getallstocks').get(getAllStocks);
 
 /**
  * @swagger

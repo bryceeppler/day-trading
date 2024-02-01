@@ -14,6 +14,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker-compose up --abort-on-container-exit
+      run: docker-compose up --build -d
     - name: Stop Docker Compose
       run: docker-compose down

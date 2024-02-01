@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
     - name: Build the Docker image
       run: docker-compose up --abort-on-container-exit
+    - name: Stop Docker Compose
+      run: docker-compose down

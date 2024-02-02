@@ -1,4 +1,4 @@
-const Stock = require('../models/stockModel');
+const Stock = require('../shared/models/stockModel');
 
 
 async function createStock(req, res)

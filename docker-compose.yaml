@@ -45,10 +45,6 @@ services:
       - "8004:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
-    depends_on:
-      - ms_shared
-    volumes:
-      - shared_volume:/app/shared
 
   # Market Data Microservice
   ms_market_data:

@@ -1,0 +1,39 @@
+@import 'scss/base/colors';
+
+.details {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  background-color: $color-shaded-background;
+  padding: 40px;
+  padding-top: 5px;
+  box-shadow: 5px 0px 5px -5px rgba(0, 0, 0, 0.2), -5px 0px 5px -5px rgba(0, 0, 0, 0.2),
+    0px 5px 5px -5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  gap: 30px;
+
+  img {
+    width: 200px;
+  }
+
+  .submitButton {
+    width: 105%;
+    height: 40px;
+  }
+
+  .text {
+    width: 100%;
+    padding-right: 17px;
+  }
+}
+
+.error {
+  color: red;
+}

@@ -1,0 +1,16 @@
+.item {
+  height: 50px;
+  width: 400px;
+  background-color: white;
+  color: black;
+  margin-top: 10px;
+  border: 2px solid black;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 12px;
+
+  .data {
+  }
+}

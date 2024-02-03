@@ -1,0 +1,124 @@
+{
+  "name": "encompass.web",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.2",
+    "@react-google-maps/api": "^2.19.2",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^16.11.21",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
+    "axios": "^0.27.2",
+    "chart.js": "^4.4.1",
+    "classnames": "^2.3.1",
+    "i": "^0.3.7",
+    "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
+    "npm": "^9.8.1",
+    "pdf-lib": "^1.17.1",
+    "react": "^17.0.2",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^17.0.2",
+    "react-draggable": "^4.4.5",
+    "react-router-dom": "^6.2.1",
+    "react-scripts": "5.0.0",
+    "sass": "^1.49.7",
+    "typescript": "3.8.3",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint --fix .",
+    "format": "prettier --write \"**/*.+(js|jsx|json|scss|md|tsx|ts)\""
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "react-app",
+      "react-app/jest"
+    ],
+    "overrides": [],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "react",
+      "@typescript-eslint"
+    ],
+    "ignorePatterns": [
+      "src/types/*",
+      "build/*"
+    ],
+    "rules": {
+      "quotes": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "typescript/S6606": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "semi": [
+        "warn",
+        "always"
+      ],
+      "no-use-before-define": [
+        "error",
+        {
+          "functions": true,
+          "classes": true,
+          "variables": true
+        }
+      ],
+      "no-inferrable-types": [
+        "off"
+      ],
+      "no-mixed-spaces-and-tabs": "warn"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120,
+    "semi": true,
+    "trailingComma": "es5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format && npm run lint"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "husky": "^4.3.8",
+    "prettier": "^2.8.3"
+  }
+}

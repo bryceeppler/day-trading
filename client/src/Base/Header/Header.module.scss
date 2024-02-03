@@ -1,0 +1,90 @@
+@import 'scss/base/font.scss';
+@import 'scss/base/colors.scss';
+
+.container {
+  background-color: $color-main;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.15);
+
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 55px;
+
+  border-bottom: 2px solid $color-secondary;
+
+  .name {
+    font-weight: 600;
+    color: white;
+    width: 140px;
+    text-align: center;
+  }
+
+  .signedIn {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 5px 0px;
+    align-items: center;
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      color: white;
+
+      img {
+        height: 25px;
+      }
+    }
+
+    .search {
+      width: 300px;
+      height: 35px;
+    }
+  }
+
+  .account {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    gap: 5px;
+    margin-right: 50px;
+    color: white;
+    img {
+      height: 10px;
+    }
+
+    .dropdownMenu {
+      position: absolute;
+      right: 0;
+      top: 20px;
+      z-index: 999;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          padding: 8px 12px;
+          cursor: pointer;
+          border-bottom: 1px solid $color-main-background;
+          white-space: nowrap;
+          color: $color-text-dark-grey;
+        }
+      }
+    }
+  }
+}

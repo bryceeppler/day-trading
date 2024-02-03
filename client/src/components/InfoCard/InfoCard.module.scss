@@ -1,0 +1,12 @@
+@import 'scss/base/colors.scss';
+.card {
+  background-color: $color-main-light;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+
+  .title {
+    font-weight: 700;
+    font-size: 20px;
+  }
+}

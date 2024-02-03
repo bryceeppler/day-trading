@@ -1,0 +1,32 @@
+@import 'scss/base/colors';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+
+    .greeting {
+      font-size: 20px;
+      span {
+        font-weight: bold;
+      }
+    }
+    .price {
+      font-size: 30px;
+      font-weight: 600;
+    }
+    .btn {
+      height: 30px;
+      width: 120px;
+      font-size: 14px;
+    }
+  }
+}

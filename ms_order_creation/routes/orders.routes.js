@@ -4,4 +4,5 @@ const validation = require('./validations/orders.validation')
 
 module.exports = (router) => {
   router.route('/placeStockOrder').post([validation.placeStockOrder], orders.placeStockOrder);
+  router.route('/cancelStockTransaction').post([validation.cancelStockTransaction], orders.cancelStockTransaction);
 };

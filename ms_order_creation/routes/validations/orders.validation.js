@@ -8,3 +8,7 @@ exports.placeStockOrder = validate([
   body('quantity').notEmpty().isInt(),
   body('price').notEmpty().isDecimal(),
 ]);
+
+exports.cancelStockTransaction = validate([
+  body('stock_tx_id').notEmpty().isString()
+]);

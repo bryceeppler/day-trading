@@ -21,8 +21,7 @@ app.use('/', routes);
 async function startup()
 {
   await mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    authSource: 'admin'
   })
     .then(console.log('Connected to MongoDB'))
     .catch((error) => console.error('Error connecting to MongoDB:', error));

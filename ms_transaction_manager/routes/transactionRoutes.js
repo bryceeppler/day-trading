@@ -14,7 +14,7 @@ const router = express.Router();
  */
 router.route('/').get((req, res) =>
 {
-    res.send("This is the audit manager microservice");
+    res.send("This is the transaction manager microservice");
 });
 
 /**
@@ -40,7 +40,7 @@ router.route('/getAllWalletTransactions').get(getAllWalletTransactions);
  * paths:
  *   /getAllStockTransactions:
  *     get:
- *       summary: Retrieve all active stock transactions (excludes deleted transactions)
+ *       summary: Retrieve all stock transactions (includes deleted transactions)
  */
 router.route('/getStockTransactions').get(getStockTransactions);
 /**
@@ -48,7 +48,7 @@ router.route('/getStockTransactions').get(getStockTransactions);
  * paths:
  *   /getStockTransactions:
  *     get:
- *       summary: Retrieve all active stock transactions (includes deleted transactions)
+ *       summary: Retrieve all active stock transactions (excludes deleted transactions)
  */
 router.route('/getAllStockTransactions').get(getAllStockTransactions);
 
@@ -99,26 +99,28 @@ router.route('/createStockTransaction')
 
 /**
  * @swagger
- * /createWalletTransaction:
- post:
-      summary: Create a new wallet transaction
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                is_debit:
-                  type: boolean
-                  description: Indicates whether the transaction is a debit.
-                amount:
-                  type: number
-                  description: The transaction amount.
-              required:
-                - is_debit
-                - amount
+ * paths:
+ *   /createWalletTransaction:
+ *     post:
+ *       summary: Create a new wallet transaction
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 is_debit:
+ *                   type: boolean
+ *                   description: Indicates whether the transaction is a debit.
+ *                 amount:
+ *                   type: number
+ *                   description: The amount of the transaction.
+ *               required:
+ *                 - is_debit
+ *                 - amount
  */
+
 router.route('/createWalletTransaction')
     .post(
         [walletTxValidation.createWalletTxValidation],
@@ -151,7 +153,7 @@ router.route('/createWalletTransaction')
  *               required:
  *                 - order_status
  */
-router.route('/updateStockTxStatus').
+router.route('/updateStockTxStatus/:stock_tx_id').
     put(
         [stockTxValidation.updateStockTxStatusValidation],
         updateStockTxStatus);
@@ -182,7 +184,7 @@ router.route('/updateStockTxStatus').
  *               required:
  *                 - stock_tx_id
  */
-router.route('/updateStockTxId').
+router.route('/updateStockTxId/:wallet_tx_id').
     put(
         [walletTxValidation.updateWalletTxValidation],
         updateStockTxId)
@@ -190,8 +192,8 @@ router.route('/updateStockTxId').
 /**
  * @swagger
  * paths:
- *   /deleteStockTx/{stock_tx_id}:
- *     delete:
+ *   /deleteStockTransaction/{stock_tx_id}:
+ *     put:
  *       summary: Delete a stock transaction
  *       parameters:
  *         - in: path
@@ -201,7 +203,7 @@ router.route('/updateStockTxId').
  *             type: string
  *           description: The ID of the stock transaction to delete.
  */
-router.route('/deleteStockTransaction')
+router.route('/deleteStockTransaction/:stock_tx_id')
     .put(
         [stockTxValidation.deleteStockTxValidation],
         deleteStockTx);
@@ -210,8 +212,8 @@ router.route('/deleteStockTransaction')
 /**
  * @swagger
  * paths:
- *   /deleteWalletTx/{wallet_tx_id}:
- *     delete:
+ *   /deleteWalletTransaction/{wallet_tx_id}:
+ *     put:
  *       summary: Delete a wallet transaction
  *       parameters:
  *         - in: path
@@ -222,7 +224,7 @@ router.route('/deleteStockTransaction')
  *           description: The ID of the wallet transaction to delete.
  */
 
-router.route('/deleteWalletTransaction')
+router.route('/deleteWalletTransaction/:wallet_tx_id')
     .put(
         [walletTxValidation.deleteWalletTxValidation],
         deleteWalletTx

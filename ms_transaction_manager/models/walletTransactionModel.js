@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const walletTxSchema = new mongoose.Schema({
-    stock_tx_id: { type: ObjectId, unique: true },
+    stock_tx_id: { type: ObjectId, unique: false, default: null },
     is_debit: { type: Boolean, required: true },
     amount: { type: Number, required: true },
     time_stamp: { type: Date, required: true, default: Date.now },

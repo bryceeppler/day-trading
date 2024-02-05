@@ -8,7 +8,7 @@ exports.createWalletTxValidation = validate([
     .isBoolean().withMessage('is_debit must be a boolean'),
   body('amount').notEmpty().withMessage('amount is required')
     .isNumeric().withMessage('amount must be a number')
-    .custom(isAboveLimit(0)).withMessage('amount must be positive')
+    .custom(value => value >= 1).withMessage('amount must be positive')
 ]);
 
 

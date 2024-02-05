@@ -52,7 +52,7 @@ services:
     ports:
       - "8005:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
 
   # Audit Manager Microservice
   ms_transaction_manager:
@@ -60,7 +60,7 @@ services:
     ports:
       - "8006:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
 
   mongo:
     image: mongo:latest

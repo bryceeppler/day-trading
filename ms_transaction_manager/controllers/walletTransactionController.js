@@ -7,10 +7,12 @@ async function createWalletTx(req, res)
     {
         const { is_debit, amount } = req.body;
 
-        const newWalletTx = new WalletTransaction({ is_debit, amount })
+        const walletTx = new WalletTransaction({ is_debit, amount })
         walletTx.save();
 
-        return res.status(201).json(newWalletTx);
+        return res.status(201).json(walletTx);
+
+
     } catch (error)
     {
         console.error('Error creating wallet transaciton:', error);
@@ -27,7 +29,7 @@ async function updateStockTxId(req, res)
         const { stock_tx_id } = req.body;
 
         // Check if the stock exists
-        const existingWalletTx = await Stock.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.findById(walletTxId);
 
         if (!existingWalletTx)
         {
@@ -54,7 +56,7 @@ async function deleteWalletTx(req, res)
         const walletTxId = req.params.wallet_tx_id;
 
         // Check if the transaction exists
-        const existingWalletTx = await Stock.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.findById(walletTxId);
 
         if (!existingWalletTx)
         {
@@ -84,7 +86,11 @@ async function getWalletTransactions(req, res)
 
         // Map the documents and rename _id to wallet_tx_id
         const transformedWalletTx = walletTx.map(tx => ({
-            wallet_tx_id: tx._id
+            wallet_tx_id: tx._id,
+            stock_tx_id: tx.stock_tx_id,
+            is_debit: tx.is_debit,
+            amount: tx.amount,
+            time_stamp: tx.time_stamp,
         }));
 
         return res.status(200).json(transformedWalletTx);
@@ -102,13 +108,19 @@ async function getAllWalletTransactions(req, res)
 
     try 
     {
-        // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
-        const walletTx = await WalletTransaction.find().sort({ time_stamp: 1 }) || {};
+        const walletTx = await WalletTransaction.find().sort({ time_stamp: 1 }) || {};;
+
 
         // Map the documents and rename _id to wallet_tx_id
         const transformedWalletTx = walletTx.map(tx => ({
-            wallet_tx_id: tx._id
+            wallet_tx_id: tx._id,
+            stock_tx_id: tx.stock_tx_id,
+            is_debit: tx.is_debit,
+            amount: tx.amount,
+            time_stamp: tx.time_stamp,
+            is_deleted: tx.is_deleted
         }));
+
 
         return res.status(200).json(transformedWalletTx);
     }
@@ -118,7 +130,6 @@ async function getAllWalletTransactions(req, res)
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
-
 
 module.exports = {
     createWalletTx,

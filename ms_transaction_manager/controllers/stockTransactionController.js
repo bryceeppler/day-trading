@@ -7,7 +7,7 @@ async function createStockTx(req, res)
     {
         const { stock_id, wallet_tx_id, is_buy, order_type, stock_price, quantity } = req.body;
 
-        const newStockTx = new WalletTransaction({
+        const newStockTx = new StockTransaction({
             stock_id,
             wallet_tx_id,
             is_buy,
@@ -34,7 +34,7 @@ async function updateStockTxStatus(req, res)
         const { order_status } = req.body;
 
         // Check if the transaction exists
-        const existingStockTx = await Stock.findById(stockTxId);
+        const existingStockTx = await StockTransaction.findById(stockTxId);
 
         if (!existingStockTx)
         {
@@ -61,7 +61,7 @@ async function deleteStockTx(req, res)
         const stockTxId = req.params.stock_tx_id;
 
         // Check if the transaction exists
-        const existingStockTx = await Stock.findById(stockTxId);
+        const existingStockTx = await StockTransaction.findById(stockTxId);
 
         if (!existingStockTx)
         {
@@ -69,7 +69,7 @@ async function deleteStockTx(req, res)
         }
         // update is_deleted flag
         existingStockTx.is_deleted = true;
-        await existingWalletTx.save();
+        await existingStockTx.save();
 
         return res.status(200).json(existingStockTx);
     }
@@ -86,14 +86,21 @@ async function getStockTransactions(req, res)
 
     try 
     {
-        // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
+        // get all stock transaction that are not deleted.  
         const stockTx = await StockTransaction.find({ is_deleted: false }).sort({ time_stamp: 1 }) || {};
 
-        // Map the documents and rename _id to wallet_tx_id
+        // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
-            stock_tx_id: tx._id
+            stock_tx_id: tx._id,
+            stock_id: tx.stock_id,
+            wallet_tx_id: tx.wallet_tx_id,
+            order_status: tx.order_status,
+            is_buy: tx.is_buy,
+            order_type: tx.order_type,
+            stock_price: tx.stock_price,
+            quantity: tx.quantity,
+            time_stamp: tx.time_stamp,
         }));
-
         return res.status(200).json(transformedStockTx);
     }
     catch (error) 
@@ -110,14 +117,21 @@ async function getAllStockTransactions(req, res)
 
     try 
     {
-        // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
         const stockTx = await StockTransaction.find().sort({ time_stamp: 1 }) || {};
 
-        // Map the documents and rename _id to wallet_tx_id
+        // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
-            stock_tx_id: tx._id
+            stock_tx_id: tx._id,
+            stock_id: tx.stock_id,
+            wallet_tx_id: tx.wallet_tx_id,
+            order_status: tx.order_status,
+            is_buy: tx.is_buy,
+            order_type: tx.order_type,
+            stock_price: tx.stock_price,
+            quantity: tx.quantity,
+            time_stamp: tx.time_stamp,
+            is_deleted: tx.is_deleted
         }));
-
         return res.status(200).json(transformedStockTx);
     }
     catch (error) 
@@ -133,5 +147,4 @@ module.exports = {
     deleteStockTx,
     getStockTransactions,
     getAllStockTransactions
-
 };

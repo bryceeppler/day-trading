@@ -11,8 +11,8 @@ const mongoUri = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 
 // Force swagger UI to output file
-const outputPath = './swagger.json';
-fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2));
+// const outputPath = './swagger.json';
+// fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2));
 
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

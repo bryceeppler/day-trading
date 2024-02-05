@@ -4,13 +4,13 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Market Data Service API',
+            title: 'Transaction Manager Service API',
             version: '1.0.0',
-            description: 'Market data service API for day trading application',
+            description: 'Transaction manager service API for day trading application',
         },
         servers: [
             {
-                url: 'http://localhost:8005', // Your server URL
+                url: 'http://localhost:8006', // Your server URL
             },
         ],
     },

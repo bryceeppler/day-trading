@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const { ORDER_STATUS, ORDER_TYPE } = require('../lib/enums'); 
+const ObjectId = mongoose.Types.ObjectId;
+const { ORDER_STATUS, ORDER_TYPE } = require('../lib/enums');
 
 const stockTxSchema = new mongoose.Schema({
     stock_id: { type: ObjectId, required: true },

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const walletTxSchema = new mongoose.Schema({
     stock_tx_id: { type: ObjectId, unique: true },

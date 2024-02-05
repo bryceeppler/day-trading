@@ -96,10 +96,34 @@ async function getWalletTransactions(req, res)
     }
 }
 
+// /getWalletTransactions
+async function getAllWalletTransactions(req, res)
+{
+
+    try 
+    {
+        // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
+        const walletTx = await WalletTransaction.find().sort({ time_stamp: 1 }) || {};
+
+        // Map the documents and rename _id to wallet_tx_id
+        const transformedWalletTx = walletTx.map(tx => ({
+            wallet_tx_id: tx._id
+        }));
+
+        return res.status(200).json(transformedWalletTx);
+    }
+    catch (error) 
+    {
+        console.error('Error getting stock prices:', error);
+        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+    }
+}
+
 
 module.exports = {
     createWalletTx,
     updateStockTxId,
     deleteWalletTx,
-    getWalletTransactions
+    getWalletTransactions,
+    getAllWalletTransactions
 };

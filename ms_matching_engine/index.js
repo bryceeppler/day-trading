@@ -6,10 +6,10 @@ const Orderbook = require("./orderbook.js");
 
 const mongoUri = process.env.MONGO_URI;
 
-// mongoose.connect(mongoUri, {
-
-// }).then(() => console.log("MongoDB connected using Mongoose"))
-//   .catch(err => console.error("MongoDB connection error:", err));
+mongoose.connect(mongoUri, {
+  authSource: "admin",
+}).then(() => console.log("MongoDB connected using Mongoose"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
 
   // import models
@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/healthcheck", async (req, res) => {
+  console.log("mongo uri", mongoUri)
   try {
     const connectionState = mongoose.connection.readyState;
 

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 const fs = require('fs');
-const routes = require('./routes/stockRoutes');
+const routes = require('./routes/transactionRoutes');
 var app = express();
 
 // local instance of environment variables
@@ -21,14 +21,14 @@ app.use('/', routes);
 async function startup()
 {
   await mongoose.connect(mongoUri, {
-    authSource: 'admin'
+    authSource:'admin'
   })
     .then(console.log('Connected to MongoDB'))
     .catch((error) => console.error('Error connecting to MongoDB:', error));
 
   app.listen(port, () =>
   {
-    console.log(`Market data microservice on port ${port}...`);
+    console.log(`transaction manager microservice on port ${port}...`);
   });
 }
 

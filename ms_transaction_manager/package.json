@@ -1,5 +1,5 @@
 {
-  "name": "ms_market_data",
+  "name": "ms_transaction_manager",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -13,7 +13,7 @@ services:
       - ms_matching_engine
       - ms_market_data
 
-    
+
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
@@ -21,7 +21,8 @@ services:
       - "8001:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
-    
+      JWT_SECRET: your_jwt_secret_here
+
   # Order Execution Microservice
   ms_order_execution:
     build: ./ms_order_execution
@@ -29,7 +30,7 @@ services:
       - "8002:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
-  
+
   # Order Creation Microservice
   ms_order_creation:
     build: ./ms_order_creation
@@ -44,7 +45,7 @@ services:
     ports:
       - "8004:3000"
     environment:
-       MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongo:27017/db
 
   # Market Data Microservice
   ms_market_data:
@@ -52,8 +53,15 @@ services:
     ports:
       - "8005:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
 
+  # Audit Manager Microservice
+  ms_transaction_manager:
+    build: ./ms_transaction_manager
+    ports:
+      - "8006:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
 
   mongo:
     image: mongo:latest
@@ -67,8 +75,8 @@ services:
 
 volumes:
   db_data:
-  # user_db_data:
-  # order_execution_db_data:
-  # order_creation_db_data:
-  # matching_engine_db_data:
-  # market_data_db_data: 
+    # user_db_data:
+    # order_execution_db_data:
+    # order_creation_db_data:
+    # matching_engine_db_data:
+    # market_data_db_data: 

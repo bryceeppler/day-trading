@@ -111,7 +111,7 @@ async function getStockTransactions(req, res)
 }
 
 
-// /getStockTransactions
+// /getAllStockTransactions
 async function getAllStockTransactions(req, res)
 {
 

@@ -102,7 +102,7 @@ async function getWalletTransactions(req, res)
     }
 }
 
-// /getWalletTransactions
+// /geAlltWalletTransactions
 async function getAllWalletTransactions(req, res)
 {
     try 

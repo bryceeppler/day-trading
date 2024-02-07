@@ -1,6 +1,6 @@
 version: '3.9'
-services:
 
+services:
   # React Frontend
   react:
     build: ./client
@@ -17,10 +17,12 @@ services:
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
+    image: ms_user
     ports:
       - "8001:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
     
   # Order Execution Microservice
   ms_order_execution:

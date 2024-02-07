@@ -31,7 +31,7 @@ module.exports = class OrderBook {
                 // move to matchedOrders array
                 this.matchedOrders.push(this.buyOrders.shift(), this.sellOrders.shift());
             } else {
-                matchFound = false; // astop if the top buy order cannot match the top sell order
+                matchFound = false; // stop if the top buy order cannot match the top sell order
             }
         }
     }

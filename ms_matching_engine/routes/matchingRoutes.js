@@ -6,6 +6,7 @@ router.get('/', (req, res) => {
   res.send('This is the matching engine microservice');
 });
 router.get('/healthcheck', orderController.healthCheck);
-router.post('/orderTrigger', orderController.orderTrigger);
+router.post('/limitOrderTrigger', orderController.limitOrderTrigger);
+router.post('/marketOrderTrigger', orderController.marketOrderTrigger);
 
 module.exports = router;

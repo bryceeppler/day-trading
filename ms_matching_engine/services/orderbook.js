@@ -1,48 +1,40 @@
+const StockTransaction = require('../models/StockTransactionModel');
 module.exports = class OrderBook {
-    constructor(db) {
+    constructor() {
         this.buyOrders = [];
         this.sellOrders = [];
         this.matchedOrders = [];
-        // this.loadOrders(db);
-
     }
 
-    async loadOrders(db) {
-        // load orders from db
-        // maybe sort on the mongo query if we end up needing it later
-        const buyOrders = await db.ordersCollection.find({ type: "buy" }).toArray(); 
-        const sellOrders = await db.ordersCollection.find({ type: "sell" }).toArray();
-        const matchedOrders = await db.ordersCollection.find({ type: "matched" }).toArray();
-        this.buyOrders = buyOrders;
-        this.sellOrders = sellOrders;
-        this.matchedOrders = matchedOrders;
+    async loadOrders() {
+        // status = IN PROGRESS/COMPLETED/CANCELLED/MATCHED
+        // order_type = limit/market
+        // is_buy = true/false
+        this.buyOrders = await StockTransaction.find({ order_type: "limit", is_buy: true, status: "IN PROGRESS" }).sort({ price: -1 });
+        this.sellOrders = await StockTransaction.find({ order_type: "limit", is_buy: false, status: "IN PROGRESS" }).sort({ price: 1 });
     }
 
-
-    addOrder(order) {
-        if (order.type === 'buy') {
-            this.buyOrders.push(order);
-            // sort here maybe?
-        } else {
-            this.sellOrders.push(order);
-            // sort?
-        }
-    }
-
-    async saveOrders(db) {
-        try {
-            // TODO: we'll need to clear the collection first
-            await db.ordersCollection.insertMany(this.buyOrders);
-            await db.ordersCollection.insertMany(this.sellOrders);
-            await db.ordersCollection.insertMany(this.matchedOrders);
-            console.log("Orders saved to db")
-        } catch (error) {
-            console.error("Error saving orders to db:", error);
+    async saveOrders() {
+        // after matching and updating order status, save to db
+        for (const order of this.matchedOrders) {
+            await StockTransaction.findByIdAndUpdate(order._id, { status: "MATCHED" });
         }
     }
 
     matchOrders() {
-        return;
+        let matchFound = true;
+        while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
+            if (this.buyOrders[0].price >= this.sellOrders[0].price) {
+                // TODO add partial order fills
+                console.log(`Matching order: ${this.buyOrders[0]._id} with ${this.sellOrders[0]._id}`);
+    
+                // move to matchedOrders array
+                this.matchedOrders.push(this.buyOrders.shift(), this.sellOrders.shift());
+            } else {
+                matchFound = false; // astop if the top buy order cannot match the top sell order
+            }
+        }
     }
+    
 
 }

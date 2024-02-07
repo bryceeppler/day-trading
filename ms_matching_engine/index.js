@@ -12,8 +12,9 @@ mongoose.connect(mongoUri, {
   .catch(err => console.error("MongoDB connection error:", err));
 
 
-  // import models
-const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
+  // import models from ./models/stockTransactionModel.js
+
+  const StockTransaction = require('./models/stockTransactionModel');
 
 
 

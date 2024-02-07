@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
+const connectDB = async (customURI) => {
+  const mongoUri = customURI || process.env.MONGO_URI;
   try {
-    await mongoose.connect(process.env.MONGO_URI, { authSource: "admin" });
+    await mongoose.connect(mongoUri, { authSource: "admin" });
     console.log("MongoDB connected using Mongoose");
   } catch (err) {
     console.error("MongoDB connection error:", err);

@@ -13,8 +13,7 @@ mongoose.connect(mongoUri, {
 
 
   // import models
-// import mongoose models from ../ms_transaction_manager/models/stockTransactionModel.js
-// const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
+const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
 
 
 

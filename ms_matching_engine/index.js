@@ -6,21 +6,20 @@ const Orderbook = require("./orderbook.js");
 
 const mongoUri = process.env.MONGO_URI;
 
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log("MongoDB connected using Mongoose"))
-  .catch(err => console.error("MongoDB connection error:", err));
+// mongoose.connect(mongoUri, {
+
+// }).then(() => console.log("MongoDB connected using Mongoose"))
+//   .catch(err => console.error("MongoDB connection error:", err));
 
 
   // import models
 // import mongoose models from ../ms_transaction_manager/models/stockTransactionModel.js
-const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
+// const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
 
 
 
 
-const orderbook = new Orderbook(db);
+// const orderbook = new Orderbook(db);
 
 app.get("/", (req, res) => {
   res.send("This is the matching engine microservice");

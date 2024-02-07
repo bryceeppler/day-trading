@@ -1,0 +1,21 @@
+# This file override and merges the default settings in docker-compose.yml
+# Use it for development changes that should not run in production
+
+# If you want to bypass the override file, use the -f flag in your docker-compose command to force the use of the default file
+# Example: docker-compose -f docker-compose.yml up
+
+version: "3.9"
+services:
+  # Matching Engine Microservice
+  # This override creates a volume to map the local directory to the container directory for live updates
+  # and runs the development script to start the server (nodemon)
+  ms_matching_engine:
+    build: ./ms_matching_engine
+    volumes:
+      - ./ms_matching_engine:/app
+    ports:
+      - "8004:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
+      NODE_ENV: production
+    command: ["npm", "run", "dev"]

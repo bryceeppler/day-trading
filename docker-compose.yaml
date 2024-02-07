@@ -42,14 +42,12 @@ services:
   # Matching Engine Microservice
   ms_matching_engine:
     build: ./ms_matching_engine
-    # This volume maps the local directory to the container directory for live updates
-    # during development
-    volumes:
-      - ./ms_matching_engine:/app
     ports:
       - "8004:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
+      NODE_ENV: production
+    command: ["npm", "start"]
 
   # Market Data Microservice
   ms_market_data:

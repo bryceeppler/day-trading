@@ -1,4 +1,4 @@
-class OrderBook {
+module.exports = class OrderBook {
     constructor(db) {
         this.buyOrders = [];
         this.sellOrders = [];

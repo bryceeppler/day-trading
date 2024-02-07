@@ -32,11 +32,12 @@ async function getStockPrices(req, res)
 {
     try 
     {
-        const stocks = await Stock.find({}, 'current_price') || {};
+        const stocks = await Stock.find({}, 'stock_name current_price') || {};
 
         // Map the documents and rename _id to stock_id
         const transformedStocks = stocks.map(stock => ({
             stock_id: stock._id,
+            stock_name: stock.stock_name,
             current_price: stock.current_price,
         }));
 

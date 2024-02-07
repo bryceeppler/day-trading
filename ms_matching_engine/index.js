@@ -1,48 +1,45 @@
 var express = require("express");
 var app = express();
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const mongoose = require("mongoose");
 const Orderbook = require("./orderbook.js");
 
-
-// mongo db uri for this microservice's database
 const mongoUri = process.env.MONGO_URI;
 
-const client = new MongoClient(mongoUri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }
-}
-);
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log("MongoDB connected using Mongoose"))
+  .catch(err => console.error("MongoDB connection error:", err));
 
-const db = client.db("matching_engine");
+
+  // import models
+// import mongoose models from ../ms_transaction_manager/models/stockTransactionModel.js
+const StockTransaction = require('../ms_transaction_manager/models/stockTransactionModel');
+
+
+
+
 const orderbook = new Orderbook(db);
-
-async function pingDb() {
-  try {
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("successfully pinged mongo");
-  } finally {
-    await client.close();
-  }
-}
-
-app.get("/healthcheck", async (req, res) => {
-  try {
-    await pingDb();
-    res.send("MongoDB connection successful");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    res.status(500).send("MongoDB connection failed");
-  }
-});
 
 app.get("/", (req, res) => {
   res.send("This is the matching engine microservice");
+});
+
+app.get("/healthcheck", async (req, res) => {
+  try {
+    const connectionState = mongoose.connection.readyState;
+
+    // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    if (connectionState === 1) {
+      res.send("MongoDB connection is healthy");
+    } else {
+      throw new Error("MongoDB connection is not healthy");
+    }
+  } catch (error) {
+    console.error("Health check failed:", error);
+    res.status(500).send("Health check failed: Unable to connect to MongoDB");
+  }
 });
 
 

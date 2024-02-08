@@ -17,8 +17,17 @@ jobs:
       run: |
         docker-compose up --build -d
 
-    - name: Delay before Tear down Docker Compose
-      run: sleep 150s
+    - name: Check Docker services
+      run: |
+        services=$(docker-compose ps --services)
+        for service in $services; do
+          if [[ "$(docker inspect -f '{{.State.Running}}' "$service")" == "true" ]]; then
+            echo "$service is running"
+          else
+            echo "$service is not running"
+            exit 1
+          fi
+        done
 
     - name: Tear down Docker Compose
       run: |

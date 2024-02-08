@@ -22,10 +22,11 @@ jobs:
         services=$(docker-compose ps --services)
         good=true
         for service in $services; do
-            if ! docker inspect --format '{{.State.Status}}' "$service" | grep -q "running"; then
-                echo "$service is not running"
+            ms=docker-compose ps -q "$service"
+            if [ docker inspect --format '{{.State.Status}}' "$ms" != "running"]; then
+                echo "$service is not running
                 good=false
-            fi
+            fidocker
         done
         if [ "$good" = false ]; then
             exit 1

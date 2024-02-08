@@ -1,4 +1,4 @@
-const StockTransaction = require('../models/StockTransactionModel');
+const StockTransaction = require('../models/stockTransactionModel');
 module.exports = class OrderBook {
     constructor() {
         this.buyOrders = [];

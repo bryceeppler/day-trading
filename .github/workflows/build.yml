@@ -32,9 +32,9 @@ jobs:
             if [ "$status" == "running" ]; then
                 echo "$name is running"
                 service=${name#*/}  # Remove leading slash
-                service=${service#*_}         # Remove prefix
-                service=${service%%_1}  # Remove suffix
-                echo "$(service)"
+                # service=${service#*_}         # Remove prefix
+                # mservice=${service%%_1}  # Remove suffix
+                echo "$service"
             else    
                 echo "$name is not running"
                 service=${name#*/}  # Remove leading slash

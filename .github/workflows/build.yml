@@ -19,14 +19,16 @@ jobs:
 
     - name: Check Docker services
       run: |
-        services=$(docker-compose ps --services)
+        containers=$(docker ps --format "{{.ID}}")
         good=true
-        for service in $services; do
-            ms=docker-compose ps -q "$service"
-            if [ docker inspect --format '{{.State.Status}}' "$ms" != "running"]; then
-                echo "$service is not running
+        for container in $containers; do
+            name=$(docker inspect --format '{{.Name}}' "$container")
+            if [ docker inspect --format '{{.State.Status}}' "$container" == "running"]; then
+                echo "$name is running"
+            else    
+                echo "$name is not running"
                 good=false
-            fidocker
+            fi
         done
         if [ "$good" = false ]; then
             exit 1

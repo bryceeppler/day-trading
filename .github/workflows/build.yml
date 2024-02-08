@@ -20,14 +20,16 @@ jobs:
     - name: Check Docker services
       run: |
         services=$(docker-compose ps --services)
+        good=true
         for service in $services; do
-          if [[ "$(docker inspect -f '{{.State.Running}}' "$service")" == "true" ]]; then
-            echo "$service is running"
-          else
-            echo "$service is not running"
-            exit 1
-          fi
+            if ! docker inspect --format '{{.State.Status}}' "$service" | grep -q "running"; then
+                echo "$service is not running"
+                good=false
+            fi
         done
+        if [ "$good" = false ]; then
+            exit 1
+        fi
 
     - name: Tear down Docker Compose
       run: |

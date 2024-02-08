@@ -16,6 +16,9 @@ jobs:
     - name: Build and Run Docker Compose
       run: |
         docker-compose up --build -d
+
+    - name: Delay Check
+      run: sleep 5
         
     - name: Check Docker services
       run: |

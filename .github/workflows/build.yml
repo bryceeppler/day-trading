@@ -20,10 +20,11 @@ jobs:
     - name: Check Docker services
       run: |
         containers=$(docker ps --format "{{.ID}}")
+        echo "$containers"
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
-            if [ docker inspect --format '{{.State.Status}}' "$container" == "running"]; then
+            if [ $(docker inspect --format '{{.State.Status}}' "$container") == "running" ]; then
                 echo "$name is running"
             else    
                 echo "$name is not running"

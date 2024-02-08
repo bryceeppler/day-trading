@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Build and Run Docker Compose
       run: |
-        docker-compose up --build -d -f docker-compose.yml
+        docker-compose up --build -d
 
     - name: Delay Check
       run: |

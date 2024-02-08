@@ -18,7 +18,9 @@ jobs:
         docker-compose up --build -d
 
     - name: Delay Check
-      run: sleep 5
+      run: |
+        sleep 5
+        docker ps
         
     - name: Check Docker services
       run: |
@@ -31,7 +33,6 @@ jobs:
                 echo "$name is running"
             else    
                 echo "$name is not running"
-                docker compose logs ${name:1}
                 good=false
             fi
         done

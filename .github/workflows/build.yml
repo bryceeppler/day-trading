@@ -33,7 +33,7 @@ jobs:
                 echo "$name is running"
             else    
                 echo "$name is not running"
-                docker compose logs $(name:13)
+                echo $("$name" | cut -d'_' -f2)
                 good=false
             fi
         done

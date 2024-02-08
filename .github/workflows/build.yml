@@ -33,7 +33,7 @@ jobs:
                 echo "$name is running"
             else    
                 echo "$name is not running"
-                service=${container#"/day_trading_"}  # Remove prefix
+                service=${name#"/day_trading_"}  # Remove prefix
                 service=${service%%_1}  # Remove suffix
                 echo $(docker-compose logs $service)
                 good=false

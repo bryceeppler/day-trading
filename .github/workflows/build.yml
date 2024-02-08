@@ -29,6 +29,7 @@ jobs:
                 echo "$name is running"
             else    
                 echo "$name is not running"
+                docker-compose logs $name
                 good=false
             fi
         done

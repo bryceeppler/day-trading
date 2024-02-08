@@ -13,8 +13,13 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Build Microservices
+    - name: Build and Run Docker Compose
       run: |
-        cd ms_market_data
-        npm install
-        npm run build
+        docker-compose up --build -d
+
+    - name: Delay before Tear down Docker Compose
+      run: sleep 150s
+
+    - name: Tear down Docker Compose
+      run: |
+        docker-compose down

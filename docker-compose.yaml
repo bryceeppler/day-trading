@@ -47,6 +47,8 @@ services:
       - "8004:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
+      NODE_ENV: production
+    command: ["npm", "start"]
 
   # Market Data Microservice
   ms_market_data:

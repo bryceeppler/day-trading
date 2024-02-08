@@ -14,4 +14,5 @@ COPY . .
 # Make port available to the world outside this container
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Should be used in production
+# CMD ["npm", "start"]

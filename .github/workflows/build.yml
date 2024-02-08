@@ -20,7 +20,7 @@ jobs:
     - name: Check Docker services
       run: |
         containers=$(docker ps --format "{{.ID}}")
-        sleep 1
+        sleep 3
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")

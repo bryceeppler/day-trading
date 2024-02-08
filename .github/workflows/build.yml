@@ -16,17 +16,15 @@ jobs:
     - name: Build and Run Docker Compose
       run: |
         docker-compose up --build -d
-    - name: Sleep for 3 seconds
-      run: sleep 3
-
+        
     - name: Check Docker services
       run: |
         containers=$(docker ps --format "{{.ID}}")
+        sleep 1
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
             status=$(docker inspect --format '{{.State.Status}}' "$container")
-            echo "$name : $status"
             if [ "$status" == "running" ]; then
                 echo "$name is running"
             else    

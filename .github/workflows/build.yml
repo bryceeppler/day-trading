@@ -28,11 +28,13 @@ jobs:
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
+            echo "$name"
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then
                 echo "$name is running"
             else    
                 echo "$name is not running"
+                docker compose logs $service
                 good=false
             fi
         done

@@ -19,17 +19,16 @@ jobs:
         
     - name: Check Docker services
       run: |
-        containers=$(docker ps --format "{{.ID}}")
-        sleep 5
+        containers=$(docker ps --all --format "{{.ID}}")
         good=true
         for container in $containers; do
-            name=$(docker inspect --format '{{.Name}}' "$container" | sed 's|^/||')
+            name=$(docker inspect --format '{{.Name}}' "$container")
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then
                 echo "$name is running"
             else    
                 echo "$name is not running"
-                docker-compose logs $name
+                docker compose logs ${name:1}
                 good=false
             fi
         done

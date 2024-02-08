@@ -31,12 +31,16 @@ jobs:
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then
                 echo "$name is running"
+                service=${name#*/}  # Remove leading slash
+                service=${service#*_}         # Remove prefix
+                service=${service%%_1}  # Remove suffix
+                echo $(service)
             else    
                 echo "$name is not running"
                 service=${name#*/}  # Remove leading slash
                 service=${service#*_}         # Remove prefix
                 service=${service%%_1}  # Remove suffix
-                echo $(docker-compose logs $service)
+                echo $(service)
                 good=false
             fi
         done

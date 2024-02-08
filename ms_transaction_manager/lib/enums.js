@@ -4,8 +4,9 @@ exports.ORDER_TYPE = {
 };
 
 
-exports.ORDER_STATUS = {
+export.ORDER_STATUS = {
   IN_PROGRESS: 'IN_PROGRESS',
   CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED',
   COMPLETED: 'COMPLETED'
 };

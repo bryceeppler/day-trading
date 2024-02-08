@@ -43,7 +43,7 @@ async function updateStockTxId(req, res)
     }
     catch (error)
     {
-        console.error('Error updating stock price:', error);
+        console.error('Error updating wallet transaction:', error);
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
@@ -70,7 +70,7 @@ async function deleteWalletTx(req, res)
     }
     catch (error)
     {
-        console.error('Error updating stock price:', error);
+        console.error('Error updating wallet transaction:', error);
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
@@ -97,36 +97,22 @@ async function getWalletTransactions(req, res)
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
+        console.error('Error getting wallet trasactions:', error);
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
 
-// /getWalletTransactions
+// /geAlltWalletTransactions
 async function getAllWalletTransactions(req, res)
 {
-
     try 
     {
-        const walletTx = await WalletTransaction.find().sort({ time_stamp: 1 }) || {};;
-
-
-        // Map the documents and rename _id to wallet_tx_id
-        const transformedWalletTx = walletTx.map(tx => ({
-            wallet_tx_id: tx._id,
-            stock_tx_id: tx.stock_tx_id,
-            is_debit: tx.is_debit,
-            amount: tx.amount,
-            time_stamp: tx.time_stamp,
-            is_deleted: tx.is_deleted
-        }));
-
-
-        return res.status(200).json(transformedWalletTx);
+        const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};;
+        return res.status(200).json(walletTx);
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
+        console.error('Error getting wallet transactions:', error);
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }

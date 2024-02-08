@@ -24,8 +24,8 @@ exports.createStockTxValidation = validate([
 exports.updateStockTxStatusValidation = validate([
   param('stock_tx_id').notEmpty().withMessage('Stock ID is required')
     .isMongoId().withMessage('Invalid stock ID format'),
-  body('order_status').notEmpty().withMessage('New price is required')
-    .isIn(Object.values(ORDER_STATUS)).withMessage('Order type must be IN_PROGRESS, CANCELED, or COMPLETED')
+  body('order_status').notEmpty().withMessage('Order status is required')
+    .isIn(Object.values(ORDER_STATUS)).withMessage('Order type must be IN_PROGRESS, CANCELED, EXPIRED, or COMPLETED')
 ]);
 
 exports.deleteStockTxValidation = validate([

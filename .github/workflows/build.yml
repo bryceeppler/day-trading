@@ -33,7 +33,7 @@ jobs:
                 echo "$name is running"
                 service=${name#*/}  # Remove leading slash
                 service=${service#*_}         # Remove prefix
-                # mservice=${service%%_1}  # Remove suffix
+                mservice=${service%%_1}  # Remove suffix
                 echo "$service"
             else    
                 echo "$name is not running"

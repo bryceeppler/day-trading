@@ -18,24 +18,22 @@ exports.healthCheck = async (req, res) => {
   }
 };
 
-exports.limitOrderTrigger = async (req, res) => {
+exports.receiveOrder = async (req, res) => {
   try {
-    // I don't actually need any information fromt the request for now, it just triggers a search for matching orders.
-    await orderbook.loadOrders();   // load orders from db
+    const order = req.body; // TODO: validate order
+    console.log("Received order:", order);
+
+    orderbook.updateOrders(order);
+
+    // Order received and in orderbook, return 200 and match in background
+    res.status(200).send("Order received");
+
     orderbook.matchOrders();        // run matching algorithm
-    await orderbook.saveOrders();   // save to db
-    res.status(200).send("Limit order trigger received");
+    orderbook.flushOrders();        // send expired/matched orders to order execution service
+
   } catch (error) {
+    // TODO: better err handling
     console.error("Error processing order:", error);
     res.status(500).send("Error processing order");
   }
 };
-
-exports.marketOrderTrigger = async (req, res) => {
-  try {
-    res.status(200).send("Market order trigger received");
-  } catch (error) {
-    console.error("Error processing order:", error);
-    res.status(500).send("Error processing order");
-  }
-}

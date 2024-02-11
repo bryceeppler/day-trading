@@ -1,44 +1,168 @@
-const StockTransaction = require('../models/stockTransactionModel');
+// const axios = require('axios');
 module.exports = class OrderBook {
-    constructor() {
+    constructor(stockTransactionModel) {
+        this.stockTransactionModel = stockTransactionModel;
         this.buyOrders = [];
         this.sellOrders = [];
         this.matchedOrders = [];
+        this.cancelledOrders = [];
+        this.expiredOrders = [];
+        // this.init();
+    }
+
+    async init() {
+        await this.loadOrders();
     }
 
     async loadOrders() {
-        // status = IN_PROGRESS/COMPLETED/CANCELLED/MATCHED
-        // order_type = LIMIT/market
-        // is_buy = true/false
         console.log("Loading orders from db")
-        this.buyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1 });
-        this.sellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1 });
-        this.buyOrders.map(order => console.log("Buy order", order.stock_price, order.quantity));
-        this.sellOrders.map(order => console.log("Sell order", order.stock_price, order.quantity));
-    }
+        let allBuyOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1, time_stamp: 1 });
+        let allSellOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1, time_stamp: 1 });
 
-    async saveOrders() {
-        // after matching and updating order status, save to db
-        for (const order of this.matchedOrders) {
-            await StockTransaction.findByIdAndUpdate(order._id, { order_status: "MATCHED" });
-        }
+        this.buyOrders = allBuyOrders;
+        this.sellOrders = allSellOrders;
     }
 
     matchOrders() {
-        let matchFound = true;
-        while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
-            if (this.buyOrders[0].stock_price >= this.sellOrders[0].stock_price) {
-                // TODO add partial order fills
-                console.log(`Matching order: ${this.buyOrders[0]._id} with ${this.sellOrders[0]._id}`);
+        // define output buy order queue and sell order queue for unmatched orders that can be used as input for the next matching
+
+        const unmatchedBuyOrders = [];
+        const unmatchedSellOrders = [];
+
+        while (this.buyOrders.length > 0 && this.sellOrders.length > 0) {
+            const buyOrder = this.buyOrders[0];
+            const sellOrder = this.sellOrders[0];
+            // Check if the first buy order's price is at least equal to the first sell order's price
+            if (buyOrder.stock_price >= sellOrder.stock_price) {
+                const qty = Math.min(buyOrder.quantity, sellOrder.quantity);
+                console.log(`Matching order: ${buyOrder._id} with ${sellOrder._id} for ${qty} shares at ${buyOrder.stock_price}`);
+                
+                // update available quanities
+                buyOrder.quantity -= qty;
+                sellOrder.quantity -= qty;
+
+                this.matchedOrders.push(
+                    {
+                        buy_order: buyOrder,
+                        sell_order: sellOrder,
+                        quantity: qty,
+                    }
+                );
+
+                // if no qty left, remove from queue
+                if (buyOrder.quantity === 0) {
+                    this.buyOrders.shift();
+                }
+                if (sellOrder.quantity === 0) {
+                    this.sellOrders.shift();
+                }
     
-                // move to matchedOrders array
-                this.matchedOrders.push(this.buyOrders.shift(), this.sellOrders.shift());
             } else {
-                matchFound = false; // stop if the top buy order cannot match the top sell order
+                // increment the index of the order that is not matched
+                // if (buyOrder.stock_price < sellOrder.stock_price) {
+                //     this.buyOrders.shift();
+                // }
+                // else {
+                //     this.sellOrders.shift();
+                // }
+
+
+                // we don't want to shift it into the ether, we want it to be stored as the input queue
+                // on the next iteration
+
+                if (buyOrder.stock_price < sellOrder.stock_price) {
+                    unmatchedBuyOrders.push(this.buyOrders.shift());
+                } else {
+                    unmatchedSellOrders.push(this.sellOrders.shift());
+                }
+
+                // if we are totally out of buy or sell orders, reset the buyOrders and sellOrders arrays to the unmatched orders
+                // combined with the remaining orders in the other array
+                // if (this.buyOrders.length === 0) {
+                //     this.buyOrders = unmatchedBuyOrders;
+                //     this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
+                // }
+                // if (this.sellOrders.length === 0) {
+                //     this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
+                //     this.sellOrders = unmatchedSellOrders;
+                // }
+
             }
         }
-        console.log("Num of matched orders", this.matchedOrders.length);
+
+        this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
+        this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
+
+    
     }
     
+
+
+    flushOrders() {
+        // send matched, cancelled, expired orders to order execution service
+        console.log("Flushing orders");
+        console.log("Matched orders:", this.matchedOrders.length);
+        this.sendOrdersToOrderExecutionService(
+            this.matchedOrders,
+            this.cancelledOrders,
+            this.expiredOrders
+        );
+    }
+
+    insertOrder(order) {
+        // add to proper orderbook array
+        // orderbook array is sorted by time_stamp, so this will be at the end no matter what
+        // if (order.is_buy) {
+        //     if (!this.buyOrders[order.stock_id]) {
+        //         this.buyOrders[order.stock_id] = [];
+        //     }
+        //     this.buyOrders[order.stock_id].push(order);
+        // } else {
+        //     if (!this.sellOrders[order.stock_id]) {
+        //         this.sellOrders[order.stock_id] = [];
+        //     }
+        //     this.sellOrders[order.stock_id].push(order);
+        // } 
+        // console.log("Number of buy orders after insert", this.buyOrders[order.stock_id].length);
+        // console.log("Number of sell orders after insert", this.sellOrders[order.stock_id].length);
+
+        if (order.is_buy) {
+            // add to buy orders at proper index, it is already sorted by price and time
+            this.buyOrders.push(order);
+        }
+        else {
+            this.sellOrders.push(order);
+        }
+        console.log("Number of buy orders after insert", this.buyOrders.length);
+    }
+
+    async sendOrdersToOrderExecutionService(
+        matchedOrders,
+        cancelledOrders,
+        expiredOrders
+    ) {
+        console.log("Sending orders to order execution service");
+
+        // empty the arrays
+        matchedOrders = [];
+        cancelledOrders = [];
+        expiredOrders = [];
+        
+        // const executionServiceUrl = "http://ms_order_execution:8002/";
+        
+        // try {
+        //     // send http request to order execution service containing the orders
+        //     const response = await axios.post(executionServiceUrl, {
+        //         matchedOrders,
+        //         cancelledOrders,
+        //         expiredOrders
+        //     });
+
+        //     console.log("Order execution service response:", response.data);
+
+        // } catch (error) {
+        //     console.error("Error sending orders to order execution service:", error);
+        // }
+    }
 
 }

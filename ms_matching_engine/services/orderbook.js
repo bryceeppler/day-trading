@@ -1,13 +1,14 @@
-const StockTransaction = require('../models/stockTransactionModel');
+// const StockTransaction = require('../models/stockTransactionModel');
 const axios = require('axios');
 module.exports = class OrderBook {
-    constructor() {
-        this.buyOrders = {};
-        this.sellOrders = {};
+    constructor(stockTransactionModel) {
+        this.stockTransactionModel = stockTransactionModel;
+        this.buyOrders = [];
+        this.sellOrders = [];
         this.matchedOrders = [];
         this.cancelledOrders = [];
         this.expiredOrders = [];
-        this.init();
+        // this.init();
     }
 
     async init() {
@@ -16,8 +17,8 @@ module.exports = class OrderBook {
 
     async loadOrders() {
         console.log("Loading orders from db")
-        let allBuyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1, time_stamp: 1 });
-        let allSellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1, time_stamp: 1 });
+        let allBuyOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1, time_stamp: 1 });
+        let allSellOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1, time_stamp: 1 });
 
         this.buyOrders = allBuyOrders;
         this.sellOrders = allSellOrders;

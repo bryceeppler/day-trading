@@ -23,7 +23,7 @@ exports.receiveOrder = async (req, res) => {
     const order = req.body; // TODO: validate order
     console.log("Received order:", order);
 
-    orderbook.updateOrders(order);
+    orderbook.insertOrder(order);
 
     // Order received and in orderbook, return 200 and match in background
     res.status(200).send("Order received");

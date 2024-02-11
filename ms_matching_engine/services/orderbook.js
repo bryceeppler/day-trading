@@ -37,7 +37,7 @@ module.exports = class OrderBook {
 
         this.buyOrders.sort((a, b) => new Date(a.time_stamp) - new Date(b.time_stamp));
         this.sellOrders.sort((a, b) => new Date(a.time_stamp) - new Date(b.time_stamp));
-        
+
         while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
 
             // Check expiry
@@ -78,7 +78,7 @@ module.exports = class OrderBook {
         );
     }
 
-    updateOrders(order) {
+    insertOrder(order) {
         // add to proper orderbook array and re-sort
         if (order.is_buy) {
             this.buyOrders.push(order);

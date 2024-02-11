@@ -1,7 +1,8 @@
 const Orderbook = require('../services/orderbook');
 const mongoose = require('mongoose');
-const orderbook = new Orderbook();
-
+const StockTransaction = require('../models/stockTransactionModel');
+const orderbook = new Orderbook(StockTransaction);
+orderbook.init();
 exports.healthCheck = async (req, res) => {
   console.log("mongo uri", process.env.MONGO_URI);
   try {

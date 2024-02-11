@@ -35,9 +35,6 @@ module.exports = class OrderBook {
     matchOrders() {
         let matchFound = true;
 
-        this.buyOrders.sort((a, b) => new Date(a.time_stamp) - new Date(b.time_stamp));
-        this.sellOrders.sort((a, b) => new Date(a.time_stamp) - new Date(b.time_stamp));
-
         while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
 
             // Check expiry

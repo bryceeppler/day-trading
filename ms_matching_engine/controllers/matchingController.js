@@ -25,7 +25,7 @@ exports.receiveOrder = async (req, res) => {
 
     orderbook.insertOrder(order);
 
-    // Order received and in orderbook, return 200 and match in background
+    // Order received and in orderbook, return 200 to order creation service
     res.status(200).send("Order received");
 
     orderbook.matchOrders();        // run matching algorithm

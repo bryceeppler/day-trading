@@ -82,11 +82,9 @@ module.exports = class OrderBook {
         // add to proper orderbook array and re-sort
         if (order.is_buy) {
             this.buyOrders.push(order);
-            this.buyOrders.sort((a, b) => b.stock_price - a.stock_price);
         }
         else {
             this.sellOrders.push(order);
-            this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
         }
     }
 

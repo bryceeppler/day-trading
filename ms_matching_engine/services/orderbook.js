@@ -19,8 +19,8 @@ module.exports = class OrderBook {
         // order_type = LIMIT/market
         // is_buy = true/false
         console.log("Loading orders from db")
-        this.buyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1 });
-        this.sellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1 });
+        this.buyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
+        this.sellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
         this.buyOrders.map(order => console.log("Buy order", order.stock_price, order.quantity));
         this.sellOrders.map(order => console.log("Sell order", order.stock_price, order.quantity));
     }
@@ -79,7 +79,8 @@ module.exports = class OrderBook {
     }
 
     insertOrder(order) {
-        // add to proper orderbook array and re-sort
+        // add to proper orderbook array
+        // orderbook array is sorted by time_stamp, so this will be at the end no matter what
         if (order.is_buy) {
             this.buyOrders.push(order);
         }

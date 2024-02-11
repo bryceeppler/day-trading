@@ -1,5 +1,4 @@
-// const StockTransaction = require('../models/stockTransactionModel');
-const axios = require('axios');
+// const axios = require('axios');
 module.exports = class OrderBook {
     constructor(stockTransactionModel) {
         this.stockTransactionModel = stockTransactionModel;
@@ -26,8 +25,10 @@ module.exports = class OrderBook {
 
     matchOrders() {
         // define output buy order queue and sell order queue for unmatched orders that can be used as input for the next matching
-        // const unmatchedBuyOrders = [];
-        // const unmatchedSellOrders = [];
+
+        const unmatchedBuyOrders = [];
+        const unmatchedSellOrders = [];
+
         while (this.buyOrders.length > 0 && this.sellOrders.length > 0) {
             const buyOrder = this.buyOrders[0];
             const sellOrder = this.sellOrders[0];
@@ -58,22 +59,22 @@ module.exports = class OrderBook {
     
             } else {
                 // increment the index of the order that is not matched
-                if (buyOrder.stock_price < sellOrder.stock_price) {
-                    this.buyOrders.shift();
-                }
-                else {
-                    this.sellOrders.shift();
-                }
+                // if (buyOrder.stock_price < sellOrder.stock_price) {
+                //     this.buyOrders.shift();
+                // }
+                // else {
+                //     this.sellOrders.shift();
+                // }
 
 
                 // we don't want to shift it into the ether, we want it to be stored as the input queue
                 // on the next iteration
 
-                // if (buyOrder.stock_price < sellOrder.stock_price) {
-                //     unmatchedBuyOrders.push(this.buyOrders.shift());
-                // } else {
-                //     unmatchedSellOrders.push(this.sellOrders.shift());
-                // }
+                if (buyOrder.stock_price < sellOrder.stock_price) {
+                    unmatchedBuyOrders.push(this.buyOrders.shift());
+                } else {
+                    unmatchedSellOrders.push(this.sellOrders.shift());
+                }
 
                 // if we are totally out of buy or sell orders, reset the buyOrders and sellOrders arrays to the unmatched orders
                 // combined with the remaining orders in the other array
@@ -88,6 +89,10 @@ module.exports = class OrderBook {
 
             }
         }
+
+        this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
+        this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
+
     
     }
     
@@ -136,11 +141,7 @@ module.exports = class OrderBook {
         cancelledOrders,
         expiredOrders
     ) {
-        // log the orders to be sent to order execution service
         console.log("Sending orders to order execution service");
-        // console.log("Matched orders:", matchedOrders);
-        // console.log("Cancelled orders:", cancelledOrders);
-        // console.log("Expired orders:", expiredOrders);
 
         // empty the arrays
         matchedOrders = [];

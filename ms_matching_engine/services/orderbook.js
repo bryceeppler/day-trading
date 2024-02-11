@@ -2,8 +2,8 @@ const StockTransaction = require('../models/stockTransactionModel');
 const axios = require('axios');
 module.exports = class OrderBook {
     constructor() {
-        this.buyOrders = [];
-        this.sellOrders = [];
+        this.buyOrders = {};
+        this.sellOrders = {};
         this.matchedOrders = [];
         this.cancelledOrders = [];
         this.expiredOrders = [];
@@ -19,31 +19,49 @@ module.exports = class OrderBook {
         // order_type = LIMIT/market
         // is_buy = true/false
         console.log("Loading orders from db")
-        this.buyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
-        this.sellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
+        let allBuyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
+        let allSellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
+
+        this.buyOrders = this.groupOrdersByStock(allBuyOrders);
+        this.sellOrders = this.groupOrdersByStock(allSellOrders);
     }
 
+    groupOrdersByStock(orders) {
+        return orders.reduce((acc, order) => {
+            if (!acc[order.stock_id]) {
+                acc[order.stock_id] = [];
+            }
+            acc[order.stock_id].push(order);
+            return acc;
+        }, {});
+    }
 
     matchOrders() {
-        let matchFound = true;
+        for (const stock in this.buyOrders) {
+            let buyQueue = this.buyOrders[stock];
+            let sellQueue = this.sellOrders[stock] || [];
 
-        while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
+            let matchFound = buyQueue.length > 0 && sellQueue.length > 0;
 
+            while (matchFound) {
+                let buyOrder = buyQueue[0];
+                let sellOrder = sellQueue[0];
 
-            // Check if match
-            if (this.buyOrders[0].stock_price >= this.sellOrders[0].stock_price) {
-                // TODO add partial order fills
-                console.log(`Matching order: ${this.buyOrders[0]._id} with ${this.sellOrders[0]._id}`);
-    
-                // move to matchedOrders array
-                this.matchedOrders.push(this.buyOrders.shift(), this.sellOrders.shift());
-            } else {
-                matchFound = false; // stop if the top buy order cannot match the top sell order
+                // Check for price match
+                if (buyOrder.stock_price >= sellOrder.stock_price) {
+                    console.log(`Matching order: ${buyOrder._id} with ${sellOrder._id}`);
+                    // TODO: partial fills
+
+                    // moving to matchedOrders
+                    this.matchedOrders.push(buyQueue.shift(), sellQueue.shift());
+                    matchFound = buyQueue.length > 0 && sellQueue.length > 0;
+                } else {
+                    matchFound = false; // no match, move to next stock
+                }
             }
-
         }
+
         console.log("Num of matched orders", this.matchedOrders.length);
-        console.log("Num of expired orders", this.expiredOrders.length);
     }
 
 
@@ -61,11 +79,16 @@ module.exports = class OrderBook {
         // add to proper orderbook array
         // orderbook array is sorted by time_stamp, so this will be at the end no matter what
         if (order.is_buy) {
-            this.buyOrders.push(order);
-        }
-        else {
-            this.sellOrders.push(order);
-        }
+            if (!this.buyOrders[order.stock_id]) {
+                this.buyOrders[order.stock_id] = [];
+            }
+            this.buyOrders[order.stock_id].push(order);
+        } else {
+            if (!this.sellOrders[order.stock_id]) {
+                this.sellOrders[order.stock_id] = [];
+            }
+            this.sellOrders[order.stock_id].push(order);
+        } 
     }
 
     async sendOrdersToOrderExecutionService(

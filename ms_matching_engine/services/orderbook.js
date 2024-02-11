@@ -21,32 +21,14 @@ module.exports = class OrderBook {
         console.log("Loading orders from db")
         this.buyOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
         this.sellOrders = await StockTransaction.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ time_stamp: 1 });
-        this.buyOrders.map(order => console.log("Buy order", order.stock_price, order.quantity));
-        this.sellOrders.map(order => console.log("Sell order", order.stock_price, order.quantity));
     }
 
-    async saveOrders() {
-        // after matching and updating order status, save to db
-        for (const order of this.matchedOrders) {
-            await StockTransaction.findByIdAndUpdate(order._id, { order_status: "MATCHED" });
-        }
-    }
 
     matchOrders() {
         let matchFound = true;
 
         while (matchFound && this.buyOrders.length > 0 && this.sellOrders.length > 0) {
 
-            // Check expiry
-
-            // if (this.buyOrders[0].order_expiry < Date.now()) {
-            //     this.expiredOrders.push(this.buyOrders.shift());
-            //     continue;
-            // }
-            // if (this.sellOrders[0].order_expiry < Date.now()) {
-            //     this.expiredOrders.push(this.sellOrders.shift());
-            //     continue;
-            // }
 
             // Check if match
             if (this.buyOrders[0].stock_price >= this.sellOrders[0].stock_price) {

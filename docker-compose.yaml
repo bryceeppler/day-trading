@@ -21,8 +21,8 @@ services:
     ports:
       - "8001:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
-      JWT_SECRET: your_jwt_secret_here
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
 
   # Order Execution Microservice
   ms_order_execution:

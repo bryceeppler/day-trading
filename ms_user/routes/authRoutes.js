@@ -25,7 +25,7 @@ const validatePassword = (password) => {
 
 const validateName = (name) => {
   // Check if name is provided and contains only letters and spaces
-  const nameRegex = /^[a-zA-Z ]+$/;
+  const nameRegex = /^[a-zA-Z]+$/;
   return name.trim().length > 0 && nameRegex.test(name);
 };
 
@@ -35,17 +35,19 @@ router.post('/login', async (req, res) => {
     const { user_name, password } = req.body;
     let user = await User.findOne({ user_name });
     if (!user) {
-      return res.status(400).send('Invalid credentials');
+      return res.status(400).json({ success: false, data: null, message: 'User does not exist'});
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send('Invalid credentials');
+      console.log(password);
+      console.log(user.password);
+      return res.status(400).json({ success: false, data: null, message: 'Invalid credentials'});
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.status(200).send({ user, token });
+    res.status(200).json({ success: true, data: { id: user._id, user_name: user.user_name, name: user.name }, token });
   } catch (error) {
-    res.status(500).send('Server error');
+    res.status(500).json({ success: false, data: null, message: 'Server error' });
   }
 });
 
@@ -74,15 +76,16 @@ router.post('/register', async (req, res) => {
       return res.status(400).send('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ user_name, password: hashedPassword, name });
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
-    res.status(201).send({ token });
+    const token = jwt.sign({ userId: newUser._id, id: newUser._id, user_name: newUser.user_name, password: newUser.password, name: newUser.name }, process.env.JWT_SECRET);
+    // Respond with success true and data containing user details
+    res.status(201).json({ success: true, data: { id: newUser._id, user_name: newUser.user_name, password: newUser.password, name: newUser.name }});
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server error');
+    res.status(500).json({ success: false, data: null, message: 'Server error' });
   }
 });
 

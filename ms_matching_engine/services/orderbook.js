@@ -12,16 +12,37 @@ module.exports = class OrderBook {
 
     async init() {
         await this.loadOrders();
+        console.log("Orderbook initialized with ", this.buyOrders.length, " buy orders and ", this.sellOrders.length, " sell orders...")
     }
 
     async loadOrders() {
-        console.log("Loading orders from db")
         let allBuyOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" }).sort({ stock_price: -1, time_stamp: 1 });
         let allSellOrders = await this.stockTransactionModel.find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" }).sort({ stock_price: 1, time_stamp: 1 });
 
         this.buyOrders = allBuyOrders;
         this.sellOrders = allSellOrders;
     }
+
+    checkForExpiredOrders() {
+        // This is ugly but it does the job for now
+        console.log("Checking for expired orders");
+        const now = new Date();
+        const expiredBuyOrders = this.buyOrders.filter(
+            (order) => now - order.time_stamp > 1000 * 60 * 60 * 24
+        );
+        const expiredSellOrders = this.sellOrders.filter(
+            (order) => now - order.time_stamp > 1000 * 60 * 60 * 24
+        );
+
+        this.expiredOrders = this.expiredOrders.concat(expiredBuyOrders, expiredSellOrders);
+        this.buyOrders = this.buyOrders.filter(
+            (order) => now - order.time_stamp <= 1000 * 60 * 60 * 24
+        );
+        this.sellOrders = this.sellOrders.filter(
+            (order) => now - order.time_stamp <= 1000 * 60 * 60 * 24
+        );
+    }
+
 
     matchOrders() {
         // define output buy order queue and sell order queue for unmatched orders that can be used as input for the next matching
@@ -93,7 +114,6 @@ module.exports = class OrderBook {
         this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
         this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
 
-    
     }
     
 

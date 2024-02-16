@@ -1,6 +1,8 @@
 const express = require("express");
+const userRoutes = require('../routes/userRoutes');
+const env = require('dotenv').config();
+
 const app = express();
-require('dotenv').config(); // To use environment variables
 
 // Middleware to parse request bodies
 app.use(express.json());
@@ -14,6 +16,7 @@ const authRoutes = require("../routes/authRoutes");
 
 // Use routes
 app.use("/", authRoutes);
+app.use('/', userRoutes); 
 
 // Simple route for health check
 app.get("/healthcheck", async (req, res) => {

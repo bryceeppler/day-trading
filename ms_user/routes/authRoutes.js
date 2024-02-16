@@ -1,9 +1,3 @@
-// In a single file (e.g., authRoutes.js), define routes for 
-// registration and login. Use bcrypt to hash passwords before
-// saving them during registration, and compare submitted 
-// passwords during login. On successful login, generate a 
-// JWT token with jsonwebtoken.
-
 const express = require('express');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');

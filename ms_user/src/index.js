@@ -16,7 +16,7 @@ const authRoutes = require("../routes/authRoutes");
 
 // Use routes
 app.use("/", authRoutes);
-app.use('/', userRoutes); 
+//app.use('/', userRoutes); 
 
 // Simple route for health check
 app.get("/healthcheck", async (req, res) => {

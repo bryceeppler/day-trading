@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 module.exports = (orderBook) => {
   return {
     healthCheck: async (req, res) => {
-      console.log("mongo uri", process.env.MONGO_URI);
       try {
         const connectionState = mongoose.connection.readyState;
         // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
@@ -21,15 +20,27 @@ module.exports = (orderBook) => {
     receiveOrder: async (req, res) => {
       try {
         const order = req.body; // TODO: validate order
-        console.log("Received order:", order);
-    
-        orderBook.insertOrder(order);
-    
-        // Order received and in orderBook, return 200 to order creation service
         res.status(200).send("Order received");
-    
-        orderBook.matchOrders();        // run matching algorithm
-        orderBook.flushOrders();        // send expired/matched orders to order execution service
+
+        const [match_found, matched_order] = orderBook.matchOrder(order);
+
+        if (match_found) {
+          // remove matched order from orderBook
+          // send matched order to order execution service
+      
+        } else {
+          if (is_limit_order) {
+            // add to orderBook
+          } else {
+            // notify order execution service
+          }
+        }
+        // orderBook.insertOrder(order);
+  
+        // // Order received and in orderBook, return 200 to order creation service
+
+        // orderBook.matchOrders();        // run matching algorithm
+        // orderBook.flushOrders();        // send expired/matched orders to order execution service
     
       } catch (error) {
         // TODO: better err handling

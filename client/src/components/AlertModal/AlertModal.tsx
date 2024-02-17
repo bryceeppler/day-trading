@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import styles from './AlertModal.module.scss';
-import CloseIcon from '@mui/icons-material/Close'
+import CloseIcon from '@mui/icons-material/Close';
 
 interface AlertModalProps {
   open: boolean;

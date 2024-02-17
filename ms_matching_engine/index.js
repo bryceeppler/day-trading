@@ -1,49 +1,27 @@
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
+const connectDB = require("./config/database");
+const matchingRoutes = require('./routes/matchingRoutes');
+const OrderBook = require('./services/orderbook');
+const StockTransaction = require('./models/stockTransactionModel');
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+console.log('Initializing order book...');
+const orderBook = new OrderBook(StockTransaction);
+orderBook.init();
 
+console.log('Connecting to database...');
+connectDB();
 
-// mongo db uri for this microservice's database
-const mongoUri = process.env.MONGO_URI;
-
-const client = new MongoClient(mongoUri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }
-}
-);
-
-async function pingDb() {
-  try {
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("successfully pinged mongo");
-  } finally {
-    await client.close();
-  }
-}
-
-app.get("/healthcheck", async (req, res) => {
-  try {
-    await pingDb();
-    res.send("MongoDB connection successful");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    res.status(500).send("MongoDB connection failed");
-  }
-});
-
-app.get("/", (req, res) => {
-  res.send("This is the matching engine microservice");
-});
-
+app.use(express.json());
+app.use('/', matchingRoutes(orderBook)); // Pass the orderBook instance
 
 const port = process.env.PORT || 3000;
-
 app.listen(port, () => {
   console.log(`Matching engine microservice on port ${port}...`);
 });
+
+// periodically check for expired orders and notify order exec service
+setInterval(() => {
+  orderBook.checkForExpiredOrders();
+  // orderBook.flushOrders();
+}, 60000); // every 60 sec for now

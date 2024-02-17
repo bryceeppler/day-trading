@@ -11,8 +11,8 @@ RUN npm install
 # Copy remaining files
 COPY . .
 
+
 # Make port available to the world outside this container
 EXPOSE 3000
 
-# Should be used in production
-# CMD ["npm", "start"]
+CMD ["npm", "start"]

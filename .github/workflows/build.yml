@@ -1,19 +1,49 @@
 name: Docker Compose Build
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
 
   build:
-
+    name: docker compose build
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker-compose up --build -d
-    - name: Stop Docker Compose
-      run: docker-compose down
+    - name: Build and Run Docker Compose
+      run: |
+        docker-compose up --build -d
+
+    - name: Delay Check
+      run: |
+        sleep 5
+        docker ps
+        
+    - name: Check Docker services
+      run: |
+        containers=$(docker ps --all --format "{{.ID}}")
+        good=true
+        for container in $containers; do
+            name=$(docker inspect --format '{{.Name}}' "$container")
+            status=$(docker inspect --format '{{.State.Status}}' "$container")
+            if [ "$status" == "running" ]; then
+                echo "$name is running"
+            else    
+                echo "$name is not running"
+                service=${name#*/}  # Remove leading slash
+                service=${service#*_}         # Remove prefix
+                service=${service%%_1}  # Remove suffix
+                docker-compose logs "$service"
+                good=false
+            fi
+        done
+        if [ "$good" = false ]; then
+            exit 1
+        fi
+
+    - name: Tear down Docker Compose
+      run: |
+        docker-compose down

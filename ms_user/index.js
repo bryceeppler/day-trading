@@ -46,3 +46,15 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`User microservice on port ${port}...`);
 });
+
+
+//just use profile id to store in jwt
+//identify user to the payload
+
+//jwt token with nodejs or express
+//read headers in nodejs
+
+//search for
+//login
+//register endpoint
+//store password using bcrypt

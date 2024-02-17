@@ -39,26 +39,8 @@ module.exports = class OrderBook {
   }
 
   checkForExpiredOrders() {
-    // This is ugly but it does the job for now
-    console.log("Checking for expired orders");
-    const now = new Date();
-    const expiredBuyOrders = this.buyOrders.filter(
-      (order) => now - order.time_stamp > 1000 * 60 * 60 * 24
-    );
-    const expiredSellOrders = this.sellOrders.filter(
-      (order) => now - order.time_stamp > 1000 * 60 * 60 * 24
-    );
-
-    this.expiredOrders = this.expiredOrders.concat(
-      expiredBuyOrders,
-      expiredSellOrders
-    );
-    this.buyOrders = this.buyOrders.filter(
-      (order) => now - order.time_stamp <= 1000 * 60 * 60 * 24
-    );
-    this.sellOrders = this.sellOrders.filter(
-      (order) => now - order.time_stamp <= 1000 * 60 * 60 * 24
-    );
+    console.log("checking for expired orders");
+    return
   }
 
   matchOrder(order) {

@@ -1,0 +1,13 @@
+exports.ORDER_TYPE = {
+    MARKET: 'MARKET',
+    LIMIT: 'LIMIT',
+  };
+  
+  
+  exports.ORDER_STATUS = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    CANCELED: 'CANCELED',
+    EXPIRED: 'EXPIRED',
+    COMPLETED: 'COMPLETED'
+  };
+  

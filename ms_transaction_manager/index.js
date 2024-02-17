@@ -4,6 +4,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 const fs = require('fs');
 const routes = require('./routes/transactionRoutes');
+const connectDB = require('./shared/config/database');
 var app = express();
 
 // local instance of environment variables
@@ -20,11 +21,7 @@ app.use('/', routes);
 
 async function startup()
 {
-  await mongoose.connect(mongoUri, {
-    authSource:'admin'
-  })
-    .then(console.log('Connected to MongoDB'))
-    .catch((error) => console.error('Error connecting to MongoDB:', error));
+  await connectDB(mongoUri);
 
   app.listen(port, () =>
   {

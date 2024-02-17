@@ -10,11 +10,15 @@ depends_on:
 
 2. shared_volume will now be mounted inside the working directory of your micrsoservice. Update any paths to the shared code in your microservice. For example: 
 ```javascript
-  "const Stock = require('../shared/models/stockModel');
+  const Stock = require('../shared/models/stockModel');
 ```
 
 ```javascript
-  "const { validate } = require('../../shared/middleware/base.validation');
+  const { validate } = require('../../shared/middleware/base.validation');
 ```
 
 3. If any code in the shared microservices changes run `docker compose down -v` to reset the shared_volume between sessions.
+
+You can check the shared volume is mounted correctly by going to the files tab in docker desktop.
+
+![Shared Volume](./res/shared_volume.PNG)

@@ -1,7 +1,7 @@
 name: Docker Compose Build
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:

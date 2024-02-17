@@ -15,15 +15,14 @@ services:
 
 
   # User & Auth Microservice
-
   ms_user:
     build: ./ms_user
     image: ms_user
     ports:
       - "8001:3000"
     environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+      MONGO_URI: mongodb://mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
 
   # Order Execution Microservice
   ms_order_execution:
@@ -32,7 +31,6 @@ services:
       - "8002:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
-
 
   # Order Creation Microservice
   ms_order_creation:
@@ -51,14 +49,13 @@ services:
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
     command: npm run nodemon
 
-
   # Matching Engine Microservice
   ms_matching_engine:
     build: ./ms_matching_engine
     ports:
       - "8004:3000"
     environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      MONGO_URI: mongodb://mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
 
@@ -81,7 +78,7 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - "50567:27017"
+      - "27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb

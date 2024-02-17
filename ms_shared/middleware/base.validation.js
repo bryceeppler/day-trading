@@ -1,4 +1,4 @@
-const { handleError, createError } = require('../utils/apiHandling');
+const { handleError, createError } = require('../lib/apiHandling');
 const { validationResult, body } = require('express-validator');
 
 exports.validate = (validations) =>

@@ -1,7 +1,7 @@
 const Stock = require('../shared/models/stockModel');
 
 
-async function createStock(req, res)
+exports.createStock = async (req, res) =>
 {
     try
     {
@@ -28,7 +28,7 @@ async function createStock(req, res)
 }
 
 // /getStockPrices
-async function getStockPrices(req, res) 
+exports.getStockPrices = async (req, res) => 
 {
     try 
     {
@@ -51,7 +51,7 @@ async function getStockPrices(req, res)
 }
 
 // /getAllStocks
-async function getAllStocks(req, res) 
+exports.getAllStocks = async (req, res) => 
 {
     try 
     {
@@ -66,7 +66,7 @@ async function getAllStocks(req, res)
 }
 
 // /updateStockPrice/:stockId
-async function updateStockPrice(req, res)
+exports.updateStockPrice = async (req, res) =>
 {
     try
     {
@@ -92,10 +92,3 @@ async function updateStockPrice(req, res)
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
-
-module.exports = {
-    createStock,
-    getStockPrices,
-    getAllStocks,
-    updateStockPrice
-};

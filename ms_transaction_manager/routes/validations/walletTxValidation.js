@@ -1,6 +1,5 @@
 const { body, query, check, param } = require('express-validator');
-const { validate, isAboveLimit } = require('./baseValidation')
-
+const { validate } = require('../../shared/middleware/base.validation');
 
 
 exports.createWalletTxValidation = validate([

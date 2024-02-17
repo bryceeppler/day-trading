@@ -1,15 +1,16 @@
-const StockTransaction = require('../models/stockTransactionModel');
+const StockTransaction = require('../shared/models/stockTransactionModel');
 
 // /createWalletTransaction
-async function createStockTx(req, res)
+exports.createStockTx = async (req, res) =>
 {
     try
     {
-        const { stock_id, wallet_tx_id, is_buy, order_type, stock_price, quantity } = req.body;
+        const { stock_id, wallet_tx_id, portfolio_id, is_buy, order_type, stock_price, quantity } = req.body;
 
         const newStockTx = new StockTransaction({
             stock_id,
             wallet_tx_id,
+            portfolio_id,
             is_buy,
             order_type,
             stock_price,
@@ -26,7 +27,7 @@ async function createStockTx(req, res)
 }
 
 // /updateStockTxStatus/:stockTxId
-async function updateStockTxStatus(req, res)
+exports.updateStockTxStatus = async (req, res) =>
 {
     try
     {
@@ -54,7 +55,7 @@ async function updateStockTxStatus(req, res)
 }
 
 // /deleteStockTx/:StockTxId
-async function deleteStockTx(req, res)
+exports.deleteStockTx = async (req, res) =>
 {
     try
     {
@@ -81,7 +82,7 @@ async function deleteStockTx(req, res)
 }
 
 // /getStockTransactions
-async function getStockTransactions(req, res)
+exports.getStockTransactions = async (req, res) =>
 {
 
     try 
@@ -112,7 +113,7 @@ async function getStockTransactions(req, res)
 
 
 // /getAllStockTransactions
-async function getAllStockTransactions(req, res)
+exports.getAllStockTransactions =  async (req, res) =>
 {
 
     try 
@@ -127,10 +128,3 @@ async function getAllStockTransactions(req, res)
     }
 }
 
-module.exports = {
-    createStockTx,
-    updateStockTxStatus,
-    deleteStockTx,
-    getStockTransactions,
-    getAllStockTransactions
-};

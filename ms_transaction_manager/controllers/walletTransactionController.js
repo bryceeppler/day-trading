@@ -1,7 +1,7 @@
-const WalletTransaction = require('../models/walletTransactionModel');
+const WalletTransaction = require('../shared/models/walletTransactionModel');
 
 // /createWalletTransaction
-async function createWalletTx(req, res)
+exports.createWalletTx = async (req, res) =>
 {
     try
     {
@@ -21,7 +21,7 @@ async function createWalletTx(req, res)
 }
 
 // /updateStockTxId/:walletTxId
-async function updateStockTxId(req, res)
+exports.updateStockTxId = async (req, res) =>
 {
     try
     {
@@ -49,7 +49,7 @@ async function updateStockTxId(req, res)
 }
 
 // /deleteWalletTx/:walletTxId
-async function deleteWalletTx(req, res)
+exports.deleteWalletTx = async (req, res) =>
 {
     try
     {
@@ -76,7 +76,7 @@ async function deleteWalletTx(req, res)
 }
 
 // /getWalletTransactions
-async function getWalletTransactions(req, res)
+exports.getWalletTransactions = async (req, res) =>
 {
 
     try 
@@ -103,7 +103,7 @@ async function getWalletTransactions(req, res)
 }
 
 // /geAlltWalletTransactions
-async function getAllWalletTransactions(req, res)
+exports.getAllWalletTransactions = async (req, res) =>
 {
     try 
     {
@@ -116,11 +116,3 @@ async function getAllWalletTransactions(req, res)
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
-
-module.exports = {
-    createWalletTx,
-    updateStockTxId,
-    deleteWalletTx,
-    getWalletTransactions,
-    getAllWalletTransactions
-};

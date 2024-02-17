@@ -45,7 +45,9 @@ services:
     ports:
       - "8004:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db_data
+      MONGO_URI: mongodb://mongo:27017/db
+      NODE_ENV: production
+    command: ["npm", "start"]
 
   # Market Data Microservice
   ms_market_data:
@@ -54,15 +56,12 @@ services:
       - "8005:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
     depends_on:
       - ms_shared
     volumes:
       - shared_volume:/app/shared
 
-  ms_shared:
-    build: ./ms_shared
-    volumes:
-      - shared_volume:/app/shared
 
   # Audit Manager Microservice
   ms_transaction_manager:
@@ -71,6 +70,17 @@ services:
       - "8006:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
+    depends_on:
+    - ms_shared
+    volumes:
+      - shared_volume:/app/shared
+
+# Shared Code Microservice
+  ms_shared:
+    build: ./ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   mongo:
     image: mongo:latest

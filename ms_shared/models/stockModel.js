@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const base = require('./baseModel');
 
 const stockSchema = new mongoose.Schema({
     stock_name: { type: String, required: true, unique: true },
@@ -7,6 +8,6 @@ const stockSchema = new mongoose.Schema({
     creation_date: { type: Date, required: true, default: Date.now },
 });
 
-const Stock = mongoose.model('Stock', stockSchema);
+const Stock = mongoose.model(base.COLLECTIONS.STOCK, stockSchema);
 
 module.exports = Stock;

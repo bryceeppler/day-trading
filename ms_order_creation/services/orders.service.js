@@ -99,7 +99,7 @@ exports.sellOrder = async (data, token) => {
 			...data,
 			stock_tx_id
 		}
-		
+
 		// Send data to matching engine
 		await axios.POST(`${config.mathingEngineUrl}/receiveOrder`, matchingEngineData, token)
 
@@ -131,7 +131,6 @@ exports.cancelStockTransaction = async (data, token) => {
 
 const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx_id) => {
 	try {
-		console.log("REversing data")
 		if (previousBalance !== undefined)  {
 			console.log(previousBalance)
 			await usersModel.updateBalance(userId, previousBalance)
@@ -154,9 +153,7 @@ const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx
 
 const reverseSellOrder = async (portfolioId, previousQuantityOwned, stock_tx_id) => {
 	try {
-		console.log("REversing data")
 		if (previousQuantityOwned)  {
-
 			await usersModel.updatePortfolioStockQuantity(portfolioId, previousQuantityOwned)
 		}
 

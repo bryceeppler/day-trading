@@ -1,37 +1,37 @@
 version: '3.9'
 
 services:
-  ## React Frontend
-  #react:
-  #  build: ./client
-  #  ports:
-  #    - "3000:80"
-  #  depends_on:
-  #    - ms_user
-  #    - ms_order_execution
-  #    - ms_order_creation
-  #    - ms_matching_engine
-  #    - ms_market_data
+  # React Frontend
+  react:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - ms_user
+      - ms_order_execution
+      - ms_order_creation
+      - ms_matching_engine
+      - ms_market_data
 
 
   # User & Auth Microservice
 
-  #ms_user:
-  #  build: ./ms_user
-  #  image: ms_user
-  #  ports:
-  #    - "8001:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-  #    JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-#
-  ## Order Execution Microservice
-  #ms_order_execution:
-  #  build: ./ms_order_execution
-  #  ports:
-  #    - "8002:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongo:27017/db
+  ms_user:
+    build: ./ms_user
+    image: ms_user
+    ports:
+      - "8001:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+
+  # Order Execution Microservice
+  ms_order_execution:
+    build: ./ms_order_execution
+    ports:
+      - "8002:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
 
 
   # Order Creation Microservice
@@ -61,23 +61,23 @@ services:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
-#
-  ## Market Data Microservice
-  #ms_market_data:
-  #  build: ./ms_market_data
-  #  ports:
-  #    - "8005:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-#
-  ## Audit Manager Microservice
-  #ms_transaction_manager:
-  #  build: ./ms_transaction_manager
-  #  ports:
-  #    - "8006:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-#
+
+  # Market Data Microservice
+  ms_market_data:
+    build: ./ms_market_data
+    ports:
+      - "8005:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+
+  # Audit Manager Microservice
+  ms_transaction_manager:
+    build: ./ms_transaction_manager
+    ports:
+      - "8006:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+
   mongo:
     image: mongo:latest
     ports:

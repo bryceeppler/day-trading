@@ -48,6 +48,10 @@ services:
       MONGO_URI: mongodb://mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   # Market Data Microservice
   ms_market_data:

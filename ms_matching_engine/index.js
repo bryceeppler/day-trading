@@ -3,7 +3,7 @@ const app = express();
 const connectDB = require("./config/database");
 const matchingRoutes = require('./routes/matchingRoutes');
 const OrderBook = require('./services/orderbook');
-const StockTransaction = require('./models/stockTransactionModel');
+const StockTransaction = require('../shared/models/stockTransactionModel');
 
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);

@@ -50,51 +50,41 @@ module.exports = class OrderBook {
 
 
     matchOrder(order) {
-        const unmatchedBuyOrders = [];
-        const unmatchedSellOrders = [];
-        // we can just initialize one based off the order type
-        const matchFound = false;
-        while (this.buyOrders.length > 0 && this.sellOrders.length > 0) {
-            const buyOrder = this.buyOrders[0];
-            const sellOrder = this.sellOrders[0];
-            // Check if the first buy order's price is at least equal to the first sell order's price
-            if (buyOrder.stock_price >= sellOrder.stock_price) {
-                const qty = Math.min(buyOrder.quantity, sellOrder.quantity);
-                console.log(`Matching order: ${buyOrder._id} with ${sellOrder._id} for ${qty} shares at ${buyOrder.stock_price}`);
-                matchFound = true;
-                buyOrder.quantity -= qty;
-                sellOrder.quantity -= qty;
-
-                this.matchedOrders.push(
-                    {
-                        buy_order: buyOrder,
-                        sell_order: sellOrder,
-                        quantity: qty,
-                    }
-                );
-                if (buyOrder.quantity === 0) {
-                    this.buyOrders.shift();
-                }
-                if (sellOrder.quantity === 0) { 
-                    this.sellOrders.shift();
-                }
-    
-            } else {
-                if (buyOrder.stock_price < sellOrder.stock_price) {
-                    unmatchedBuyOrders.push(this.buyOrders.shift());
-                } else {
-                    unmatchedSellOrders.push(this.sellOrders.shift());
-                }
-            }
-        }
-
-        this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
-        this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
-
+        const matchQueue = order.is_buy ? this.sellOrders : this.buyOrders;
         this.resort();
 
-        return matchFound
+        const remainingQty = order.quantity;
 
+        for (let i = 0; i < matchQueue.length && remainingQty; i++) {
+            const matchAgainst = matchQueue[i];
+
+            if (
+                (order.is_buy && matchAgainst.stock_price > order.stock_price) ||
+                (!order.is_buy && matchAgainst.stock_price < order.stock_price)
+            ) {
+                break;
+            }
+
+            const matchedQuantity = Math.min(remainingQuantity, matchAgainst.quantity);
+            remainingQuantity -= matchedQuantity;
+            matchAgainst.quantity -= matchedQuantity;
+
+            const matchedOrder = {
+                buyOrder: newOrder.is_buy ? newOrder : matchAgainst,
+                sellOrder: newOrder.is_buy ? matchAgainst : newOrder,
+                quantity: matchedQuantity,
+                matchPrice: matchAgainst.stock_price,
+                timestamp: new Date() // might not need this idk
+            };
+
+            this.matchedOrders.push(matchedOrder);
+
+            // If fully matched remove from order book
+            if (matchAgainst.quantity === 0) {
+                matchAgainst.splice(i, 1);
+                i--; // to account for the removed order
+            }
+        }
     }
     
 

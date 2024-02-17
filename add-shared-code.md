@@ -1,6 +1,6 @@
 ### Add the shared code volume to your service
 
-1. Update your service in the docker-compose.yaml
+1. Update your service definition in the docker-compose.yaml
 ```yml
 depends_on:
       - ms_shared
@@ -8,7 +8,7 @@ depends_on:
       - shared_volume:/app/shared
 ```
 
-2. shared_volume will now be mounted inside the working directory of your micrsoservice. Update any paths to the shared code in your microservice. For example: 
+2. shared_volume will now be mounted inside the working directory of your micrsoservice. Update any paths to the shared code in your microservice. For example from ms_market_data: 
 ```javascript
   const Stock = require('../shared/models/stockModel');
 ```

@@ -8,7 +8,7 @@ const startApp = (app) => {
   });
 
   app.use(cors());
-  app.use(config.apiRootPath, routes.router);
+  app.use('/', routes.router);
   return app.listen(config.port, () => {
     console.log(`Server is up on port ${config.port}`);
   });

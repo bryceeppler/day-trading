@@ -4,19 +4,20 @@ const orderService = require('../services/orders.service')
 exports.placeStockOrder = async (req, res, next) => {
   try {
 		const is_buy = req.body.is_buy;
-
+		const token = req.token;
 		const orderDetails =  {
+			user_id: req.user?.userId || "65d051e3273e059d8c4587b4",
 			stock_id: req.body.stock_id,
 			quantity: req.body.quantity,
 			price: req.body.price,
-			account_id: req.user?.account_id || 2,
-			order_type: req.body.order_type
+			order_type: req.body.order_type,
+			is_buy
 		}
 
 		if (is_buy) {
-			orderService.placeOrder(orderDetails)
+			await orderService.placeOrder(orderDetails, token)
 		} else {
-			orderService.sellOrder(orderDetails)
+			await orderService.sellOrder(orderDetails, token)
 		}
 
 		
@@ -30,11 +31,10 @@ exports.placeStockOrder = async (req, res, next) => {
 exports.cancelStockTransaction = async (req, res, next) => {
   try {
 		const params =  {
-			stock_tx_id: req.body.stock_tx_id,
-			account_id: req.user.account_id
+			stock_tx_id: req.body.stock_tx_id
 		}
 
-		orderService.cancelStockTransaction(params)
+		await orderService.cancelStockTransaction(params, req.token)
 		  
     successReturn(res);
   } catch (error) {

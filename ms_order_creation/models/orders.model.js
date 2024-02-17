@@ -1,18 +1,20 @@
-const { COLLECTIONS } = require('../lib/db')
+
 const base = require('./base.model')
 
-exports.placeOrder = (data, trx) => {
-	return base.save(COLLECTIONS.BUY_ORDERS, [data], trx)
+
+exports.createWalletTransaction = (data) => {
+	return base.createOne(base.COLLECTIONS.WALLET_TRANSACTION, [data])
 }
-exports.sellOrder = (data, trx) => {
-	return base.save(COLLECTIONS.SELL_ORDERS, [data], trx)
-}
-exports.findOrders = (params) => {
-	base.find(COLLECTIONS.BUY_ORDERS, params)
+
+exports.deleteWalletTransaction = (id) => {
+	return base.deleteById(base.COLLECTIONS.WALLET_TRANSACTION, id)
 }
 
 
+exports.createStockTransaction = (data) => {
+	return base.createOne(base.COLLECTIONS.STOCK_TRANSACTION, [data])
+}
 
-exports.placeMarketOrder = (data) => {
-	
+exports.deleteStockTransaction = (id) => {
+	return base.deleteById(base.COLLECTIONS.STOCK_TRANSACTION, id)
 }

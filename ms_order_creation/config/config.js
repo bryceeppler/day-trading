@@ -10,8 +10,9 @@ const getEnvironment = (name) => {
 module.exports = {
   apiRootPath: getEnvironment('API_ROOT'),
 	port: getEnvironment('PORT'),
+	mongodb: getEnvironment('MONGO_URI'),
+	mathingEngineUrl: getEnvironment('MATCHING_ENGINE_URL'),
   jwt: {
-    accessTokenSecret: getEnvironment('ACCESS_TOKEN_SECRET'),
-    accessTokenRefresh: getEnvironment('ACCESS_TOKEN_REFRESH'),
+    accessTokenSecret: getEnvironment('JWT_SECRET'),
   },
 };

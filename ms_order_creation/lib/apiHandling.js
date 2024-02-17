@@ -1,3 +1,5 @@
+
+
 exports.createError = (message = 'Error Performing Action', statusCode = 500) => {
   const error = new Error(message);
   error.details = {
@@ -8,7 +10,7 @@ exports.createError = (message = 'Error Performing Action', statusCode = 500) =>
 };
 
 exports.handleError = (error, res, next) => {
-  return error.details ? res.status(error.details.statusCode).send({ message: error.details.message }) : next(error);
+  return res.status(error.details.statusCode).send({ message: error.details.message })
 };
 
 exports.successReturn = (res, data) => {

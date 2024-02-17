@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Dispatch, RefObject, SetStateAction } from 'react';
 import styles from './SearchBar.module.scss';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import classNames from 'classnames';
 
 interface SearchBarProps {

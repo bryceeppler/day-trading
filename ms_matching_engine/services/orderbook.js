@@ -10,6 +10,11 @@ module.exports = class OrderBook {
         // this.init();
     }
 
+    resort() {
+        this.buyOrders.sort((a, b) => a.stock_price - b.stock_price);
+        this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
+    }
+
     async init() {
         await this.loadOrders();
         console.log("Orderbook initialized with ", this.buyOrders.length, " buy orders and ", this.sellOrders.length, " sell orders...")
@@ -44,12 +49,11 @@ module.exports = class OrderBook {
     }
 
 
-    matchOrders() {
-        // define output buy order queue and sell order queue for unmatched orders that can be used as input for the next matching
-
+    matchOrder(order) {
         const unmatchedBuyOrders = [];
         const unmatchedSellOrders = [];
-
+        // we can just initialize one based off the order type
+        const matchFound = false;
         while (this.buyOrders.length > 0 && this.sellOrders.length > 0) {
             const buyOrder = this.buyOrders[0];
             const sellOrder = this.sellOrders[0];
@@ -57,8 +61,7 @@ module.exports = class OrderBook {
             if (buyOrder.stock_price >= sellOrder.stock_price) {
                 const qty = Math.min(buyOrder.quantity, sellOrder.quantity);
                 console.log(`Matching order: ${buyOrder._id} with ${sellOrder._id} for ${qty} shares at ${buyOrder.stock_price}`);
-                
-                // update available quanities
+                matchFound = true;
                 buyOrder.quantity -= qty;
                 sellOrder.quantity -= qty;
 
@@ -69,50 +72,28 @@ module.exports = class OrderBook {
                         quantity: qty,
                     }
                 );
-
-                // if no qty left, remove from queue
                 if (buyOrder.quantity === 0) {
                     this.buyOrders.shift();
                 }
-                if (sellOrder.quantity === 0) {
+                if (sellOrder.quantity === 0) { 
                     this.sellOrders.shift();
                 }
     
             } else {
-                // increment the index of the order that is not matched
-                // if (buyOrder.stock_price < sellOrder.stock_price) {
-                //     this.buyOrders.shift();
-                // }
-                // else {
-                //     this.sellOrders.shift();
-                // }
-
-
-                // we don't want to shift it into the ether, we want it to be stored as the input queue
-                // on the next iteration
-
                 if (buyOrder.stock_price < sellOrder.stock_price) {
                     unmatchedBuyOrders.push(this.buyOrders.shift());
                 } else {
                     unmatchedSellOrders.push(this.sellOrders.shift());
                 }
-
-                // if we are totally out of buy or sell orders, reset the buyOrders and sellOrders arrays to the unmatched orders
-                // combined with the remaining orders in the other array
-                // if (this.buyOrders.length === 0) {
-                //     this.buyOrders = unmatchedBuyOrders;
-                //     this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
-                // }
-                // if (this.sellOrders.length === 0) {
-                //     this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
-                //     this.sellOrders = unmatchedSellOrders;
-                // }
-
             }
         }
 
         this.buyOrders = this.buyOrders.concat(unmatchedBuyOrders);
         this.sellOrders = this.sellOrders.concat(unmatchedSellOrders);
+
+        this.resort();
+
+        return matchFound
 
     }
     
@@ -130,22 +111,6 @@ module.exports = class OrderBook {
     }
 
     insertOrder(order) {
-        // add to proper orderbook array
-        // orderbook array is sorted by time_stamp, so this will be at the end no matter what
-        // if (order.is_buy) {
-        //     if (!this.buyOrders[order.stock_id]) {
-        //         this.buyOrders[order.stock_id] = [];
-        //     }
-        //     this.buyOrders[order.stock_id].push(order);
-        // } else {
-        //     if (!this.sellOrders[order.stock_id]) {
-        //         this.sellOrders[order.stock_id] = [];
-        //     }
-        //     this.sellOrders[order.stock_id].push(order);
-        // } 
-        // console.log("Number of buy orders after insert", this.buyOrders[order.stock_id].length);
-        // console.log("Number of sell orders after insert", this.sellOrders[order.stock_id].length);
-
         if (order.is_buy) {
             // add to buy orders at proper index, it is already sorted by price and time
             this.buyOrders.push(order);
@@ -153,7 +118,6 @@ module.exports = class OrderBook {
         else {
             this.sellOrders.push(order);
         }
-        console.log("Number of buy orders after insert", this.buyOrders.length);
     }
 
     async sendOrdersToOrderExecutionService(

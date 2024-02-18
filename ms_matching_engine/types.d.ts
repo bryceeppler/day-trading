@@ -1,5 +1,7 @@
 import { Document, Model } from 'mongoose';
 // Document and Model are mongodb types
+// Document represents literally a mongo docoument
+// Model represents the schema of a collection
 
 export enum OrderType {
   LIMIT = "LIMIT",
@@ -12,7 +14,7 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED",
 }
 
-export interface IStockTransaction extends Document {
+export interface StockTransactionDocument extends Document {
   stock_id: string;
   wallet_tx_id: string;
   portfolio_id: string;
@@ -26,7 +28,7 @@ export interface IStockTransaction extends Document {
 }
 
 // Order is IStockTransaction
-export interface Order extends IStockTransaction {
+export interface Order extends StockTransactionDocument {
 }
 
 export interface MatchedOrder {
@@ -38,4 +40,19 @@ export interface MatchedOrder {
 }
 
 
-export interface IStockTransactionModel extends Model<IStockTransaction> {}
+export interface StockTransactionModel extends Model<StockTransactionDocument> {}
+
+
+export interface IOrderBook {
+  buyOrders: Order[];
+  sellOrders: Order[];
+  matchedOrders: MatchedOrder[];
+  expiredOrders: Order[];
+
+  removeOrder(order: Order): void;
+  matchOrder(order: Order): MatchedOrder[];
+  checkForExpiredOrders(): void;
+  createMatchedOrder(order: Order, matchAgainst: Order, quantity: number): MatchedOrder;
+  findMatches(order: Order): [MatchedOrder[], number];
+  isMatch(order: Order, matchAgainst: Order): boolean;
+}

@@ -1,18 +1,19 @@
 import {
   Order,
   MatchedOrder,
+  IOrderBook
 } from "../types";
 
 import { StockTransaction } from "../models/stockTransactionModel";
 
 // const axios = require('axios');
-module.exports = class OrderBook {
-  private stockTransactionModel: typeof StockTransaction;
-  private buyOrders: Order[] = [];
-  private sellOrders: Order[] = [];
-  private matchedOrders: MatchedOrder[] = [];
-  private cancelledOrders: Order[] = [];
-  private expiredOrders: Order[] = [];
+module.exports = class OrderBook implements IOrderBook {
+  stockTransactionModel: typeof StockTransaction;
+  buyOrders: Order[] = [];
+  sellOrders: Order[] = [];
+  matchedOrders: MatchedOrder[] = [];
+  cancelledOrders: Order[] = [];
+  expiredOrders: Order[] = [];
 
   constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
@@ -170,7 +171,7 @@ module.exports = class OrderBook {
   /**
    * Entry point for matching, calls the proper function based on limit or market order
    */
-  matchOrder(newOrder:Order) {
+  matchOrder(newOrder:Order): MatchedOrder[]{
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);

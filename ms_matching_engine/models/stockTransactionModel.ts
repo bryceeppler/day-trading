@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { IStockTransaction, IStockTransactionModel, OrderStatus, OrderType } from '../types';
+import { StockTransactionDocument, StockTransactionModel, OrderStatus, OrderType } from '../types';
 
-const stockTransactionSchema = new mongoose.Schema<IStockTransaction>({
+const stockTransactionSchema = new mongoose.Schema<StockTransactionDocument>({
   stock_id: { type: String, required: true },
   wallet_tx_id: { type: String, required: true },
   portfolio_id: { type: String, required: true },
@@ -14,4 +14,4 @@ const stockTransactionSchema = new mongoose.Schema<IStockTransaction>({
   is_deleted: { type: Boolean, required: true, default: false },
 });
 
-export const StockTransaction: IStockTransactionModel = mongoose.model<IStockTransaction, IStockTransactionModel>('StockTransaction', stockTransactionSchema);
+export const StockTransaction: StockTransactionModel = mongoose.model<StockTransactionDocument, StockTransactionModel>('StockTransaction', stockTransactionSchema);

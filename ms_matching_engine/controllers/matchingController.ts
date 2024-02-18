@@ -42,7 +42,7 @@ export default (orderBook: OrderBook): Routes => {
         };
 
         const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(orderBookOrder);
-        // orderBook.flushOrders();        // send expired/matched orders to order execution service
+        orderBook.flushOrders();
     
       } catch (error) {
         // TODO: better err handling

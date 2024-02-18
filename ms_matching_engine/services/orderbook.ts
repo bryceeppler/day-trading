@@ -2,7 +2,8 @@ import { Order, MatchedOrder, IOrderBook, OrderBookOrder } from "../types";
 
 import { StockTransaction } from "../models/stockTransactionModel";
 
-// const axios = require('axios');
+const axios = require('axios');
+
 export default class OrderBook implements IOrderBook {
   stockTransactionModel: typeof StockTransaction;
   buyOrders: OrderBookOrder[] = [];
@@ -279,28 +280,44 @@ export default class OrderBook implements IOrderBook {
     cancelledOrders: OrderBookOrder[],
     expiredOrders: OrderBookOrder[]
   ) {
-    console.log("Sending orders to order execution service");
+    const executionServiceUrl = "http://ms_order_execution:8002/executeOrder";
 
-    // empty the arrays
-    matchedOrders = [];
-    cancelledOrders = [];
-    expiredOrders = [];
+    const data = []
 
-    // const executionServiceUrl = "http://ms_order_execution:8002/";
+    if (matchedOrders.length > 0) {
+      for (const matchedOrder of matchedOrders) {
+        const buyStockTxId = matchedOrder.buyOrder.stock_tx_id;
+        const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
+        data.push({ stock_tx_id: buyStockTxId, action: "COMPLETE" });
+        data.push({ stock_tx_id: sellStockTxId, action: "COMPLETE" });
+      }
+    }
 
-    // try {
-    //     // send http request to order execution service containing the orders
-    //     const response = await axios.post(executionServiceUrl, {
-    //         matchedOrders,
-    //         cancelledOrders,
-    //         expiredOrders
-    //     });
+    if (cancelledOrders.length > 0) {
+      for (const cancelledOrder of cancelledOrders) {
+        data.push({ stock_tx_id: cancelledOrder.stock_tx_id, action: "CANCEL" });
+      }
+    }
 
-    //     console.log("Order execution service response:", response.data);
+    if (expiredOrders.length > 0) {
+      for (const expiredOrder of expiredOrders) {
+        data.push({ stock_tx_id: expiredOrder.stock_tx_id, action: "EXPIRE" });
+      }
+    }
 
-    // } catch (error) {
-    //     console.error("Error sending orders to order execution service:", error);
-    // }
+    try {
+        const response = await axios.post(executionServiceUrl, {
+            data
+        });
+
+        if (response.status === 200) {
+            this.matchedOrders = [];
+            this.cancelledOrders = [];
+            this.expiredOrders = [];
+        }
+    } catch (error) {
+        console.error("Error sending orders to order execution service:", error);
+    }
   }
 
   cancelOrder(stockTxId: string): Order | null {

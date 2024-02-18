@@ -3,7 +3,11 @@ const app = express();
 const connectDB = require("./config/database");
 const matchingRoutes = require('./routes/matchingRoutes');
 const OrderBook = require('./services/orderbook');
-const StockTransaction = require('../shared/models/stockTransactionModel');
+
+// Having issues importing from the shared volume
+// const StockTransaction = require('../shared/models/stockTransactionModel');
+
+const StockTransaction = require('./models/stockTransactionModel');
 
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);

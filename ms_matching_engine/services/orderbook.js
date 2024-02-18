@@ -99,7 +99,7 @@ module.exports = class OrderBook {
    */
   findMatches(order) {
     const matched = [];
-    let remainingQty = order.quantity;
+    const remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.orders.sell : this.orders.buy;
 
     orderQueue.forEach((matchAgainst, i) => {
@@ -153,9 +153,9 @@ module.exports = class OrderBook {
   }
 
   matchLimitOrder(newOrder) {
-    const matched = this.findMatches(newOrder);
+    const matcherOrders = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
-    return matched;
+    return matcherOrders;
   }
 
   /**

@@ -1,3 +1,4 @@
+const { successReturn } = require('../../ms_shared/lib/apiHandling');
 const StockTransaction = require('../shared/models/stockTransactionModel');
 
 // /createWalletTransaction
@@ -18,7 +19,7 @@ exports.createStockTx = async (req, res) =>
         })
         newStockTx.save();
 
-        return res.status(201).json(newStockTx);
+        successReturn(res, newStockTx);
     } catch (error)
     {
         console.error('Error creating stock transaciton:', error);
@@ -45,7 +46,7 @@ exports.updateStockTxStatus = async (req, res) =>
         existingStockTx.order_status = order_status;
         await existingStockTx.save();
 
-        return res.status(200).json(existingStockTx);
+        successReturn(res, existingStockTx);
     }
     catch (error)
     {
@@ -72,7 +73,7 @@ exports.deleteStockTx = async (req, res) =>
         existingStockTx.is_deleted = true;
         await existingStockTx.save();
 
-        return res.status(200).json(existingStockTx);
+        successReturn(res, existingStockTx);
     }
     catch (error)
     {
@@ -102,7 +103,9 @@ exports.getStockTransactions = async (req, res) =>
             quantity: tx.quantity,
             time_stamp: tx.time_stamp,
         }));
-        return res.status(200).json(transformedStockTx);
+
+        successReturn(res, transformedStockTx);
+        
     }
     catch (error) 
     {
@@ -119,7 +122,7 @@ exports.getAllStockTransactions =  async (req, res) =>
     try 
     {
         const stockTx = await StockTransaction.find({}).sort({ time_stamp: 1 }) || {};
-        return res.status(200).json(stockTx);
+        successReturn(res, stockTx);
     }
     catch (error) 
     {

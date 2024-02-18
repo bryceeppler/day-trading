@@ -1,3 +1,4 @@
+const { successReturn } = require('../../ms_shared/lib/apiHandling');
 const WalletTransaction = require('../shared/models/walletTransactionModel');
 
 // /createWalletTransaction
@@ -10,7 +11,7 @@ exports.createWalletTx = async (req, res) =>
         const walletTx = new WalletTransaction({ is_debit, amount })
         walletTx.save();
 
-        return res.status(201).json(walletTx);
+        successReturn(res, walletTx);
 
 
     } catch (error)
@@ -39,7 +40,7 @@ exports.updateStockTxId = async (req, res) =>
         existingWalletTx.stock_tx_id = stock_tx_id;
         await existingWalletTx.save();
 
-        return res.status(200).json(existingWalletTx);
+        successReturn(res, existingWalletTx);
     }
     catch (error)
     {
@@ -66,7 +67,7 @@ exports.deleteWalletTx = async (req, res) =>
         existingWalletTx.is_deleted = true;
         await existingWalletTx.save();
 
-        return res.status(200).json(existingWalletTx);
+        successReturn(res, existingWalletTx);
     }
     catch (error)
     {
@@ -93,7 +94,7 @@ exports.getWalletTransactions = async (req, res) =>
             time_stamp: tx.time_stamp,
         }));
 
-        return res.status(200).json(transformedWalletTx);
+        successReturn(res, transformedWalletTx);
     }
     catch (error) 
     {
@@ -107,12 +108,13 @@ exports.getAllWalletTransactions = async (req, res) =>
 {
     try 
     {
-        const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};;
-        return res.status(200).json(walletTx);
+        const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};
+        successReturn(res, walletTx);
     }
     catch (error) 
     {
         console.error('Error getting wallet transactions:', error);
+        handleError()
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }

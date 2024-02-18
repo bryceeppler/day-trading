@@ -1,5 +1,6 @@
 const Stock = require('../shared/models/stockModel');
-
+const apiHandling = require('../shared/lib/apiHandling');
+const { handleError, successReturn } = require('../lib/apiHandling');
 
 exports.createStock = async (req, res) =>
 {
@@ -19,7 +20,7 @@ exports.createStock = async (req, res) =>
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
         newStock.save();
 
-        return res.status(201).json(newStock);
+        successReturn(res, newStock);
     } catch (error)
     {
         console.error('Error creating stock:', error);
@@ -40,8 +41,7 @@ exports.getStockPrices = async (req, res) =>
             stock_name: stock.stock_name,
             current_price: stock.current_price,
         }));
-
-        return res.status(200).json(transformedStocks);
+        successReturn(res, transformedStocks);
     }
     catch (error) 
     {
@@ -56,7 +56,7 @@ exports.getAllStocks = async (req, res) =>
     try 
     {
         const stocks = await Stock.find() || {};
-        return res.status(200).json(stocks);
+        successReturn(res, stocks);
     }
     catch (error) 
     {
@@ -84,7 +84,7 @@ exports.updateStockPrice = async (req, res) =>
         existingStock.current_price = new_price;
         await existingStock.save();
 
-        return res.status(200).json(existingStock);
+        successReturn(res, existingStock);
     }
     catch (error)
     {

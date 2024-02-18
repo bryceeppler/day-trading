@@ -2,7 +2,7 @@ import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "./orderbook";
 import { Order, MatchedOrder, OrderType, IOrderBook } from "../types";
 
-describe("OrderBook matchOrder tests", () => {
+describe("OrderBook Limit Order Tests", () => {
   let orderbook: IOrderBook;
 
   beforeEach(() => {

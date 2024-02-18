@@ -62,9 +62,21 @@ export default class OrderBook implements IOrderBook {
   }
 
   resortOrders() {
-    this.buyOrders.sort((a, b) => b.stock_price - a.stock_price);
-    this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
+    this.buyOrders.sort((a, b) => {
+      if (b.stock_price === a.stock_price) {
+        return a.time_stamp.getTime() - b.time_stamp.getTime();
+      }
+      return b.stock_price - a.stock_price;
+    });
+  
+    this.sellOrders.sort((a, b) => {
+      if (a.stock_price === b.stock_price) {
+        return a.time_stamp.getTime() - b.time_stamp.getTime();
+      }
+      return a.stock_price - b.stock_price;
+    });
   }
+  
 
   async initializeOrderBook() {
     await this.loadInProgressOrders();
@@ -107,7 +119,6 @@ export default class OrderBook implements IOrderBook {
    * Given a pair of matched orders, create a new matched order object
    */
   createMatchedOrder(order:Order, matchAgainst:Order, quantity:number) {
-    console.log("creating matched order");
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
       sellOrder: order.is_buy ? matchAgainst : order,
@@ -132,7 +143,6 @@ export default class OrderBook implements IOrderBook {
       };
 
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
-      console.log(`Matched quantity: ${matchedQuantity}`)
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
@@ -176,11 +186,9 @@ export default class OrderBook implements IOrderBook {
    */
   matchOrder(newOrder:Order): [MatchedOrder[], number]{
     this.resortOrders();
-    console.log("buyOrders:", this.buyOrders);
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {
-      console.log("Matching limit order");
       return this.matchLimitOrder(newOrder);
     }
   }
@@ -197,7 +205,6 @@ export default class OrderBook implements IOrderBook {
    */
   flushOrders() {
     console.log("Flushing orders");
-    console.log("Matched orders:", this.matchedOrders.length);
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,

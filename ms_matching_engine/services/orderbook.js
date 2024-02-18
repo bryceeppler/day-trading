@@ -15,6 +15,7 @@ module.exports = class OrderBook {
 
     for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
       const matchAgainst = orderQueue[i];
+      if (this.isMatch(newOrder, matchAgainst) === false) continue;
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
@@ -129,11 +130,15 @@ module.exports = class OrderBook {
   }
 
   insertOrder(order) {
-    if (order.is_buy) {
-      // add to buy orders at proper index, it is already sorted by price and time
-      this.buyOrders.push(order);
+    if (order.order_type === "LIMIT") {
+      if (order.is_buy) {
+        this.buyOrders.push(order);
+      } else {
+        this.sellOrders.push(order);
+      }
+      this.resort();
     } else {
-      this.sellOrders.push(order);
+      this.matchMarketOrder(order);
     }
   }
 

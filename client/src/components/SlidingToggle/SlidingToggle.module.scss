@@ -1,0 +1,13 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	align-items: center;
+	padding: 5px;
+	justify-content: space-between;
+	width: 170px;
+	label {
+		width: 50px;
+		
+	}
+}

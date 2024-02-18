@@ -3,8 +3,11 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from 'pages/Login';
 
-import { HOME, LOGIN } from 'lib/pagesPaths';
+import { HOME, LOGIN, PORTFOLIO, REGISTER, WALLET } from 'lib/pagesPaths';
 import Home from 'pages/Home';
+import Register from 'pages/Register';
+import Wallet from 'pages/Wallet';
+import Portfolio from 'pages/Portfolio';
 
 function Routing(): ReactElement {
   return (
@@ -12,6 +15,9 @@ function Routing(): ReactElement {
       <Routes>
         <Route path={LOGIN} element={<Login />} />
         <Route path={HOME} element={<Home />} />
+        <Route path={REGISTER} element={<Register />} />
+        <Route path={WALLET} element={<Wallet />} />
+        <Route path={PORTFOLIO} element={<Portfolio />} />
 
         <Route path="/*" element={<Navigate to="/login" />} />
       </Routes>

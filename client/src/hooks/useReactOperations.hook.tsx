@@ -4,7 +4,10 @@ import * as PATHS from 'lib/pagesPaths';
 interface UseReactOperationsProps {
   navigateToPage: (path: string) => void;
   navigateToLoginPage: () => void;
+  navigateToRegistrationPage: () => void;
   navigateToHomePage: () => void;
+  navigateToWalletPage: () => void;
+  navigateToPortfolioPage: () => void;
 
   replaceState: () => void;
   updateUrl: (query: Array<{ [key: string]: string | number }>) => void;
@@ -53,6 +56,18 @@ function useReactOperations(): UseReactOperationsProps {
     localNavigate(PATHS.LOGIN);
   };
 
+	const navigateToWalletPage = () => {
+    localNavigate(PATHS.WALLET);
+  };
+
+	const navigateToRegistrationPage = () => {
+    localNavigate(PATHS.REGISTER);
+  };
+
+	const navigateToPortfolioPage = () => {
+    localNavigate(PATHS.PORTFOLIO);
+  };
+
   const navigateToHomePage = () => {
     localNavigate(PATHS.HOME);
   };
@@ -71,7 +86,10 @@ function useReactOperations(): UseReactOperationsProps {
     navigateToPage,
     navigateToLoginPage,
     navigateToHomePage,
+		navigateToRegistrationPage,
     replaceState,
+		navigateToWalletPage,
+		navigateToPortfolioPage,
     goBack,
   };
 }

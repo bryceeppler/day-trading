@@ -1,42 +1,35 @@
+
 import { BaseApi } from 'api';
-import { USERS } from 'lib/routes';
-import { User, CreateUser } from 'types';
-import { CreateUserParams, FetchTimeCardsParams, FetchUsersParams } from 'types/users.types';
-import { CreateClockInOutParams, EditTimeCardParams, SuccessApiResponse } from 'types/utils.types';
+import { FETCH_BALANCE, FETCH_STOCK_TXS, FETCH_WALLET_TXS, PLACE_STOCK_ORDER } from 'lib/routes';
+import { PlaceStockOrderParams } from 'types/users.types';
+import { SuccessApiResponse } from 'types/utils.types';
 
-export const fetchUsers = async (params: FetchUsersParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(USERS, params);
-};
-export const fetchUsersStats = async (): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(`${USERS}/userTypesStats`);
-};
-export const fetchRunningTimeCard = async (): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(`${USERS}/fetchRunningTimeCard`);
-};
-export const fetchTimeCards = async (params: FetchTimeCardsParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(`${USERS}/fetchTimeCards`, params);
-};
-export const fetchUserTypes = async (): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(`${USERS}/userTypes`);
-};
-export const create = async (body: CreateUserParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.post(`${USERS}`, body);
-};
-export const clockIn = async (body: CreateClockInOutParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.post(`${USERS}/clockIn`, body);
-};
-export const clockOut = async (body: CreateClockInOutParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.put(`${USERS}/clockOut`, body);
+
+export const fetchBalance = async (): Promise<SuccessApiResponse> => {
+  return await BaseApi.get(`${FETCH_BALANCE}`);
 };
 
-export const editTimeCardParams = async (body: EditTimeCardParams): Promise<SuccessApiResponse> => {
-  return await BaseApi.put(`${USERS}/timeCards`, body);
+export const fetchWalletTransactions = async (): Promise<SuccessApiResponse> => {
+  return await BaseApi.get(`${FETCH_WALLET_TXS}`);
 };
 
-export const fetchUser = async (userId: number, date?: string): Promise<User> => {
-  return await BaseApi.get(`${USERS}/${userId}`, { date });
+export const fetchStockTransactions = async (): Promise<SuccessApiResponse> => {
+  return await BaseApi.get(`${FETCH_STOCK_TXS}`);
 };
 
-export const updateUser = async (id: number, body: CreateUser): Promise<void> => {
-  return await BaseApi.put(`${USERS}/${id}`, body);
+export const fetchStocks = async (): Promise<SuccessApiResponse> => {
+  return await BaseApi.get(`${FETCH_WALLET_TXS}`);
 };
+
+export const addMoney = async (amount: number): Promise<SuccessApiResponse> => {
+  return await BaseApi.post(`${FETCH_BALANCE}`, { amount });
+};
+
+export const placeStockOrder = async (data: PlaceStockOrderParams): Promise<SuccessApiResponse> => {
+  return await BaseApi.post(`${PLACE_STOCK_ORDER}`, data);
+};
+
+export const cancelStockOrder = async (stock_tx_id: string): Promise<SuccessApiResponse> => {
+  return await BaseApi.post(`${PLACE_STOCK_ORDER}`,{stock_tx_id});
+};
+

@@ -1,83 +1,47 @@
 import { Stat } from './utils.types';
 
 export type UserLogin = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+  id: string;
+  name: string;
+  user_name: string;
 };
 
-export type UserType = {
-  id: number;
-  type: string;
-  description: string;
-};
 
-export type UserList = {
-  id: number;
-  fullName: string;
-  email?: string;
-  cellPhone?: string;
-  homePhone?: string;
-  userType: string;
-};
+export type StockTransaction = {
+	wallet_tx_id: string;
+	stock_tx_id: string;
+	order_status: string;
+	is_buy: boolean;
+	order_type: string;
+	stock_price: number;
+	quantity: number;
+	time_stamp: string;
+}
 
-export type UsersStat = {
-  label: string;
-  count: number;
-};
+export type WalletTransaction = {
+	wallet_tx_id: string;
+	stock_tx_id: string;
+	is_debit: true;
+	amount: number;
+	time_stamp: string;
+}
 
-export type TimeCard = {
-  id: number;
-  userId: number;
-  clockIn: string;
-  clockOut: string;
-  lateClockInReason: string;
-  lateClockOutReason: string;
-};
+export type StockPortfolio = {
+	stock_id: string;
+	stock_name: string;
+	quantity_owned: number;
+}
 
-export type FetchUsersParams = {
-  searchFilter?: string;
-  limit?: number;
-  offset?: number;
-};
+export type Stock = {
+	stock_id: string;
+	stock_name: string;
+	current_price: number;
+}
 
-export type FetchUserStatsParams = {
-  total?: boolean;
-  repeat?: boolean;
-  repeatPercentage?: boolean;
-};
-
-export type CreateUserParams = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  startDate: string;
-  userTypeId: number;
-  password: string;
-  confirmPassword: string;
-
-  address?: string;
-  cellPhone?: string;
-  homePhone?: string;
-  emergencyContactName?: string;
-  emergencyContactNumber?: string;
-  emergencyContactEmail?: string;
-};
-
-export type FetchTimeCardsResult = {
-  results: Array<TimeCard>;
-  totalResults: number;
-};
-
-export type FetchUserListResult = {
-  results: Array<UserList>;
-  totalResults: number;
-};
-
-export type FetchTimeCardsParams = {
-  minDate: string;
-  maxDate: string;
-  limit?: number;
-  offset?: number;
-};
+export type PlaceStockOrderParams = {
+	stock_id: string;
+	is_buy: boolean;
+	order_type: string;
+	quantity: number;
+	price: number;
+}

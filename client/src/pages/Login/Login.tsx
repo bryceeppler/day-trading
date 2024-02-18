@@ -8,9 +8,10 @@ import Button from 'components/Button';
 import Layout from 'Base';
 import Logo from 'images/logo.svg';
 function Login(): ReactElement {
-  const [username, setUsername] = useState<string>();
-  const [password, setPassword] = useState<string>();
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [verify, setVerify] = useState<boolean>(false);
+	const [error, setError] = useState<string>('')
 
   const verified = () => {
     setVerify(true);
@@ -20,24 +21,22 @@ function Login(): ReactElement {
     return true;
   };
 
-  const { navigateToHomePage } = useReactOperations();
+  const { navigateToHomePage, navigateToRegistrationPage } = useReactOperations();
 
   const userContext = useContext(UserContext);
 
-  const { login, getRefreshToken } = useLogin();
+  const { login } = useLogin();
   const localLogin = async () => {
     if (!verified()) return;
-    await login(username!, password!);
+    const error = await login(username, password);
+		console.log(error)
+		setError(error || '')
   };
 
   useEffect(() => {
     if (!userContext.user) return;
     navigateToHomePage();
   }, [userContext.user]);
-
-  useEffect(() => {
-    getRefreshToken();
-  }, []);
 
   return (
     <Layout>
@@ -59,8 +58,11 @@ function Login(): ReactElement {
             type={'password'}
             verify={verify}
           />
-
-          <Button className={styles.submitButton} label={'Login'} onClick={localLogin} />
+					<div className={styles.actions}>
+						<Button className={styles.submitButton} label={'Login'} onClick={localLogin} />
+						<div className={styles.createAccount} onClick={navigateToRegistrationPage}>Create Account</div>
+					</div>
+					{error && <div className={styles.error}>{error}</div>}
         </div>
       </div>
     </Layout>

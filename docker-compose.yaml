@@ -4,6 +4,8 @@ services:
   # React Frontend
   react:
     build: ./client
+    volumes: 
+      - ./client/src:/app/src
     ports:
       - "3000:3000"
     depends_on:
@@ -12,12 +14,14 @@ services:
       - ms_order_creation
       - ms_matching_engine
       - ms_market_data
-
+    command: ["npm", "start"]
 
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
-    image: ms_user
+    image: ms_user    
+    volumes: 
+      - ./ms_user:/app
     ports:
       - "8001:3000"
     environment:
@@ -79,7 +83,7 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - "27017"
+      - "50567:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb

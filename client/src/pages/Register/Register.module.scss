@@ -22,28 +22,31 @@
   img {
     width: 200px;
   }
-
-
-
+	
   .text {
     width: 100%;
     padding-right: 17px;
   }
 
+	.regSuccessful {
+		margin-bottom: 30px;
+	}
+
+	
 	.actions {
 		width: 100%;
 		.submitButton {
 			
 			height: 40px;
 		}
-		.createAccount {
+		.subAction {
 			margin-top: 5px;
 			text-align: center;
 			font-size: 11px;
 			cursor: pointer;
 		}
-	}
 	
+	}
 }
 
 .error {

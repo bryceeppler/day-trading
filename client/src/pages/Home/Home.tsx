@@ -23,7 +23,7 @@ function Home(): ReactElement {
         <InfoCard>
           <div className={styles.welcome}>
             <div className={styles.greeting}>
-              Welcome <span>{user?.firstName}</span>, Your account value is
+              Welcome <span>{user?.name}</span>, Your account value is
             </div>
             <div className={styles.price}>{formatPrice(1250.32, true)}</div>
             <Button

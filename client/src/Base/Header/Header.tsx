@@ -8,6 +8,7 @@ import DownIcon from 'images/downChevron.svg';
 import SearchBar from 'components/SearchBar';
 import useReactOperations from 'hooks/useReactOperations.hook';
 import useLogin from 'action/useLogin';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 interface HeaderProps {
   setSearch?: React.Dispatch<React.SetStateAction<string>>;
@@ -17,7 +18,7 @@ const Header = ({ signedIn, setSearch }: HeaderProps) => {
   const [accountOpen, setAccountOpen] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);
-  const { navigateToLoginPage } = useReactOperations();
+  const { navigateToLoginPage, navigateToWalletPage, navigateToPortfolioPage } = useReactOperations();
   const { logout } = useLogin();
   const onLogout = () => {
     logout();
@@ -28,26 +29,23 @@ const Header = ({ signedIn, setSearch }: HeaderProps) => {
       <div className={styles.name}>DAY TRADING INC.</div>
       {!!user && (
         <div className={styles.signedIn}>
-          <div className={styles.nav}>
+          <div className={styles.nav} onClick={navigateToPortfolioPage}>
             <img src={PortfolioIcon} alt="" />
             <div>Portfolio</div>
           </div>
-          <div className={styles.nav}>
-            <img src={WatchListIcon} alt="" />
-            <div>Watchlist</div>
+          <div className={styles.nav} onClick={navigateToWalletPage}>
+            <AccountBalanceWalletIcon className={styles.icon}/>
+            <div>Wallet</div>
           </div>
           <div className={styles.nav}>
             <img src={TransactionIcon} alt="" />
             <div>Transactions</div>
           </div>
-          {setSearch && (
-            <SearchBar className={styles.search} onChange={setSearch} placeholder={'Search for a symbol or name'} />
-          )}
         </div>
       )}
       {!!user && (
         <div className={styles.account}>
-          <div>{user.fullName}</div>
+          <div>{user.name}</div>
           <img src={DownIcon} alt="" onClick={() => setAccountOpen((prev) => !prev)} />
           {accountOpen && (
             <div className={styles.dropdownMenu}>

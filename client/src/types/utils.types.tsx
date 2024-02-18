@@ -20,9 +20,10 @@ export type ButtonInfo = {
 };
 
 export type SuccessApiResponse = {
-  error?: string;
-  data?: any;
+  success: boolean;
+  data: any;
 };
+
 
 export type Stat = {
   total: number;

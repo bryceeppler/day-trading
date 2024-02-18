@@ -1,7 +1,8 @@
 import {
   Order,
   MatchedOrder,
-  IOrderBook
+  IOrderBook,
+  OrderBookOrder
 } from "../types";
 
 import { StockTransaction } from "../models/stockTransactionModel";
@@ -9,11 +10,11 @@ import { StockTransaction } from "../models/stockTransactionModel";
 // const axios = require('axios');
 export default class OrderBook implements IOrderBook {
   stockTransactionModel: typeof StockTransaction;
-  buyOrders: Order[] = [];
-  sellOrders: Order[] = [];
+  buyOrders: OrderBookOrder[] = [];
+  sellOrders: OrderBookOrder[] = [];
   matchedOrders: MatchedOrder[] = [];
-  cancelledOrders: Order[] = [];
-  expiredOrders: Order[] = [];
+  cancelledOrders: OrderBookOrder[] = [];
+  expiredOrders: OrderBookOrder[] = [];
 
   constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
@@ -28,7 +29,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Match a market order against the orderbook and return the matched orders
    */
-  matchMarketOrder(newOrder: Order): [MatchedOrder[], number]{
+  matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number]{
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
 
@@ -63,17 +64,17 @@ export default class OrderBook implements IOrderBook {
 
   resortOrders() {
     this.buyOrders.sort((a, b) => {
-      if (b.stock_price === a.stock_price) {
-        return a.time_stamp.getTime() - b.time_stamp.getTime();
+      if (b.price === a.price) {
+        return a.timestamp.getTime() - b.timestamp.getTime();
       }
-      return b.stock_price - a.stock_price;
+      return b.price - a.price;
     });
   
     this.sellOrders.sort((a, b) => {
-      if (a.stock_price === b.stock_price) {
-        return a.time_stamp.getTime() - b.time_stamp.getTime();
+      if (a.price === b.price) {
+        return a.timestamp.getTime() - b.timestamp.getTime();
       }
-      return a.stock_price - b.stock_price;
+      return a.price - b.price;
     });
   }
   
@@ -90,23 +91,37 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
-   * Only run on init, loads all in progress orders from the database.
+   * Only run on init, loads all in progress orders from the database. 
+   * There is no timestamp field in the database, so we assign one 
+   * to be 15 mins from now.
    */
   async loadInProgressOrders() {
-    this.buyOrders = await this.fetchOrdersByType(true); // isBuy = true
-    this.sellOrders = await this.fetchOrdersByType(false); // isBuy = false
+    const buyOrderDocuments = await this.fetchOrdersByType(true); // isBuy = true
+    const sellOrderDocuments = await this.fetchOrdersByType(false); // isBuy = false
+    // These are Orders we need to convert them to OrderBookOrders by adding timestamp
+    this.buyOrders = buyOrderDocuments;
+    this.sellOrders = sellOrderDocuments;
   }
 
-  async fetchOrdersByType(isBuy: boolean) {
-    return await this.stockTransactionModel
-      .find({
-        order_type: "LIMIT",
-        is_buy: isBuy,
-        order_status: "IN_PROGRESS",
-      })
-      .sort({ stock_price: isBuy ? -1 : 1, time_stamp: 1 });
+  async fetchOrdersByType(isBuy: boolean): Promise<OrderBookOrder[]> {
+    const documents = await this.stockTransactionModel.find({
+      order_type: "LIMIT",
+      is_buy: isBuy,
+      order_status: "IN_PROGRESS",
+    }).sort({ price: isBuy ? -1 : 1, timestamp: 1 });
+  
+    // Transform Mongoose documents into the Order type
+     const orders = documents.map(doc => ({
+      // map mongoose docs to Order type
+      price: doc.stock_price,
+      quantity: doc.quantity,
+      is_buy: doc.is_buy,
+      order_type: doc.order_type,
+      timestamp: doc.time_stamp,
+      stock_id: doc.stock_id,
+    }));
+    return orders;
   }
-
   /**
    * Check for expired orders and add them to the expiredOrders array
    */
@@ -118,20 +133,20 @@ export default class OrderBook implements IOrderBook {
   /**
    * Given a pair of matched orders, create a new matched order object
    */
-  createMatchedOrder(order:Order, matchAgainst:Order, quantity:number) {
+  createMatchedOrder(order:OrderBookOrder, matchAgainst:Order, quantity:number) {
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
       sellOrder: order.is_buy ? matchAgainst : order,
       quantity,
-      matchPrice: matchAgainst.stock_price,
+      matchPrice: matchAgainst.price,
       timestamp: new Date(),
-    };
+    } as MatchedOrder;
   }
 
   /**
    * Find all matches for a given order and return the matched orders and the remaining quantity
    */
-  findMatches(order: Order): [MatchedOrder[], number]{
+  findMatches(order: OrderBookOrder): [MatchedOrder[], number]{
     const matched: MatchedOrder[] = [];
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
@@ -157,16 +172,16 @@ export default class OrderBook implements IOrderBook {
     return [matched, remainingQty];
   }
   
-  isMatch(order:Order, matchAgainst:Order) {
+  isMatch(order:OrderBookOrder, matchAgainst:OrderBookOrder) {
     return order.is_buy
-      ? matchAgainst.stock_price <= order.stock_price
-      : matchAgainst.stock_price >= order.stock_price;
+      ? matchAgainst.price <= order.price
+      : matchAgainst.price >= order.price;
   }
 
   /**
    * Handle remaining quantity of a partially filled order by pushing it into the orderbook
    */
-  handlePartialOrder(order:Order, remainingQty:number) {
+  handlePartialOrder(order:OrderBookOrder, remainingQty:number) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
       order.quantity = remainingQty;
       this.insertToOrderBook(order);
@@ -174,11 +189,24 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
+   * Compare an Order and OrderBookOrder and return true if they are the same
+   */
+  isSameOrder(order:Order, orderBookOrder:OrderBookOrder) {
+    return (
+      order.user_id === orderBookOrder.user_id &&
+      order.stock_id === orderBookOrder.stock_id &&
+      order.quantity === orderBookOrder.quantity &&
+      order.price === orderBookOrder.price &&
+      order.is_buy === orderBookOrder.is_buy
+    );
+  }
+
+  /**
    * Remove a given order from a given order queue
    */
-  removeOrderFromQueue(order:Order, orderQueue:Order[]): Order | null {
+  removeOrderFromQueue(order:Order, orderQueue:OrderBookOrder[]): OrderBookOrder | null {
     for (let i = 0; i < orderQueue.length; i++) {
-      if (orderQueue[i] === order) {
+      if (this.isSameOrder(order, orderQueue[i])) {
         return orderQueue.splice(i, 1)[0];
       }
     }
@@ -188,14 +216,14 @@ export default class OrderBook implements IOrderBook {
   /**
    * Given a order, remove it from the orderbook and return it
    */
-  removeOrder(order:Order): Order | null{
+  removeOrder(order:Order): OrderBookOrder | null{
     return order.is_buy ? this.removeOrderFromQueue(order, this.buyOrders) : this.removeOrderFromQueue(order, this.sellOrders);
   }
 
   /**
    * Entry point for matching, calls the proper function based on limit or market order
    */
-  matchOrder(newOrder:Order): [MatchedOrder[], number]{
+  matchOrder(newOrder:OrderBookOrder): [MatchedOrder[], number]{
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
@@ -204,7 +232,7 @@ export default class OrderBook implements IOrderBook {
     }
   }
 
-  matchLimitOrder(newOrder:Order): [MatchedOrder[], number]{
+  matchLimitOrder(newOrder:OrderBookOrder): [MatchedOrder[], number]{
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
@@ -226,7 +254,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Insert a new order into the orderbook and resort
    */
-  insertToOrderBook(order:Order) {
+  insertToOrderBook(order:OrderBookOrder) {
     // if (order.order_type === "LIMIT") {
     if (order.is_buy) {
       this.buyOrders.push(order);
@@ -241,8 +269,8 @@ export default class OrderBook implements IOrderBook {
 
   async sendOrdersToOrderExecutionService(
     matchedOrders:MatchedOrder[],
-    cancelledOrders:Order[],
-    expiredOrders:Order[]) {
+    cancelledOrders:OrderBookOrder[],
+    expiredOrders:OrderBookOrder[]) {
     console.log("Sending orders to order execution service");
 
     // empty the arrays
@@ -270,6 +298,6 @@ export default class OrderBook implements IOrderBook {
   cancelOrder(order:Order): Order | null{
     const cancelledOrder = this.removeOrder(order)
     cancelledOrder && this.cancelledOrders.push(cancelledOrder);
-    return cancelledOrder;
+    return cancelledOrder as Order;
   }
 };

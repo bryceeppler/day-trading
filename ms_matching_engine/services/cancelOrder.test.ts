@@ -13,10 +13,10 @@ describe("Cancel Order Tests", () => {
     const order = {
       stock_id: "1",
       quantity: 5,
-      stock_price: 10,
+      price: 10,
       is_buy: true,
       order_type: OrderType.LIMIT,
-      time_stamp: new Date(),
+      timestamp: new Date(),
     };
     orderbook.buyOrders.push(order);
 
@@ -31,19 +31,19 @@ describe("Cancel Order Tests", () => {
     const orderInBook = {
       stock_id: "1",
       quantity: 5,
-      stock_price: 10,
+      price: 10,
       is_buy: true,
       order_type: OrderType.LIMIT,
-      time_stamp: new Date(),
+      timestamp: new Date(),
     };
 
     const orderToCancel = {
       stock_id: "2",
       quantity: 5,
-      stock_price: 10,
+      price: 10,
       is_buy: true,
       order_type: OrderType.LIMIT,
-      time_stamp: new Date(),
+      timestamp: new Date(),
     };
     orderbook.buyOrders.push(orderInBook);
 

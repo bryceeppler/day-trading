@@ -2,13 +2,14 @@ import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 
 import OrderBook from '../services/orderbook';
-import { Order, MatchedOrder } from '../types';
+import { Order, MatchedOrder, OrderBookOrder } from '../types';
 
 interface Routes {
   healthCheck: (req: Request, res: Response) => Promise<void>;
   receiveOrder: (req: Request, res: Response) => Promise<void>;
   cancelOrder: (req: Request, res: Response) => Promise<void>;
 }
+
 
 export default (orderBook: OrderBook): Routes => {
   return {
@@ -32,7 +33,12 @@ export default (orderBook: OrderBook): Routes => {
         const order: Order = req.body; 
         res.status(200).send("Order received");
 
-        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(order);
+        const orderBookOrder:OrderBookOrder = {
+          ...order,
+          timestamp: new Date()
+        };
+
+        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(orderBookOrder);
         // orderBook.flushOrders();        // send expired/matched orders to order execution service
     
       } catch (error) {

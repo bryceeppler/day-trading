@@ -42,11 +42,22 @@ export interface StockTransactionDocument extends Document {
 }
 
 // Order is IStockTransaction
-export type Order = IStockTransaction;
+export type Order = {
+  user_id?: string;
+  stock_id: string;
+  quantity: number;
+  price: number;
+  order_type: string;
+  is_buy: boolean;
+}
+
+export interface OrderBookOrder extends Order {
+  timestamp: Date;
+}
 
 export interface MatchedOrder {
-  buyOrder: Order;
-  sellOrder: Order;
+  buyOrder: OrderBookOrder;
+  sellOrder: OrderBookOrder;
   quantity: number;
   matchPrice: number;
   timestamp: Date;
@@ -57,19 +68,23 @@ export interface StockTransactionModel extends Model<StockTransactionDocument> {
 
 
 export interface IOrderBook {
-  buyOrders: Order[];
-  sellOrders: Order[];
+  buyOrders: OrderBookOrder[];
+  sellOrders: OrderBookOrder[];
   matchedOrders: MatchedOrder[];
-  expiredOrders: Order[];
-  cancelledOrders: Order[];
-
-  removeOrder(order: Order): void;
+  expiredOrders: OrderBookOrder[];
+  cancelledOrders: OrderBookOrder[];
+  matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number];
+  resortOrders(): void;
+  removeOrder(order: Order): OrderBookOrder | null;
   matchOrder(order: Order): [MatchedOrder[], number];
   checkForExpiredOrders(): void;
-  createMatchedOrder(order: Order, matchAgainst: Order, quantity: number): MatchedOrder;
-  findMatches(order: Order): [MatchedOrder[], number];
-  isMatch(order: Order, matchAgainst: Order): boolean;
+  createMatchedOrder(order:OrderBookOrder, matchAgainst:Order, quantity:number): MatchedOrder;
+  findMatches(order: OrderBookOrder): [MatchedOrder[], number];
+   isMatch(order: Order, matchAgainst: Order): boolean;
   removeOrderFromQueue(order:Order, orderQueue:Order[]): Order | null;
   cancelOrder(order:Order): Order | null;
-  removeOrder(order:Order): Order | null;
+  insertMatchedOrders(matchedOrders: MatchedOrder[]): void;
+  initializeOrderBook(): Promise<void>;
+  loadInProgressOrders(): Promise<void>;
+  fetchOrdersByType(isBuy: boolean): Promise<Order[]>;
 }

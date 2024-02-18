@@ -1,6 +1,12 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "./orderbook";
-import { Order, MatchedOrder, OrderType, IOrderBook } from "../types";
+import {
+  Order,
+  MatchedOrder,
+  OrderBookOrder,
+  OrderType,
+  IOrderBook,
+} from "../types";
 
 describe("OrderBook Market Order Tests", () => {
   let orderbook: IOrderBook;
@@ -14,29 +20,32 @@ describe("OrderBook Market Order Tests", () => {
     const newerTimeStamp = new Date();
     orderbook.buyOrders = [
       {
+        user_id: "1",
         stock_id: "1",
-        stock_price: 19,
+        price: 19,
         quantity: 10,
         is_buy: true,
         order_type: OrderType.LIMIT,
-        time_stamp: olderTimeStamp,
+        timestamp: olderTimeStamp,
       },
       {
+        user_id: "1",
         stock_id: "1",
-        stock_price: 20,
+        price: 20,
         quantity: 10,
         is_buy: true,
         order_type: OrderType.LIMIT,
-        time_stamp: newerTimeStamp,
+        timestamp: newerTimeStamp,
       },
     ];
-    const marketOrder: Order = {
+    const marketOrder: OrderBookOrder = {
+      user_id: "1",
       stock_id: "1",
-      stock_price: 19,
+      price: 19,
       quantity: 5,
       is_buy: false,
       order_type: OrderType.MARKET,
-      time_stamp: new Date(),
+      timestamp: new Date(),
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -48,13 +57,14 @@ describe("OrderBook Market Order Tests", () => {
   });
 
   it("does not execute a market order when there are no matching orders", () => {
-    const marketOrder: Order = {
+    const marketOrder: OrderBookOrder = {
+      user_id: "1",
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
-      time_stamp: new Date(),
-      stock_price: 10,
+      timestamp: new Date(),
+      price: 10,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -65,21 +75,23 @@ describe("OrderBook Market Order Tests", () => {
   it("partially fills a market order", () => {
     orderbook.sellOrders = [
       {
+        user_id: "1",
         stock_id: "1",
-        stock_price: 10,
+        price: 10,
         quantity: 3,
         is_buy: false,
         order_type: OrderType.LIMIT,
-        time_stamp: new Date(),
+        timestamp: new Date(),
       },
     ];
-    const marketOrder: Order = {
+    const marketOrder: OrderBookOrder = {
+      user_id: "1",
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
-      stock_price: 10,
-      time_stamp: new Date(),
+      price: 10,
+      timestamp: new Date(),
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -91,29 +103,32 @@ describe("OrderBook Market Order Tests", () => {
   it("fully fills a market order across multiple limit orders", () => {
     orderbook.sellOrders = [
       {
+        user_id: "1",
         stock_id: "1",
-        stock_price: 10,
+        price: 10,
         quantity: 3,
         is_buy: false,
         order_type: OrderType.LIMIT,
-        time_stamp: new Date(),
+        timestamp: new Date(),
       },
       {
+        user_id: "1",
         stock_id: "1",
-        stock_price: 11,
+        price: 11,
         quantity: 2,
         is_buy: false,
         order_type: OrderType.LIMIT,
-        time_stamp: new Date(),
+        timestamp: new Date(),
       },
     ];
-    const marketOrder: Order = {
+    const marketOrder: OrderBookOrder = {
+      user_id: "1",
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
-      time_stamp: new Date(),
-      stock_price: 11,
+      timestamp: new Date(),
+      price: 11,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 

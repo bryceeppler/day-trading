@@ -62,7 +62,7 @@ export default class OrderBook implements IOrderBook {
   }
 
   resortOrders() {
-    this.buyOrders.sort((a, b) => a.stock_price - b.stock_price);
+    this.buyOrders.sort((a, b) => b.stock_price - a.stock_price);
     this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
   }
 
@@ -107,11 +107,7 @@ export default class OrderBook implements IOrderBook {
    * Given a pair of matched orders, create a new matched order object
    */
   createMatchedOrder(order:Order, matchAgainst:Order, quantity:number) {
-    if (quantity === 0 || !order || !matchAgainst) {
-      console.log("create matched order with no order???");
-    }
     console.log("creating matched order");
-    console.log("matchAgainst:", matchAgainst);
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
       sellOrder: order.is_buy ? matchAgainst : order,
@@ -129,21 +125,28 @@ export default class OrderBook implements IOrderBook {
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
 
-    orderQueue.forEach((matchAgainst, i) => {
-      if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) return;
+    for (let i = 0; i < orderQueue.length; i++) {
+      const matchAgainst = orderQueue[i];
+      if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) {
+        break; 
+      };
 
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
+      console.log(`Matched quantity: ${matchedQuantity}`)
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
-      matched.push(
-        this.createMatchedOrder(order, matchAgainst, matchedQuantity)
-      );
-      if (matchAgainst.quantity === 0) orderQueue.splice(i, 1); // Remove fully matched orders
-    });
+      const matchedOrderPair = this.createMatchedOrder(order, matchAgainst, matchedQuantity); 
+      matched.push(matchedOrderPair);
+      if (matchAgainst.quantity === 0) {
+        orderQueue.splice(i, 1);
+        i--; 
+      }
+    }
 
     return [matched, remainingQty];
   }
+  
   isMatch(order:Order, matchAgainst:Order) {
     return order.is_buy
       ? matchAgainst.stock_price <= order.stock_price
@@ -173,6 +176,7 @@ export default class OrderBook implements IOrderBook {
    */
   matchOrder(newOrder:Order): [MatchedOrder[], number]{
     this.resortOrders();
+    console.log("buyOrders:", this.buyOrders);
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {

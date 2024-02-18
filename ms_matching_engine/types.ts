@@ -61,6 +61,7 @@ export interface IOrderBook {
   sellOrders: Order[];
   matchedOrders: MatchedOrder[];
   expiredOrders: Order[];
+  cancelledOrders: Order[];
 
   removeOrder(order: Order): void;
   matchOrder(order: Order): [MatchedOrder[], number];
@@ -68,4 +69,7 @@ export interface IOrderBook {
   createMatchedOrder(order: Order, matchAgainst: Order, quantity: number): MatchedOrder;
   findMatches(order: Order): [MatchedOrder[], number];
   isMatch(order: Order, matchAgainst: Order): boolean;
+  removeOrderFromQueue(order:Order, orderQueue:Order[]): Order | null;
+  cancelOrder(order:Order): Order | null;
+  removeOrder(order:Order): Order | null;
 }

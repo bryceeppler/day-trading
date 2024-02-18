@@ -24,7 +24,6 @@ export type SuccessApiResponse = {
   data: any;
 };
 
-
 export type Stat = {
   total: number;
   week?: number;

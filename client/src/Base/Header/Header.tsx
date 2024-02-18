@@ -34,7 +34,7 @@ const Header = ({ signedIn, setSearch }: HeaderProps) => {
             <div>Portfolio</div>
           </div>
           <div className={styles.nav} onClick={navigateToWalletPage}>
-            <AccountBalanceWalletIcon className={styles.icon}/>
+            <AccountBalanceWalletIcon className={styles.icon} />
             <div>Wallet</div>
           </div>
           <div className={styles.nav}>

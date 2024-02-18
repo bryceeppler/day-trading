@@ -1,3 +1,3 @@
-import SlidingToggle from "./SlidingToggle";
+import SlidingToggle from './SlidingToggle';
 
-export default SlidingToggle
+export default SlidingToggle;

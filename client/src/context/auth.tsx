@@ -1,7 +1,6 @@
 import { STORAGE_ACCESS_TOKEN, STORAGE_REFRESH_TOKEN } from 'lib/config';
 import React, { createContext, ReactElement, ReactNode, useState, useEffect } from 'react';
 
-
 export interface AuthorizationData {
   userType: string;
   setUserType: (usertype: string) => void;
@@ -22,7 +21,6 @@ const { Provider } = AuthorizationContext;
 
 function AuthorizationProvider({ children }: AuthorizationProps): ReactElement {
   const [userType, setUserType] = useState<string>('');
-
 
   const logout = () => {
     localStorage.removeItem(STORAGE_ACCESS_TOKEN);

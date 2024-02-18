@@ -56,15 +56,15 @@ function useReactOperations(): UseReactOperationsProps {
     localNavigate(PATHS.LOGIN);
   };
 
-	const navigateToWalletPage = () => {
+  const navigateToWalletPage = () => {
     localNavigate(PATHS.WALLET);
   };
 
-	const navigateToRegistrationPage = () => {
+  const navigateToRegistrationPage = () => {
     localNavigate(PATHS.REGISTER);
   };
 
-	const navigateToPortfolioPage = () => {
+  const navigateToPortfolioPage = () => {
     localNavigate(PATHS.PORTFOLIO);
   };
 
@@ -86,10 +86,10 @@ function useReactOperations(): UseReactOperationsProps {
     navigateToPage,
     navigateToLoginPage,
     navigateToHomePage,
-		navigateToRegistrationPage,
+    navigateToRegistrationPage,
     replaceState,
-		navigateToWalletPage,
-		navigateToPortfolioPage,
+    navigateToWalletPage,
+    navigateToPortfolioPage,
     goBack,
   };
 }

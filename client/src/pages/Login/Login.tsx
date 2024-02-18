@@ -11,7 +11,7 @@ function Login(): ReactElement {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [verify, setVerify] = useState<boolean>(false);
-	const [error, setError] = useState<string>('')
+  const [error, setError] = useState<string>('');
 
   const verified = () => {
     setVerify(true);
@@ -29,8 +29,8 @@ function Login(): ReactElement {
   const localLogin = async () => {
     if (!verified()) return;
     const error = await login(username, password);
-		console.log(error)
-		setError(error || '')
+    console.log(error);
+    setError(error || '');
   };
 
   useEffect(() => {
@@ -58,11 +58,13 @@ function Login(): ReactElement {
             type={'password'}
             verify={verify}
           />
-					<div className={styles.actions}>
-						<Button className={styles.submitButton} label={'Login'} onClick={localLogin} />
-						<div className={styles.createAccount} onClick={navigateToRegistrationPage}>Create Account</div>
-					</div>
-					{error && <div className={styles.error}>{error}</div>}
+          <div className={styles.actions}>
+            <Button className={styles.submitButton} label={'Login'} onClick={localLogin} />
+            <div className={styles.createAccount} onClick={navigateToRegistrationPage}>
+              Create Account
+            </div>
+          </div>
+          {error && <div className={styles.error}>{error}</div>}
         </div>
       </div>
     </Layout>

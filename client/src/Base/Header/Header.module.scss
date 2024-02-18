@@ -14,9 +14,9 @@
 
   border-bottom: 2px solid $color-secondary;
 
-	.icon {
-		color: $color-secondary;
-	}
+  .icon {
+    color: $color-secondary;
+  }
 
   .name {
     font-weight: 600;
@@ -40,7 +40,7 @@
       align-items: center;
       gap: 3px;
       color: white;
-			cursor: pointer;
+      cursor: pointer;
 
       img {
         height: 25px;

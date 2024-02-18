@@ -1,9 +1,7 @@
-
 import { BaseApi } from 'api';
 import { FETCH_BALANCE, FETCH_STOCK_TXS, FETCH_WALLET_TXS, PLACE_STOCK_ORDER } from 'lib/routes';
 import { PlaceStockOrderParams } from 'types/users.types';
 import { SuccessApiResponse } from 'types/utils.types';
-
 
 export const fetchBalance = async (): Promise<SuccessApiResponse> => {
   return await BaseApi.get(`${FETCH_BALANCE}`);
@@ -30,6 +28,5 @@ export const placeStockOrder = async (data: PlaceStockOrderParams): Promise<Succ
 };
 
 export const cancelStockOrder = async (stock_tx_id: string): Promise<SuccessApiResponse> => {
-  return await BaseApi.post(`${PLACE_STOCK_ORDER}`,{stock_tx_id});
+  return await BaseApi.post(`${PLACE_STOCK_ORDER}`, { stock_tx_id });
 };
-

@@ -9,8 +9,6 @@ interface FullWrapperProps {
 }
 
 function FullWrapper({ children }: FullWrapperProps): ReactElement {
-
-
   return children;
 }
 

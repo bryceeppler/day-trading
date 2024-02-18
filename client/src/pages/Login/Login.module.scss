@@ -23,30 +23,26 @@
     width: 200px;
   }
 
-
-
   .text {
     width: 100%;
     padding-right: 17px;
   }
 
-	.actions {
-		width: 100%;
-		.submitButton {
-			
-			height: 40px;
-		}
-		.createAccount {
-			margin-top: 5px;
-			text-align: center;
-			font-size: 11px;
-			cursor: pointer;
-		}
-	}
-	
+  .actions {
+    width: 100%;
+    .submitButton {
+      height: 40px;
+    }
+    .createAccount {
+      margin-top: 5px;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+    }
+  }
 }
 
 .error {
-	font-size: 12px;
+  font-size: 12px;
   color: red;
 }

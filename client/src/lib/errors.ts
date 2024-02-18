@@ -17,10 +17,10 @@ export const getInputError = (errors: Array<ValidationError>, id: string) => {
 };
 
 export const handleApiError = (error: unknown): string => {
-	console.log()
+  console.log();
   if (typeof error === 'object' && error !== null && 'response' in error) {
     const networkError = error as NetworkError;
-		console.log(networkError.response?.data.message)
+    console.log(networkError.response?.data.message);
     return networkError.response?.data?.message || 'Invalid Error';
   }
   return '';

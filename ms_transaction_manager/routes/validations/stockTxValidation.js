@@ -1,6 +1,6 @@
 const { body, query, check, param } = require('express-validator');
-const { validate } = require('./baseValidation')
-const { ORDER_TYPE, ORDER_STATUS } = require('../../lib/enums')
+const { validate } = require('../../shared/middleware/base.validation');
+const { ORDER_TYPE, ORDER_STATUS } = require('../../shared/lib/enums');
 
 
 exports.createStockTxValidation = validate([

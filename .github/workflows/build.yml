@@ -1,7 +1,7 @@
 name: Docker Compose Build
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -28,13 +28,16 @@ jobs:
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
+            if [[ $name =~ .*ms_shared.* ]]; then
+                  continue  # Skip the ms_shared container
+            fi
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then
                 echo "$name is running"
             else    
                 echo "$name is not running"
                 service=${name#*/}  # Remove leading slash
-                service=${service#*_}         # Remove prefix
+                service=${service#*_}  # Remove prefix
                 service=${service%%_1}  # Remove suffix
                 docker-compose logs "$service"
                 good=false

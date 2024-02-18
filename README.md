@@ -21,7 +21,7 @@ Once all containers are running via `docker-compose`, each service is exposed on
 | 8003  | ms_order_creation |
 | 8004  | ms_matching_engine |
 | 8005  | ms_market_data |
-
+| 8006  | ms_transaction_manager |
 
 
 Running a service manually

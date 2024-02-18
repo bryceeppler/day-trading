@@ -173,6 +173,7 @@ export default class OrderBook implements IOrderBook {
   }
   
   isMatch(order:OrderBookOrder, matchAgainst:OrderBookOrder) {
+    if (order.stock_id !== matchAgainst.stock_id) return false;
     return order.is_buy
       ? matchAgainst.price <= order.price
       : matchAgainst.price >= order.price;

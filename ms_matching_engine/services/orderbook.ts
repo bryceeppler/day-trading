@@ -187,6 +187,11 @@ export default class OrderBook implements IOrderBook {
 
     for (let i = 0; i < orderQueue.length; i++) {
       const matchAgainst = orderQueue[i];
+      if (this.isExpired(matchAgainst.timestamp)) {
+        this.expiredOrders.push(orderQueue.splice(i, 1)[0]);
+        i--;
+        continue;
+      }
       if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) {
         break;
       }

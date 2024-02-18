@@ -16,15 +16,15 @@ export enum OrderStatus {
 
 export interface StockTransactionDocument extends Document {
   stock_id: string;
-  wallet_tx_id: string;
-  portfolio_id: string;
+  wallet_tx_id?: string;
+  portfolio_id?: string;
   order_status: ORDER_STATUS;
   is_buy: boolean;
   order_type: ORDER_TYPE;
   stock_price: number;
   quantity: number;
   time_stamp: Date;
-  is_deleted: boolean;
+  is_deleted?: boolean;
 }
 
 // Order is IStockTransaction

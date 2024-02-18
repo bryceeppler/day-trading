@@ -41,22 +41,24 @@ describe("OrderBook", () => {
     expect(remainingQuantity).toBe(0);
   });
 
-  // it("matches partial buy order with remaining quantity", () => {
-  //   orderbook.sellOrders = [
-  //     { _id: 1, stock_id: "1", stock_price: 10, quantity: 3 },
-  //   ];
-  //   const order = {
-  //     is_buy: true,
-  //     stock_id: "1",
-  //     stock_price: 10,
-  //     quantity: 5,
-  //   };
-  //   const { matched, remainingQuantity } = orderbook.matchOrder(order);
+  it("matches partial buy order with remaining quantity", () => {
+    orderbook.sellOrders = [
+      { is_buy:false, stock_id: "1", stock_price: 10, quantity: 3, order_type: OrderType.LIMIT, time_stamp: new Date()},
+    ];
+    const order = {
+      is_buy: true,
+      stock_id: "1",
+      stock_price: 10,
+      quantity: 5,
+      order_type: OrderType.LIMIT,
+      time_stamp: new Date(),
+    };
+    const [ matched, remainingQuantity ] = orderbook.matchOrder(order);
 
-  //   expect(orderbook.matchedOrders.length).toBe(1);
-  //   expect(matched.length).toBe(1);
-  //   expect(remainingQuantity).toBe(2);
-  // });
+    expect(orderbook.matchedOrders.length).toBe(1);
+    expect(matched.length).toBe(1);
+    expect(remainingQuantity).toBe(2);
+  });
 
   // it("matches partial sell order with remaining quantity", () => {
   //   orderbook.buyOrders = [

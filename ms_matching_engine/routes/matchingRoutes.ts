@@ -12,6 +12,7 @@ export default function(orderBook: OrderBook): Router {
   
   router.get('/healthcheck', orderController.healthCheck);
   router.post('/receiveOrder', orderController.receiveOrder);
+  router.post('/cancelOrder', orderController.cancelOrder);
 
   return router;
 }

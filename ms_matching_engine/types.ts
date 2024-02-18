@@ -14,13 +14,27 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED",
 }
 
+// we need a type that doesn't extend any mongoose types
+export interface IStockTransaction {
+  stock_id: string;
+  wallet_tx_id?: string;
+  portfolio_id?: string;
+  order_status?: OrderStatus;
+  is_buy: boolean;
+  order_type: OrderType;
+  stock_price: number;
+  quantity: number;
+  time_stamp: Date;
+  is_deleted?: boolean;
+}
+
 export interface StockTransactionDocument extends Document {
   stock_id: string;
   wallet_tx_id?: string;
   portfolio_id?: string;
-  order_status: ORDER_STATUS;
+  order_status?: OrderStatus;
   is_buy: boolean;
-  order_type: ORDER_TYPE;
+  order_type: OrderType;
   stock_price: number;
   quantity: number;
   time_stamp: Date;
@@ -28,8 +42,7 @@ export interface StockTransactionDocument extends Document {
 }
 
 // Order is IStockTransaction
-export interface Order extends StockTransactionDocument {
-}
+export type Order = IStockTransaction;
 
 export interface MatchedOrder {
   buyOrder: Order;

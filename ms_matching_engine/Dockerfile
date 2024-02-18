@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16-alpine as build
 
 # Set the workdir in the container
 WORKDIR /app
@@ -11,8 +11,19 @@ RUN npm install
 # Copy remaining files
 COPY . .
 
-# Make port available to the world outside this container
+RUN npm run build
+
+# Now we can run the ts files
+FROM node:16-alpine as run
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+
+COPY --from=build /app/dist ./dist
+
 EXPOSE 3000
 
-# Should be used in production
-# CMD ["npm", "start"]
+CMD ["npm", "start"]

@@ -45,7 +45,7 @@ services:
     ports:
       - "8004:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
     depends_on:

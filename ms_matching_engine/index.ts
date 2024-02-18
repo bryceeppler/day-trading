@@ -1,5 +1,5 @@
 import express from "express";
-import connectDB from "./config/database";
+import connectDB from "./services/database";
 import matchingRoutes from './routes/matchingRoutes';
 import OrderBook from './services/orderbook';
 import {StockTransaction} from './models/stockTransactionModel';

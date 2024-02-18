@@ -10,6 +10,9 @@ interface Routes {
   cancelOrder: (req: Request, res: Response) => Promise<void>;
 }
 
+interface CancelOrderRequest {
+  stock_tx_id: string;
+}
 
 export default (orderBook: OrderBook): Routes => {
   return {
@@ -50,8 +53,8 @@ export default (orderBook: OrderBook): Routes => {
 
     cancelOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const order: Order = req.body; 
-        const result = orderBook.cancelOrder(order);
+        const orderToCancel: CancelOrderRequest = req.body.stock_tx_id; 
+        const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
         if (result) {
           res.status(200).send("Order cancelled");
         } else {

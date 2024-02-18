@@ -1,4 +1,4 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model } from "mongoose";
 // Document and Model are mongodb types
 // Document represents literally a mongo docoument
 // Model represents the schema of a collection
@@ -45,7 +45,7 @@ export interface StockTransactionDocument extends Document {
 }
 
 // Order is the incoming order from order creation
-// no timestamp, since I create it 
+// no timestamp, since I create it
 export type Order = {
   wallet_tx_id: string;
   stock_tx_id: string;
@@ -55,12 +55,11 @@ export type Order = {
   price: number;
   order_type: string;
   is_buy: boolean;
-}
+};
 
 export interface OrderBookOrder extends Order {
   timestamp: Date;
 }
-
 
 export interface MatchedOrder {
   buyOrder: OrderBookOrder;
@@ -70,9 +69,8 @@ export interface MatchedOrder {
   timestamp: Date;
 }
 
-
-export interface StockTransactionModel extends Model<StockTransactionDocument> {}
-
+export interface StockTransactionModel
+  extends Model<StockTransactionDocument> {}
 
 export interface IOrderBook {
   buyOrders: OrderBookOrder[];
@@ -82,14 +80,18 @@ export interface IOrderBook {
   cancelledOrders: OrderBookOrder[];
   matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number];
   resortOrders(): void;
-  removeOrder(order: Order): OrderBookOrder | null;
+  removeOrder(stockTxId: string): OrderBookOrder | null;
   matchOrder(order: Order): [MatchedOrder[], number];
   checkForExpiredOrders(): void;
-  createMatchedOrder(order:OrderBookOrder, matchAgainst:Order, quantity:number): MatchedOrder;
+  createMatchedOrder(
+    order: OrderBookOrder,
+    matchAgainst: Order,
+    quantity: number
+  ): MatchedOrder;
   findMatches(order: OrderBookOrder): [MatchedOrder[], number];
-   isMatch(order: Order, matchAgainst: Order): boolean;
-  removeOrderFromQueue(order:Order, orderQueue:Order[]): Order | null;
-  cancelOrder(order:Order): Order | null;
+  isMatch(order: OrderBookOrder, matchAgainst: OrderBookOrder): boolean;
+  removeOrderFromQueue(stockTxId: string, orderQueue: Order[]): Order | null;
+  cancelOrder(stockTxId: string): Order | null;
   insertMatchedOrders(matchedOrders: MatchedOrder[]): void;
   initializeOrderBook(): Promise<void>;
   loadInProgressOrders(): Promise<void>;

@@ -23,7 +23,7 @@ describe("Cancel Order Tests", () => {
     };
     orderbook.buyOrders.push(order);
 
-    const result = orderbook.cancelOrder(order);
+    const result = orderbook.cancelOrder("1");
 
     expect(result).toBe(order);
     expect(orderbook.buyOrders.length).toBe(0);
@@ -43,23 +43,19 @@ describe("Cancel Order Tests", () => {
       timestamp: new Date(),
     };
 
-    const orderToCancel = {
-      user_id: "2",
-      wallet_tx_id: "2",
-      stock_tx_id: "2",
-      stock_id: "2",
-      quantity: 5,
-      price: 10,
-      is_buy: true,
-      order_type: OrderType.LIMIT,
-      timestamp: new Date(),
-    };
     orderbook.buyOrders.push(orderInBook);
 
-    const result = orderbook.cancelOrder(orderToCancel);
+    const result = orderbook.cancelOrder("2");
 
     expect(result).toBe(null);
     expect(orderbook.buyOrders.length).toBe(1);
     expect(orderbook.cancelledOrders.length).toBe(0);
   });
+
+  it("should return null if the queues are empty", () => {
+    const result = orderbook.cancelOrder("1");
+
+    expect(result).toBe(null);
+  }
+  );
 });

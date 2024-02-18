@@ -25,13 +25,8 @@ export interface IStockTransaction extends Document {
   is_deleted: boolean;
 }
 
-export interface Order {
-  _id?: number;
-  stock_id: string;
-  stock_price: number;
-  quantity: number;
-  is_buy: boolean;
-  type: OrderType;
+// Order is IStockTransaction
+export interface Order extends IStockTransaction {
 }
 
 export interface MatchedOrder {

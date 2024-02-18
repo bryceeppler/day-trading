@@ -1,4 +1,5 @@
 import { Document, Model } from 'mongoose';
+// Document and Model are mongodb types
 
 export enum OrderType {
   LIMIT = "LIMIT",

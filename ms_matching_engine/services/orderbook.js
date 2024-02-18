@@ -9,6 +9,30 @@ module.exports = class OrderBook {
     this.expiredOrders = [];
     // this.init();
   }
+  matchMarketOrder(newOrder) {
+    const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
+    let remainingQty = newOrder.quantity;
+
+    for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
+      const matchAgainst = orderQueue[i];
+      const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
+      remainingQty -= matchedQuantity;
+      matchAgainst.quantity -= matchedQuantity;
+
+      this.matchedOrders.push(this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity));
+
+      if (matchAgainst.quantity === 0) {
+        orderQueue.splice(i, 1);
+        i--; 
+      }
+    }
+
+    if (remainingQty > 0) {
+      // What do we do with a partially filled market order?
+    }
+
+    return this.matchedOrders;
+  }
 
   resort() {
     this.buyOrders.sort((a, b) => a.stock_price - b.stock_price);
@@ -81,8 +105,6 @@ module.exports = class OrderBook {
     }
   }
 
-  matchMarketOrder(order) {
-  }
 
   matchOrder(newOrder) {
     this.resortOrders();

@@ -13,7 +13,7 @@ module.exports = class OrderBook {
   /**
    * Match a market order against the orderbook and return the matched orders
    */
-  matchMarketOrder(newOrder) {
+   matchMarketOrder(newOrder) {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
 
@@ -24,9 +24,7 @@ module.exports = class OrderBook {
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
-      this.matchedOrders.push(
-        this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity)
-      );
+      this.insertMatchedOrders(newOrder, matchAgainst, matchedQuantity);
 
       if (matchAgainst.quantity === 0) {
         orderQueue.splice(i, 1); // remove fully matched order from the orderbook
@@ -41,7 +39,11 @@ module.exports = class OrderBook {
     return this.matchedOrders;
   }
 
-  resort() {
+  insertMatchedOrders(matchedOrders) {
+    this.matchedOrders.push(...matchedOrders);
+  }
+
+  resortOrders() {
     this.buyOrders.sort((a, b) => a.stock_price - b.stock_price);
     this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
   }
@@ -85,6 +87,11 @@ module.exports = class OrderBook {
    * Given a pair of matched orders, create a new matched order object
    */
   createMatchedOrder(order, matchAgainst, quantity) {
+    if (quantity === 0 || !order || !matchAgainst) {
+      console.log("create matched order with no order???")
+    }
+    console.log("creating matched order")
+    console.log("matchAgainst:", matchAgainst)
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
       sellOrder: order.is_buy ? matchAgainst : order,
@@ -99,8 +106,8 @@ module.exports = class OrderBook {
    */
   findMatches(order) {
     const matched = [];
-    const remainingQty = order.quantity;
-    const orderQueue = order.is_buy ? this.orders.sell : this.orders.buy;
+    let remainingQty = order.quantity;
+    const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
 
     orderQueue.forEach((matchAgainst, i) => {
       if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) return;
@@ -115,7 +122,7 @@ module.exports = class OrderBook {
       if (matchAgainst.quantity === 0) orderQueue.splice(i, 1); // Remove fully matched orders
     });
 
-    return matched;
+    return [ matched, remainingQty ];
   }
   isMatch(order, matchAgainst) {
     return order.is_buy
@@ -128,7 +135,7 @@ module.exports = class OrderBook {
    */
   handlePartialOrder(order, remainingQty) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
-      this.insertOrder({ ...order, quantity: remainingQty });
+      this.insertToOrderBook({ ...order, quantity: remainingQty });
     }
   }
 
@@ -148,13 +155,17 @@ module.exports = class OrderBook {
     if (newOrder.type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {
+      console.log("Matching limit order")
       return this.matchLimitOrder(newOrder);
     }
   }
 
   matchLimitOrder(newOrder) {
-    const matchedOrders = this.findMatches(newOrder);
+    const [matchedOrders, remainingQty] = this.findMatches(newOrder);
+    console.log("not test")
+    console.log(matchedOrders, remainingQty)
     this.handlePartialOrder(newOrder, remainingQty);
+    this.insertMatchedOrders(matchedOrders);
     return matchedOrders;
   }
 
@@ -174,18 +185,19 @@ module.exports = class OrderBook {
   /**
    * Insert a new order into the orderbook and resort
    */
-  insertOrder(order) {
+  insertToOrderBook(order) {
     // if (order.order_type === "LIMIT") {
     if (order.is_buy) {
       this.buyOrders.push(order);
     } else {
       this.sellOrders.push(order);
     }
-    this.resort();
+    this.resortOrders();
     // } else {
     //   this.matchMarketOrder(order);
     // }
   }
+
 
   async sendOrdersToOrderExecutionService(
     matchedOrders,

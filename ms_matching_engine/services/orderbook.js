@@ -46,8 +46,8 @@ module.exports = class OrderBook {
     this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
   }
 
-  async init() {
-    await this.loadOrders();
+  async initializeOrderBook() {
+    await this.loadInProgressOrders();
     console.log(
       "Orderbook initialized with ",
       this.buyOrders.length,
@@ -60,16 +60,17 @@ module.exports = class OrderBook {
   /**
    * Only run on init, loads all in progress orders from the database.
    */
-  async loadOrders() {
-    let allBuyOrders = await this.stockTransactionModel
-      .find({ order_type: "LIMIT", is_buy: true, order_status: "IN_PROGRESS" })
-      .sort({ stock_price: -1, time_stamp: 1 });
-    let allSellOrders = await this.stockTransactionModel
-      .find({ order_type: "LIMIT", is_buy: false, order_status: "IN_PROGRESS" })
-      .sort({ stock_price: 1, time_stamp: 1 });
+  async loadInProgressOrders() {
+    this.buyOrders = await this.fetchOrdersByType(true); // isBuy = true
+    this.sellOrders = await this.fetchOrdersByType(false); // isBuy = false
+  }
 
-    this.buyOrders = allBuyOrders;
-    this.sellOrders = allSellOrders;
+  async fetchOrdersByType(isBuy) {
+    return await this.stockTransactionModel.find({
+      order_type: "LIMIT",
+      is_buy: isBuy,
+      order_status: "IN_PROGRESS"
+    }).sort({ stock_price: isBuy ? -1 : 1, time_stamp: 1 });
   }
 
   /**
@@ -147,10 +148,14 @@ module.exports = class OrderBook {
     if (newOrder.type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {
-      const matched = this.findMatches(newOrder);
-      this.handlePartialOrder(newOrder, remainingQty);
-      return matched;
+      return this.matchLimitOrder(newOrder);
     }
+  }
+
+  matchLimitOrder(newOrder) {
+    const matched = this.findMatches(newOrder);
+    this.handlePartialOrder(newOrder, remainingQty);
+    return matched;
   }
 
   /**

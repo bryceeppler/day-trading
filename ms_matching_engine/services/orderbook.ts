@@ -126,6 +126,24 @@ export default class OrderBook implements IOrderBook {
    */
   checkForExpiredOrders() {
     console.log("checking for expired orders");
+    const now = new Date();
+    // 15 minutes
+    for (let i = 0; i < this.buyOrders.length; i++) {
+      if (now.getTime() - this.buyOrders[i].timestamp.getTime() > 60 * 15 * 1000) {
+        this.expiredOrders.push(this.buyOrders.splice(i, 1)[0]);
+        i--;
+      }
+    }
+
+    for (let i = 0; i < this.sellOrders.length; i++) {
+      if (now.getTime() - this.sellOrders[i].timestamp.getTime() > 60 * 15 * 1000) {
+        this.expiredOrders.push(this.sellOrders.splice(i, 1)[0]);
+        i--;
+      }
+    }
+    if (this.expiredOrders.length > 0) {
+      this.flushOrders();
+    }
     return;
   }
 

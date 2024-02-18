@@ -1,7 +1,6 @@
 import {
   Order,
   MatchedOrder,
-  StockTransaction,
   StockTransactionModel,
 } from "../types";
 
@@ -27,7 +26,7 @@ module.exports = class OrderBook {
   /**
    * Match a market order against the orderbook and return the matched orders
    */
-  matchMarketOrder(newOrder) {
+  matchMarketOrder(newOrder: Order) {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
 
@@ -38,7 +37,9 @@ module.exports = class OrderBook {
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
-      this.insertMatchedOrders(newOrder, matchAgainst, matchedQuantity);
+      this.insertMatchedOrder(
+        this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity)
+      );
 
       if (matchAgainst.quantity === 0) {
         orderQueue.splice(i, 1); // remove fully matched order from the orderbook
@@ -53,8 +54,8 @@ module.exports = class OrderBook {
     return this.matchedOrders;
   }
 
-  insertMatchedOrders(matchedOrders) {
-    this.matchedOrders.push(...matchedOrders);
+  insertMatchedOrder(matchedOrder: MatchedOrder) {
+    this.matchedOrders.push(matchedOrder);
   }
 
   resortOrders() {
@@ -81,7 +82,7 @@ module.exports = class OrderBook {
     this.sellOrders = await this.fetchOrdersByType(false); // isBuy = false
   }
 
-  async fetchOrdersByType(isBuy) {
+  async fetchOrdersByType(isBuy: boolean) {
     return await this.stockTransactionModel
       .find({
         order_type: "LIMIT",
@@ -102,7 +103,7 @@ module.exports = class OrderBook {
   /**
    * Given a pair of matched orders, create a new matched order object
    */
-  createMatchedOrder(order, matchAgainst, quantity) {
+  createMatchedOrder(order:Order, matchAgainst:Order, quantity:number) {
     if (quantity === 0 || !order || !matchAgainst) {
       console.log("create matched order with no order???");
     }
@@ -120,8 +121,8 @@ module.exports = class OrderBook {
   /**
    * Find all matches for a given order and return the matched orders and the remaining quantity
    */
-  findMatches(order) {
-    const matched = [];
+  findMatches(order: Order) {
+    const matched: MatchedOrder[] = [];
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
 
@@ -149,7 +150,7 @@ module.exports = class OrderBook {
   /**
    * Handle remaining quantity of a partially filled order by pushing it into the orderbook
    */
-  handlePartialOrder(order, remainingQty) {
+  handlePartialOrder(order:Order, remainingQty:number) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
       this.insertToOrderBook({ ...order, quantity: remainingQty });
     }
@@ -159,14 +160,14 @@ module.exports = class OrderBook {
    * Given a matched order, remove it from the appropriate orderbook if
    * it is found
    */
-  removeOrder(order) {
+  removeOrder(order:Order) {
     pass;
   }
 
   /**
    * Entry point for matching, calls the proper function based on limit or market order
    */
-  matchOrder(newOrder) {
+  matchOrder(newOrder:Order) {
     this.resortOrders();
     if (newOrder.type === "MARKET") {
       return this.matchMarketOrder(newOrder);
@@ -176,12 +177,12 @@ module.exports = class OrderBook {
     }
   }
 
-  matchLimitOrder(newOrder) {
+  matchLimitOrder(newOrder:Order) {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
     console.log("not test");
     console.log(matchedOrders, remainingQty);
     this.handlePartialOrder(newOrder, remainingQty);
-    this.insertMatchedOrders(matchedOrders);
+    this.insertMatchedOrder(matchedOrders);
     return matchedOrders;
   }
 
@@ -201,7 +202,7 @@ module.exports = class OrderBook {
   /**
    * Insert a new order into the orderbook and resort
    */
-  insertToOrderBook(order) {
+  insertToOrderBook(order:Order) {
     // if (order.order_type === "LIMIT") {
     if (order.is_buy) {
       this.buyOrders.push(order);
@@ -215,10 +216,9 @@ module.exports = class OrderBook {
   }
 
   async sendOrdersToOrderExecutionService(
-    matchedOrders,
-    cancelledOrders,
-    expiredOrders
-  ) {
+    matchedOrders:MatchedOrder[],
+    cancelledOrders:MatchedOrder[],
+    expiredOrders:MatchedOrder[]) {
     console.log("Sending orders to order execution service");
 
     // empty the arrays

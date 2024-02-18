@@ -7,7 +7,7 @@ import {
   IOrderBook,
 } from "../types";
 
-describe("OrderBook", () => {
+describe("OrderBook matchOrder tests", () => {
   let orderbook: IOrderBook;
 
   beforeEach(() => {

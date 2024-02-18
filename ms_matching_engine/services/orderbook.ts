@@ -62,7 +62,7 @@ export default class OrderBook implements IOrderBook {
   }
 
   resortOrders() {
-    this.buyOrders.sort((a, b) => a.stock_price - b.stock_price);
+    this.buyOrders.sort((a, b) => b.stock_price - a.stock_price);
     this.sellOrders.sort((a, b) => a.stock_price - b.stock_price);
   }
 
@@ -176,6 +176,7 @@ export default class OrderBook implements IOrderBook {
    */
   matchOrder(newOrder:Order): [MatchedOrder[], number]{
     this.resortOrders();
+    console.log("buyOrders:", this.buyOrders);
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {

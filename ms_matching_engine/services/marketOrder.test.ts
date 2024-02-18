@@ -10,9 +10,11 @@ describe("OrderBook Market Order Tests", () => {
     });
   
     it("execute a sell market order at the best available buy price", () => {
+    const olderTimeStamp = new Date(new Date().getTime() - 1000); // -1000 milliseconds
+    const newerTimeStamp = new Date();
       orderbook.buyOrders = [
-        { stock_id: "1", stock_price: 19, quantity: 10, is_buy: true, order_type: OrderType.LIMIT, time_stamp: new Date() },
-        { stock_id: "1", stock_price: 20, quantity: 10, is_buy: true, order_type: OrderType.LIMIT, time_stamp: new Date() }
+        { stock_id: "1", stock_price: 19, quantity: 10, is_buy: true, order_type: OrderType.LIMIT, time_stamp: olderTimeStamp },
+        { stock_id: "1", stock_price: 20, quantity: 10, is_buy: true, order_type: OrderType.LIMIT, time_stamp: newerTimeStamp }
       ];
       const marketOrder: Order = {
         stock_id: "1",

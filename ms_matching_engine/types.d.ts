@@ -1,4 +1,5 @@
-import { Order } from "./types.d";
+import { Document, Model } from 'mongoose';
+
 export enum OrderType {
   LIMIT = "LIMIT",
   MARKET = "MARKET",
@@ -10,7 +11,7 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED",
 }
 
-export interface StockTransaction {
+export interface IStockTransaction extends Document {
   stock_id: string;
   wallet_tx_id: string;
   portfolio_id: string;
@@ -40,6 +41,5 @@ export interface MatchedOrder {
   timestamp: Date;
 }
 
-export interface StockTransactionModel {
-  find(query: object): Promise<Order[]>;
-}
+
+export interface IStockTransactionModel extends Model<IStockTransaction> {}

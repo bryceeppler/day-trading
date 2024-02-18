@@ -1,20 +1,23 @@
+import { StockTransaction } from './../models/stockTransactionModel';
 import OrderBook from './orderbook';
 import {
   Order,
   MatchedOrder,
-  IOrderBook
+  OrderType,
+  IOrderBook,
 } from "../types";
 
 describe("OrderBook", () => {
-  let orderbook;
+  let orderbook: IOrderBook;
 
   beforeEach(() => {
-    orderbook = new OrderBook();
+    orderbook = new OrderBook(StockTransaction);
   });
 
   it("matches simple full buy order", () => {
     orderbook.sellOrders = [
-      { _id: 1, is_buy: false, stock_id: "1", stock_price: 10, quantity: 5, type: "LIMIT" },
+      {is_buy: false, stock_id: "1", stock_price: 10, quantity: 5, order_type: OrderType.LIMIT, time_stamp: new Date()},
+    
     ];
     const order = {
       _id:2,
@@ -22,13 +25,16 @@ describe("OrderBook", () => {
       stock_id: "1",
       stock_price: 10,
       quantity: 5,
-      type: "LIMIT",
+      order_type: OrderType.LIMIT,
+      time_stamp: new Date(),
+
     };
     const [ matched, remainingQuantity ] = orderbook.matchOrder(order);
     
 
     expect(orderbook.matchedOrders.length).toBe(1);
-    expect(matched.length).toBe(1);
+    expect(matched.buyOrder).toBe(order);
+    expect(matched.sellOrder).toBe(orderbook.sellOrders[0]);
     expect(remainingQuantity).toBe(0);
   });
 

@@ -7,7 +7,7 @@ import {
 import { StockTransaction } from "../models/stockTransactionModel";
 
 // const axios = require('axios');
-module.exports = class OrderBook implements IOrderBook {
+export default class OrderBook implements IOrderBook {
   stockTransactionModel: typeof StockTransaction;
   buyOrders: Order[] = [];
   sellOrders: Order[] = [];

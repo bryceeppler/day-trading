@@ -124,16 +124,11 @@ export default class OrderBook implements IOrderBook {
     const matched: MatchedOrder[] = [];
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
-    console.log(`${orderQueue.length} orders in queue`)
 
     for (let i = 0; i < orderQueue.length; i++) {
       const matchAgainst = orderQueue[i];
-      console.log(`ITERATION NUMBER ${i}`)
-      console.log(`Remaining quantity: ${remainingQty}`)
       if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) {
-        console.log("No match")
-        
-      
+        break; 
       };
 
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);

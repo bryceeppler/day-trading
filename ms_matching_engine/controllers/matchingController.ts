@@ -1,8 +1,17 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { Request, Response } from 'express';
 
-module.exports = (orderBook) => {
+import OrderBook from '../services/orderbook';
+import { Order, MatchedOrder } from '../types';
+
+interface Routes {
+  healthCheck: (req: Request, res: Response) => Promise<void>;
+  receiveOrder: (req: Request, res: Response) => Promise<void>;
+}
+
+export default (orderBook: OrderBook): Routes => {
   return {
-    healthCheck: async (req, res) => {
+    healthCheck: async (req: Request, res: Response): Promise<void> => {
       try {
         const connectionState = mongoose.connection.readyState;
         // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
@@ -17,28 +26,12 @@ module.exports = (orderBook) => {
       }
     },
 
-    receiveOrder: async (req, res) => {
+    receiveOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const order = req.body; // TODO: validate order
+        const order: Order = req.body; // TODO: validate order
         res.status(200).send("Order received");
 
-        const matched_orders = orderBook.matchOrder(order);
-
-        if (matched_orders.length > 0) {
-          // send matched order to order execution service
-      
-        } else {
-          if (is_limit_order) {
-            // add to orderBook
-          } else {
-            // notify order execution service
-          }
-        }
-        // orderBook.insertOrder(order);
-  
-        // // Order received and in orderBook, return 200 to order creation service
-
-        // orderBook.matchOrders();        // run matching algorithm
+        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(order);
         // orderBook.flushOrders();        // send expired/matched orders to order execution service
     
       } catch (error) {

@@ -1,23 +1,22 @@
-const express = require("express");
-const app = express();
-const connectDB = require("./config/database");
-const matchingRoutes = require('./routes/matchingRoutes');
-const OrderBook = require('./services/orderbook');
+import express from "express";
+import connectDB from "./config/database";
+import matchingRoutes from './routes/matchingRoutes';
+import OrderBook from './services/orderbook';
+import {StockTransaction} from './models/stockTransactionModel';
 
 // Having issues importing from the shared volume
 // const StockTransaction = require('../shared/models/stockTransactionModel');
 
-const StockTransaction = require('./models/stockTransactionModel');
-
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);
-orderBook.init();
+orderBook.initializeOrderBook();
 
 console.log('Connecting to database...');
 connectDB();
 
+const app = express();
 app.use(express.json());
-app.use('/', matchingRoutes(orderBook)); // Pass the orderBook instance
+app.use('/', matchingRoutes(orderBook));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

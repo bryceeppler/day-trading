@@ -13,6 +13,10 @@ COPY . .
 
 RUN npm run build
 
+# debugging
+RUN ls -la /app
+
+
 # Now we can run the ts files
 FROM node:16-alpine as run
 

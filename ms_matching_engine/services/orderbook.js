@@ -81,11 +81,18 @@ module.exports = class OrderBook {
     }
   }
 
+  matchMarketOrder(order) {
+  }
+
   matchOrder(newOrder) {
     this.resortOrders();
-    const { matched } = this.findMatches(newOrder);
-    this.handlePartialOrder(newOrder, remainingQty);
-    return matched;
+    if (newOrder.type === "MARKET") {
+      return this.matchMarketOrder(newOrder);
+    } else {
+      const { matched } = this.findMatches(newOrder);
+      this.handlePartialOrder(newOrder, remainingQty);
+      return matched;
+    }
   }
 
   flushOrders() {

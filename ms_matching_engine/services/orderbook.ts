@@ -1,19 +1,20 @@
 import {
   Order,
   MatchedOrder,
-  StockTransactionModel,
 } from "../types";
+
+import { StockTransaction } from "../models/stockTransactionModel";
 
 // const axios = require('axios');
 module.exports = class OrderBook {
-  private stockTransactionModel: StockTransactionModel;
+  private stockTransactionModel: typeof StockTransaction;
   private buyOrders: Order[] = [];
   private sellOrders: Order[] = [];
   private matchedOrders: MatchedOrder[] = [];
   private cancelledOrders: Order[] = [];
   private expiredOrders: Order[] = [];
 
-  constructor(stockTransactionModel: StockTransactionModel) {
+  constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
     this.buyOrders = [];
     this.sellOrders = [];
@@ -37,8 +38,9 @@ module.exports = class OrderBook {
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
-      this.insertMatchedOrder(
+      this.insertMatchedOrders([
         this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity)
+      ]
       );
 
       if (matchAgainst.quantity === 0) {
@@ -54,8 +56,8 @@ module.exports = class OrderBook {
     return this.matchedOrders;
   }
 
-  insertMatchedOrder(matchedOrder: MatchedOrder) {
-    this.matchedOrders.push(matchedOrder);
+  insertMatchedOrders(matchedOrders: MatchedOrder[]) {
+    this.matchedOrders.push(...matchedOrders);
   }
 
   resortOrders() {
@@ -121,7 +123,7 @@ module.exports = class OrderBook {
   /**
    * Find all matches for a given order and return the matched orders and the remaining quantity
    */
-  findMatches(order: Order) {
+  findMatches(order: Order): [MatchedOrder[], number]{
     const matched: MatchedOrder[] = [];
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
@@ -141,7 +143,7 @@ module.exports = class OrderBook {
 
     return [matched, remainingQty];
   }
-  isMatch(order, matchAgainst) {
+  isMatch(order:Order, matchAgainst:Order) {
     return order.is_buy
       ? matchAgainst.stock_price <= order.stock_price
       : matchAgainst.stock_price >= order.stock_price;
@@ -152,7 +154,8 @@ module.exports = class OrderBook {
    */
   handlePartialOrder(order:Order, remainingQty:number) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
-      this.insertToOrderBook({ ...order, quantity: remainingQty });
+      order.quantity = remainingQty;
+      this.insertToOrderBook(order);
     }
   }
 
@@ -161,7 +164,7 @@ module.exports = class OrderBook {
    * it is found
    */
   removeOrder(order:Order) {
-    pass;
+    //
   }
 
   /**
@@ -169,7 +172,7 @@ module.exports = class OrderBook {
    */
   matchOrder(newOrder:Order) {
     this.resortOrders();
-    if (newOrder.type === "MARKET") {
+    if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
     } else {
       console.log("Matching limit order");
@@ -179,10 +182,8 @@ module.exports = class OrderBook {
 
   matchLimitOrder(newOrder:Order) {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
-    console.log("not test");
-    console.log(matchedOrders, remainingQty);
     this.handlePartialOrder(newOrder, remainingQty);
-    this.insertMatchedOrder(matchedOrders);
+    this.insertMatchedOrders(matchedOrders);
     return matchedOrders;
   }
 
@@ -217,8 +218,8 @@ module.exports = class OrderBook {
 
   async sendOrdersToOrderExecutionService(
     matchedOrders:MatchedOrder[],
-    cancelledOrders:MatchedOrder[],
-    expiredOrders:MatchedOrder[]) {
+    cancelledOrders:Order[],
+    expiredOrders:Order[]) {
     console.log("Sending orders to order execution service");
 
     // empty the arrays

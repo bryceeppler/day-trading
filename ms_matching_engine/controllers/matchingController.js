@@ -22,9 +22,9 @@ module.exports = (orderBook) => {
         const order = req.body; // TODO: validate order
         res.status(200).send("Order received");
 
-        const match_found = orderBook.matchOrder(order);
+        const matched_orders = orderBook.matchOrder(order);
 
-        if (match_found) {
+        if (matched_orders.length > 0) {
           // send matched order to order execution service
       
         } else {

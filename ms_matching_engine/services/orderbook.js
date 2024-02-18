@@ -43,62 +43,49 @@ module.exports = class OrderBook {
     return
   }
 
-  matchOrder(order) {
-    const matchQueue = order.is_buy ? this.sellOrders : this.buyOrders;
-    this.resort();
+  createMatchedOrder(order, matchAgainst, quantity) {
+    return {
+      buyOrder: order.is_buy ? order : matchAgainst,
+      sellOrder: order.is_buy ? matchAgainst : order,
+      quantity,
+      matchPrice: matchAgainst.stock_price,
+      timestamp: new Date(),
+    };
+  }
 
-    const remainingQty = order.quantity;
+  findMatches(order) {
+    const matched = [];
+    let remainingQty = order.quantity;
+    const orderQueue = order.is_buy ? this.orders.sell : this.orders.buy;
 
-    for (let i = 0; i < matchQueue.length && remainingQty; i++) {
-      const matchAgainst = matchQueue[i];
+    orderQueue.forEach((matchAgainst, i) => {
+      if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) return;
 
-      if (
-        (order.is_buy && matchAgainst.stock_price > order.stock_price) ||
-        (!order.is_buy && matchAgainst.stock_price < order.stock_price)
-      ) {
-        break;
-      }
-
-      const matchedQuantity = Math.min(
-        remainingQty,
-        matchAgainst.quantity
-      );
+      const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
       remainingQty -= matchedQuantity;
       matchAgainst.quantity -= matchedQuantity;
 
-      const matchedOrder = {
-        buyOrder: order.is_buy ? order : matchAgainst,
-        sellOrder: order.is_buy ? matchAgainst : order,
-        quantity: matchedQuantity,
-        matchPrice: matchAgainst.stock_price,
-        timestamp: new Date(), // might not need this idk
-      };
+      matched.push(this.createMatchedOrder(order, matchAgainst, matchedQuantity));
+      if (matchAgainst.quantity === 0) orderQueue.splice(i, 1); // Remove fully matched orders
+    });
 
-      this.matchedOrders.push(matchedOrder);
+    return { matched, remainingQty };
+  }
+  isMatch(order, matchAgainst) {
+    return order.is_buy ? matchAgainst.stock_price <= order.stock_price : matchAgainst.stock_price >= order.stock_price;
+  }
 
-      // If fully matched remove from order book
-      if (matchAgainst.quantity === 0) {
-        matchAgainst.splice(i, 1);
-        i--; // to account for the removed order
-      }
-    }
-
-    // if theres anything left, the order is partially filled or not filled at all
-    // and it can be put back into the order book as a new order
+  handlePartialOrder(order, remainingQty) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
-        // 
-      const partialOrder = { ...order, quantity: remainingQty };
-      if (order.is_buy) {
-        this.buyOrders.push(partialOrder);
-      } else {
-        this.sellOrders.push(partialOrder);
-      }
+      this.insertOrder({ ...order, quantity: remainingQty });
     }
+  }
 
-    return {
-      matched: this.matchedOrders,
-      remainingQty,
-    };
+  matchOrder(newOrder) {
+    this.resortOrders();
+    const { matched } = this.findMatches(newOrder);
+    this.handlePartialOrder(newOrder, remainingQty);
+    return matched;
   }
 
   flushOrders() {

@@ -63,7 +63,7 @@ export interface IOrderBook {
   expiredOrders: Order[];
 
   removeOrder(order: Order): void;
-  matchOrder(order: Order): MatchedOrder[];
+  matchOrder(order: Order): [MatchedOrder[], number];
   checkForExpiredOrders(): void;
   createMatchedOrder(order: Order, matchAgainst: Order, quantity: number): MatchedOrder;
   findMatches(order: Order): [MatchedOrder[], number];

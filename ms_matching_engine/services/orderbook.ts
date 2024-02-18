@@ -28,7 +28,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Match a market order against the orderbook and return the matched orders
    */
-  matchMarketOrder(newOrder: Order) {
+  matchMarketOrder(newOrder: Order): [MatchedOrder[], number]{
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
 
@@ -54,7 +54,7 @@ export default class OrderBook implements IOrderBook {
       // What do we do with a partially filled market order?
     }
 
-    return this.matchedOrders;
+    return [this.matchedOrders, remainingQty];
   }
 
   insertMatchedOrders(matchedOrders: MatchedOrder[]) {
@@ -171,7 +171,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Entry point for matching, calls the proper function based on limit or market order
    */
-  matchOrder(newOrder:Order): MatchedOrder[]{
+  matchOrder(newOrder:Order): [MatchedOrder[], number]{
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
       return this.matchMarketOrder(newOrder);
@@ -181,11 +181,11 @@ export default class OrderBook implements IOrderBook {
     }
   }
 
-  matchLimitOrder(newOrder:Order) {
+  matchLimitOrder(newOrder:Order): [MatchedOrder[], number]{
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
-    return matchedOrders;
+    return [matchedOrders, remainingQty];
   }
 
   /**

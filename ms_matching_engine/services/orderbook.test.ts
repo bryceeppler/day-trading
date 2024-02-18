@@ -33,8 +33,11 @@ describe("OrderBook", () => {
     
 
     expect(orderbook.matchedOrders.length).toBe(1);
-    expect(matched.buyOrder).toBe(order);
-    expect(matched.sellOrder).toBe(orderbook.sellOrders[0]);
+    expect(matched.length).toBe(1);
+    expect(matched[0].quantity).toBe(5);
+    expect(matched[0].buyOrder).toBe(order);
+    // fulfilled order should be removed from sellOrders
+    expect(orderbook.sellOrders.length).toBe(0);
     expect(remainingQuantity).toBe(0);
   });
 

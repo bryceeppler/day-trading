@@ -1,5 +1,5 @@
 import { STORAGE_ACCESS_TOKEN, STORAGE_REFRESH_TOKEN } from 'lib/config';
-import React, { createContext, ReactElement, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, ReactElement, ReactNode, useState } from 'react';
 
 export interface AuthorizationData {
   userType: string;

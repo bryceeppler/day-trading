@@ -1,6 +1,5 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styles from './Wallet.module.scss';
-import { UserContext } from 'context/userProfile';
 import Layout from 'Base';
 import useUsers from 'hooks/useUsers.hook';
 import WalletTransactions from 'components/WalletTransactions';

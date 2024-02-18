@@ -2,9 +2,7 @@ import React, { ReactElement } from 'react';
 import styles from './WalletTransactions.module.scss';
 import InfoCard from 'components/InfoCard';
 import Item from 'components/InfoCard/components/Item';
-import { ORDERS } from 'lib/dummyData';
 import { formatPrice } from 'lib/formatting';
-import classNames from 'classnames';
 import { WalletTransaction } from 'types/users.types';
 import { dateFormats, formatDate } from 'lib/date';
 

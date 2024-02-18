@@ -1,8 +1,4 @@
-import { AuthorizationContext } from 'context/auth';
-import { UserContext } from 'context/userProfile';
-import { REFRESH_TOKEN_INTERVAL } from 'lib/config';
-import { ReactElement, useCallback, useContext, useEffect, useRef } from 'react';
-import useLogin from 'action/useLogin';
+import { ReactElement } from 'react';
 
 interface FullWrapperProps {
   children: ReactElement;

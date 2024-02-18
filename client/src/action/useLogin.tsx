@@ -3,9 +3,7 @@ import { UserContext } from 'context/userProfile';
 import jwtDecode from 'jwt-decode';
 import { STORAGE_ACCESS_TOKEN, STORAGE_REFRESH_TOKEN, STORAGE_USER } from 'lib/config';
 import { useContext } from 'react';
-import { User } from 'types';
 import { UserLogin } from 'types/users.types';
-import useErrors from 'hooks/useErrors.hook';
 import { handleApiError } from 'lib/errors';
 
 export interface Tokens {

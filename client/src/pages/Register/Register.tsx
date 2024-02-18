@@ -1,7 +1,6 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import styles from './Register.module.scss';
 import useLogin from 'action/useLogin';
-import { UserContext } from 'context/userProfile';
 import useReactOperations from 'hooks/useReactOperations.hook';
 import TextField from 'components/TextField';
 import Button from 'components/Button';
@@ -25,8 +24,6 @@ function Register(): ReactElement {
   };
 
   const { navigateToLoginPage } = useReactOperations();
-
-  const userContext = useContext(UserContext);
 
   const { register } = useLogin();
   const localRegister = async () => {

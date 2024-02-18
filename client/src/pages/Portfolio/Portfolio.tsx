@@ -1,12 +1,11 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styles from './Portfolio.module.scss';
 import Layout from 'Base';
 import useUsers from 'hooks/useUsers.hook';
-import AddMoneyModal from 'components/AddMoneyModal';
 import Button from 'components/Button';
 import PlaceOrderModal from 'components/PlaceOrderModal';
 function Portfolio(): ReactElement {
-  const { fetchStockPortfolios, stockPortfolios } = useUsers();
+  const { fetchStockPortfolios /*stockPortfolios*/ } = useUsers();
   const [openPlaceOrder, setOpenPlaceOrder] = useState<boolean>(false);
 
   useEffect(() => {

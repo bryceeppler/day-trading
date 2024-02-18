@@ -1,20 +1,14 @@
 import React, { useContext, useState } from 'react';
 import styles from './Header.module.scss';
 import PortfolioIcon from 'images/portfolio.svg';
-import WatchListIcon from 'images/watchlist.svg';
 import TransactionIcon from 'images/transactions.svg';
 import { UserContext } from 'context/userProfile';
 import DownIcon from 'images/downChevron.svg';
-import SearchBar from 'components/SearchBar';
 import useReactOperations from 'hooks/useReactOperations.hook';
 import useLogin from 'action/useLogin';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
-interface HeaderProps {
-  setSearch?: React.Dispatch<React.SetStateAction<string>>;
-  signedIn?: boolean;
-}
-const Header = ({ signedIn, setSearch }: HeaderProps) => {
+const Header = () => {
   const [accountOpen, setAccountOpen] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);

@@ -1,5 +1,5 @@
 import { handleApiError } from 'lib/errors';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PlaceStockOrderParams, Stock, StockPortfolio, StockTransaction, WalletTransaction } from 'types/users.types';
 import { UserApi } from 'api';
 

@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import styles from './AddMoneyModal.module.scss';
-import CloseIcon from '@mui/icons-material/Close';
 import TextField from 'components/TextField';
 import Button from 'components/Button';
 import useUsers from 'hooks/useUsers.hook';

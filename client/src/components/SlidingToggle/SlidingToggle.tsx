@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './SlidingToggle.module.scss';
-import classNames from 'classnames';
 import Switch from 'react-switch';
 
 interface SlidingToggleProps {

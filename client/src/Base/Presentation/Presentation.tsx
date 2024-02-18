@@ -7,8 +7,6 @@ import AlertModal from 'components/AlertModal';
 export interface PresentationProps {
   children: React.ReactNode;
   openAlert?: boolean;
-
-  setSearch?: React.Dispatch<React.SetStateAction<string>>;
   alertTitle?: string;
   alertMessage?: string;
   onAlertClose?: () => void;
@@ -17,7 +15,7 @@ export interface PresentationProps {
 const Presentation = (props: PresentationProps): ReactElement => {
   return (
     <div className={styles.main}>
-      <Header setSearch={props.setSearch} />
+      <Header />
       <Wrapper content={props.children} />
 
       <AlertModal

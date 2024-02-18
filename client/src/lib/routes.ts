@@ -1,4 +1,4 @@
-import { baseAPIUrl, baseOrderCreationApi, baseTransactionManagerApi, baseUserApi } from './config';
+import { baseOrderCreationApi, baseTransactionManagerApi, baseUserApi } from './config';
 
 export const PLACE_STOCK_ORDER = `${baseOrderCreationApi}/placeStockOrder`;
 export const CANCEL_STOCK_ORDER = `${baseOrderCreationApi}/cancelStockTransaction`;

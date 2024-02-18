@@ -23,6 +23,14 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
+   * Check if an timestamp has expired
+   */
+  isExpired(timestamp: Date) {
+    const now = new Date();
+    return now.getTime() - timestamp.getTime() > 60 * 15 * 1000;
+  }
+
+  /**
    * Match a market order against the orderbook and return the matched orders
    */
   matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
@@ -31,6 +39,11 @@ export default class OrderBook implements IOrderBook {
 
     for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
       const matchAgainst = orderQueue[i];
+      if (this.isExpired(matchAgainst.timestamp)) {
+        this.expiredOrders.push(orderQueue.splice(i, 1)[0]);
+        i--;
+        continue;
+      }
       if (this.isMatch(newOrder, matchAgainst) === false) continue;
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
       remainingQty -= matchedQuantity;
@@ -174,6 +187,11 @@ export default class OrderBook implements IOrderBook {
 
     for (let i = 0; i < orderQueue.length; i++) {
       const matchAgainst = orderQueue[i];
+      if (this.isExpired(matchAgainst.timestamp)) {
+        this.expiredOrders.push(orderQueue.splice(i, 1)[0]);
+        i--;
+        continue;
+      }
       if (remainingQty <= 0 || !this.isMatch(order, matchAgainst)) {
         break;
       }
@@ -273,7 +291,7 @@ export default class OrderBook implements IOrderBook {
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,
-      this.expiredOrders
+      this.expiredOrders 
     );
   }
 

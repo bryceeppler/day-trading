@@ -174,11 +174,22 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
-   * Given a matched order, remove it from the appropriate orderbook if
-   * it is found
+   * Remove a given order from a given order queue
    */
-  removeOrder(order:Order) {
-    //
+  removeOrderFromQueue(order:Order, orderQueue:Order[]): Order | null {
+    for (let i = 0; i < orderQueue.length; i++) {
+      if (orderQueue[i] === order) {
+        return orderQueue.splice(i, 1)[0];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Given a order, remove it from the orderbook and return it
+   */
+  removeOrder(order:Order): Order | null{
+    return order.is_buy ? this.removeOrderFromQueue(order, this.buyOrders) : this.removeOrderFromQueue(order, this.sellOrders);
   }
 
   /**
@@ -254,5 +265,11 @@ export default class OrderBook implements IOrderBook {
     // } catch (error) {
     //     console.error("Error sending orders to order execution service:", error);
     // }
+  }
+
+  cancelOrder(order:Order): Order | null{
+    const cancelledOrder = this.removeOrder(order)
+    cancelledOrder && this.cancelledOrders.push(cancelledOrder);
+    return cancelledOrder;
   }
 };

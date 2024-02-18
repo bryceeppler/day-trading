@@ -7,6 +7,7 @@ import { Order, MatchedOrder } from '../types';
 interface Routes {
   healthCheck: (req: Request, res: Response) => Promise<void>;
   receiveOrder: (req: Request, res: Response) => Promise<void>;
+  cancelOrder: (req: Request, res: Response) => Promise<void>;
 }
 
 export default (orderBook: OrderBook): Routes => {
@@ -28,7 +29,7 @@ export default (orderBook: OrderBook): Routes => {
 
     receiveOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const order: Order = req.body; // TODO: validate order
+        const order: Order = req.body; 
         res.status(200).send("Order received");
 
         const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(order);
@@ -40,6 +41,21 @@ export default (orderBook: OrderBook): Routes => {
         res.status(500).send("Error processing order");
       }
     },
+
+    cancelOrder: async (req: Request, res: Response): Promise<void> => {
+      try {
+        const order: Order = req.body; 
+        const result = orderBook.cancelOrder(order);
+        if (result) {
+          res.status(200).send("Order cancelled");
+        } else {
+          res.status(404).send("Order not found");
+        }
+      } catch (error) {
+        console.error("Error cancelling order:", error);
+        res.status(500).send("Error cancelling order");
+      }
+    }
 
   };
 };

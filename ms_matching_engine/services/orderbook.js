@@ -153,9 +153,9 @@ module.exports = class OrderBook {
   }
 
   matchLimitOrder(newOrder) {
-    const matcherOrders = this.findMatches(newOrder);
+    const matchedOrders = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
-    return matcherOrders;
+    return matchedOrders;
   }
 
   /**

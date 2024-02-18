@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { StockTransactionDocument, StockTransactionModel, OrderStatus, OrderType } from '../types';
 
 const stockTransactionSchema = new mongoose.Schema<StockTransactionDocument>({
+  user_id: { type: String, required: true },
   stock_id: { type: String, required: true },
   wallet_tx_id: { type: String, required: true },
   portfolio_id: { type: String, required: true },

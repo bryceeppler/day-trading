@@ -1,5 +1,5 @@
 import { StockTransaction } from "../models/stockTransactionModel";
-import OrderBook from "./orderbook";
+import OrderBook from "../services/orderbook";
 import { Order, MatchedOrder, OrderType, IOrderBook } from "../types";
 
 describe("Cancel Order Tests", () => {
@@ -11,6 +11,9 @@ describe("Cancel Order Tests", () => {
 
   it("cancels an order that exists in the orderbook", () => {
     const order = {
+      user_id: "1",
+      wallet_tx_id: "1",
+      stock_tx_id: "1",
       stock_id: "1",
       quantity: 5,
       price: 10,
@@ -29,6 +32,9 @@ describe("Cancel Order Tests", () => {
 
   it("should return null if the order cannot be found", () => {
     const orderInBook = {
+      user_id: "1",
+      wallet_tx_id: "1",
+      stock_tx_id: "1",
       stock_id: "1",
       quantity: 5,
       price: 10,
@@ -38,6 +44,9 @@ describe("Cancel Order Tests", () => {
     };
 
     const orderToCancel = {
+      user_id: "2",
+      wallet_tx_id: "2",
+      stock_tx_id: "2",
       stock_id: "2",
       quantity: 5,
       price: 10,

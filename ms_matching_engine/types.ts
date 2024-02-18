@@ -17,9 +17,10 @@ export enum OrderStatus {
 // we need a type that doesn't extend any mongoose types
 export interface IStockTransaction {
   stock_id: string;
-  wallet_tx_id?: string;
+  wallet_tx_id: string;
+  stock_tx_id: string;
   portfolio_id?: string;
-  order_status?: OrderStatus;
+  order_status: OrderStatus;
   is_buy: boolean;
   order_type: OrderType;
   stock_price: number;
@@ -29,10 +30,12 @@ export interface IStockTransaction {
 }
 
 export interface StockTransactionDocument extends Document {
+  user_id: string;
   stock_id: string;
-  wallet_tx_id?: string;
+  wallet_tx_id: string;
+  stock_tx_id: string;
   portfolio_id?: string;
-  order_status?: OrderStatus;
+  order_status: OrderStatus;
   is_buy: boolean;
   order_type: OrderType;
   stock_price: number;
@@ -41,9 +44,12 @@ export interface StockTransactionDocument extends Document {
   is_deleted?: boolean;
 }
 
-// Order is IStockTransaction
+// Order is the incoming order from order creation
+// no timestamp, since I create it 
 export type Order = {
-  user_id?: string;
+  wallet_tx_id: string;
+  stock_tx_id: string;
+  user_id: string;
   stock_id: string;
   quantity: number;
   price: number;
@@ -54,6 +60,7 @@ export type Order = {
 export interface OrderBookOrder extends Order {
   timestamp: Date;
 }
+
 
 export interface MatchedOrder {
   buyOrder: OrderBookOrder;

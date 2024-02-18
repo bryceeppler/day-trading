@@ -1,5 +1,5 @@
 import { StockTransaction } from "../models/stockTransactionModel";
-import OrderBook from "./orderbook";
+import OrderBook from "../services/orderbook";
 import {
   Order,
   MatchedOrder,
@@ -19,6 +19,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.sellOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         is_buy: false,
         stock_id: "1",
         price: 10,
@@ -28,7 +30,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order: OrderBookOrder = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 10,
@@ -51,6 +55,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.sellOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         is_buy: false,
         stock_id: "1",
         price: 10,
@@ -60,7 +66,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 10,
@@ -79,6 +87,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.buyOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 10,
         quantity: 3,
@@ -88,7 +98,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: false,
       stock_id: "1",
       price: 10,
@@ -107,6 +119,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.sellOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 10,
         quantity: 5,
@@ -116,6 +130,8 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 10,
         quantity: 5,
@@ -125,7 +141,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 10,
@@ -144,6 +162,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.buyOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 12,
         quantity: 5,
@@ -153,6 +173,8 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 12,
         quantity: 5,
@@ -162,7 +184,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: false,
       stock_id: "1",
       price: 12,
@@ -182,6 +206,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 15,
         quantity: 3,
         is_buy: true,
@@ -191,6 +217,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 15,
         quantity: 2,
         is_buy: true,
@@ -199,7 +227,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: false,
       stock_id: "1",
       price: 15,
@@ -219,6 +249,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 8,
         quantity: 4,
         is_buy: false,
@@ -228,6 +260,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 8,
         quantity: 1,
         is_buy: false,
@@ -236,7 +270,9 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "2",
+      user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 8,
@@ -256,6 +292,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 20,
         quantity: 5,
         is_buy: false,
@@ -265,6 +303,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 20,
         quantity: 5,
         is_buy: false,
@@ -276,6 +316,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 20,
         quantity: 5,
         is_buy: true,
@@ -285,6 +327,8 @@ describe("OrderBook Limit Order Tests", () => {
       {
         stock_id: "1",
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         price: 20,
         quantity: 5,
         is_buy: true,
@@ -294,6 +338,8 @@ describe("OrderBook Limit Order Tests", () => {
     ];
     const sellOrder = {
       user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: false,
       stock_id: "1",
       price: 20,
@@ -303,6 +349,8 @@ describe("OrderBook Limit Order Tests", () => {
     };
     const buyOrder = {
       user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 20,
@@ -322,6 +370,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.sellOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 25,
         quantity: 3,
@@ -331,6 +381,8 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 25,
         quantity: 2,
@@ -343,6 +395,8 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.buyOrders = [
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 25,
         quantity: 4,
@@ -352,6 +406,8 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         user_id: "1",
+        stock_tx_id: "1",
+        wallet_tx_id: "1",
         stock_id: "1",
         price: 25,
         quantity: 1,
@@ -363,6 +419,8 @@ describe("OrderBook Limit Order Tests", () => {
 
     const sellOrder: OrderBookOrder = {
       user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: false,
       stock_id: "1",
       price: 25,
@@ -373,6 +431,8 @@ describe("OrderBook Limit Order Tests", () => {
 
     const buyOrder: OrderBookOrder = {
       user_id: "1",
+      stock_tx_id: "1",
+      wallet_tx_id: "1",
       is_buy: true,
       stock_id: "1",
       price: 25,

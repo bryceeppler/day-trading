@@ -113,6 +113,9 @@ export default class OrderBook implements IOrderBook {
     // Transform Mongoose documents into the Order type
      const orders = documents.map(doc => ({
       // map mongoose docs to Order type
+      stock_tx_id: doc.stock_tx_id,
+      user_id: doc.user_id,
+      wallet_tx_id: doc.wallet_tx_id,
       price: doc.stock_price,
       quantity: doc.quantity,
       is_buy: doc.is_buy,

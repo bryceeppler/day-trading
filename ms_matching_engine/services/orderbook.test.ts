@@ -119,23 +119,25 @@ describe("OrderBook matchOrder tests", () => {
     expect(remainingQuantity).toBe(0);
   });
 
-  // it("matches multiple partial sell orders with remaining quantity", () => {
-  //   orderbook.buyOrders = [
-  //     { _id: 1, stock_id: "1", stock_price: 15, quantity: 3 },
-  //     { _id: 2, stock_id: "1", stock_price: 15, quantity: 2 },
-  //   ];
-  //   const order = {
-  //     is_buy: false,
-  //     stock_id: "1",
-  //     stock_price: 15,
-  //     quantity: 10,
-  //   };
-  //   const [ matched, remainingQuantity ] = orderbook.matchOrder(order);
-
-  //   expect(orderbook.matchedOrders.length).toBe(2);
-  //   expect(matched.length).toBe(2);
-  //   expect(remainingQuantity).toBe(5);
-  // });
+  it("matches multiple partial sell orders with remaining quantity", () => {
+    orderbook.buyOrders = [
+      { stock_id: "1", stock_price: 15, quantity: 3, is_buy: true, order_type: OrderType.LIMIT, time_stamp: new Date() },
+      { stock_id: "1", stock_price: 15, quantity: 2, is_buy: true, order_type: OrderType.LIMIT, time_stamp: new Date() },
+    ];
+    const order = {
+      is_buy: false,
+      stock_id: "1",
+      stock_price: 15,
+      quantity: 10,
+      order_type: OrderType.LIMIT,
+      time_stamp: new Date(),
+    };
+    const [matched, remainingQuantity] = orderbook.matchOrder(order);
+  
+    expect(orderbook.matchedOrders.length).toBe(2);
+    expect(matched.length).toBe(2);
+    expect(remainingQuantity).toBe(5);
+  });
 
   // it("matches multiple partial buy orders with remaining quantity", () => {
   //   orderbook.sellOrders = [

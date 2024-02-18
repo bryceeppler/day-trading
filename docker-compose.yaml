@@ -43,10 +43,7 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-      NODE_ENV: development
-      PORT: 3000
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
-    command: npm run nodemon
 
   # Matching Engine Microservice
   ms_matching_engine:

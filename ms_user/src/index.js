@@ -13,9 +13,11 @@ connectDB();
 
 // Import routes
 const authRoutes = require("../routes/authRoutes");
+const transactionRoutes = require("../routes/transactionRoutes");
 
 // Use routes
 app.use("/", authRoutes);
+app.use("/", transactionRoutes);
 //app.use('/', userRoutes); 
 
 // Simple route for health check

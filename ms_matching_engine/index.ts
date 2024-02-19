@@ -23,8 +23,7 @@ app.listen(port, () => {
   console.log(`Matching engine microservice on port ${port}...`);
 });
 
-// periodically check for expired orders and notify order exec service
 setInterval(() => {
   orderBook.checkForExpiredOrders();
-  // orderBook.flushOrders();
-}, 60000); // every 60 sec for now
+  orderBook.flushOrders();
+}, 10000); // every 10 sec for now

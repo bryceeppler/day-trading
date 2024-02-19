@@ -44,8 +44,6 @@ export interface StockTransactionDocument extends Document {
   is_deleted?: boolean;
 }
 
-// Order is the incoming order from order creation
-// no timestamp, since I create it
 export type Order = {
   wallet_tx_id: string;
   stock_tx_id: string;

@@ -1,8 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
 import {
-  Order,
-  MatchedOrder,
   OrderBookOrder,
   OrderType,
   IOrderBook,
@@ -16,7 +14,7 @@ describe("OrderBook Market Order Tests", () => {
   });
 
   it("execute a sell market order at the best available buy price", () => {
-    const olderTimeStamp = new Date(new Date().getTime() - 1000); // -1000 milliseconds
+    const olderTimeStamp = new Date(new Date().getTime() - 1000);
     const newerTimeStamp = new Date();
     orderbook.buyOrders = [
       {

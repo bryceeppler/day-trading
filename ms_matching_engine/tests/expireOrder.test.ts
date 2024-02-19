@@ -1,6 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import { OrderBookOrder , MatchedOrder, OrderType, IOrderBook } from "../types";
+import { OrderBookOrder , OrderType, IOrderBook } from "../types";
 
 describe("Expired Orders on Receiving Order", () => {
   let orderbook: IOrderBook;

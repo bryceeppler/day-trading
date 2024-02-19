@@ -94,6 +94,7 @@ exports.getStockTransactions = async (req, res, next) =>
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
             stock_tx_id: tx._id,
+            parent_stock_tx_id: tx.parent_stock_tx_id,
             stock_id: tx.stock_id,
             wallet_tx_id: tx.wallet_tx_id,
             order_status: tx.order_status,

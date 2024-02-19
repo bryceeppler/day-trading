@@ -34,10 +34,16 @@ services:
   # Order Creation Microservice
   ms_order_creation:
     build: ./ms_order_creation
+    expose:
+      - '3000'
     ports:
       - "8003:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+      MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
+      NODE_ENV: production
+    command: ["npm", "start"]
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -45,9 +51,13 @@ services:
     ports:
       - "8004:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   # Market Data Microservice
   ms_market_data:

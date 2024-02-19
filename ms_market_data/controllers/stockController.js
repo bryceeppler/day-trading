@@ -1,6 +1,5 @@
 const Stock = require('../shared/models/stockModel');
-const apiHandling = require('../shared/lib/apiHandling');
-const { handleError, successReturn } = require('../lib/apiHandling');
+const { createError, handleError, successReturn } = require('../lib/apiHandling');
 
 exports.createStock = async (req, res) =>
 {
@@ -9,10 +8,8 @@ exports.createStock = async (req, res) =>
         const { stock_name } = req.body;
         // check if the stock name already exists in db
         const existingStock = await Stock.findOne({ stock_name });
-        if (existingStock)
-        {
-            return res.status(400).json({ message: "Stock already exists" });
-        }
+        
+        if (existingStock) handleError(createError("stock already exists", 400), res, next);
 
         // generate a random initial price in the range of $20.00 - $80.00.
         const startingPrice = Math.random() * (80 - 20) + 20;
@@ -23,8 +20,7 @@ exports.createStock = async (req, res) =>
         successReturn(res, newStock);
     } catch (error)
     {
-        console.error('Error creating stock:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
@@ -45,8 +41,7 @@ exports.getStockPrices = async (req, res) =>
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
@@ -60,8 +55,7 @@ exports.getAllStocks = async (req, res) =>
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
@@ -76,10 +70,7 @@ exports.updateStockPrice = async (req, res) =>
         // Check if the stock exists
         const existingStock = await Stock.findById(stockId);
 
-        if (!existingStock)
-        {
-            return res.status(404).json({ message: 'Stock not found' });
-        }
+        if (!existingStock) handleError(createError('Stock not found', 400), res, next);
 
         existingStock.current_price = new_price;
         await existingStock.save();
@@ -88,7 +79,6 @@ exports.updateStockPrice = async (req, res) =>
     }
     catch (error)
     {
-        console.error('Error updating stock price:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }

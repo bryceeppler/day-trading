@@ -17,7 +17,7 @@ RUN npm run build
 RUN ls -la /app
 
 
-# Now we can run the ts files
+# Now we can run the compiled js
 FROM node:16-alpine as run
 
 WORKDIR /app

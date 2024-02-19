@@ -12,12 +12,12 @@ exports.createWalletTx = async (req, res, next) =>
         const walletTx = new WalletTransaction({ user_id, is_debit, amount })
         walletTx.save();
 
-        successReturn(res, walletTx, STATUS_CODE.CREATED);
+        return successReturn(res, walletTx, STATUS_CODE.CREATED);
 
 
     } catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -34,17 +34,17 @@ exports.updateStockTxId = async (req, res, next) =>
 
         if (!existingWalletTx)
         {
-            handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+            return handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
         }
 
         existingWalletTx.stock_tx_id = stock_tx_id;
         await existingWalletTx.save();
 
-        successReturn(res, existingWalletTx);
+        return successReturn(res, existingWalletTx);
     }
     catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -60,17 +60,17 @@ exports.deleteWalletTx = async (req, res, next) =>
 
         if (!existingWalletTx)
         {
-            handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+            return handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
         }
         // update 
         existingWalletTx.is_deleted = true;
         await existingWalletTx.save();
 
-        successReturn(res, existingWalletTx);
+        return successReturn(res, existingWalletTx);
     }
     catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -92,11 +92,11 @@ exports.getWalletTransactions = async (req, res, next) =>
             time_stamp: tx.time_stamp,
         }));
 
-        successReturn(res, transformedWalletTx);
+        return successReturn(res, transformedWalletTx);
     }
     catch (error) 
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -106,10 +106,10 @@ exports.getAllWalletTransactions = async (req, res, next) =>
     try 
     {
         const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};;
-        successReturn(res, walletTx);
+        return successReturn(res, walletTx);
     }
     catch (error) 
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }

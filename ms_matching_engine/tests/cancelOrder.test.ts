@@ -1,6 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import { Order, MatchedOrder, OrderType, IOrderBook } from "../types";
+import { OrderType, IOrderBook } from "../types";
 
 describe("Cancel Order Tests", () => {
   let orderbook: IOrderBook;

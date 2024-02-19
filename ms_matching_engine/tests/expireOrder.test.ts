@@ -1,6 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import { OrderBookOrder , MatchedOrder, OrderType, IOrderBook } from "../types";
+import { OrderBookOrder , OrderType, IOrderBook } from "../types";
 
 describe("Expired Orders on Receiving Order", () => {
   let orderbook: IOrderBook;
@@ -43,7 +43,7 @@ describe("Expired Orders on Receiving Order", () => {
       timestamp: new Date(),
     };
 
-    orderbook.matchMarketOrder(newOrder);
+    orderbook.matchOrder(newOrder);
 
     expect(orderbook.buyOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);
@@ -64,7 +64,7 @@ describe("Expired Orders on Receiving Order", () => {
       timestamp: new Date(),
     };
 
-    orderbook.matchMarketOrder(newOrder);
+    orderbook.matchOrder(newOrder);
 
     expect(orderbook.sellOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);

@@ -1,4 +1,6 @@
-exports.createError = (message = 'Error Performing Action', statusCode = 500) =>
+const { STATUS_CODE } = require("./enums");
+
+exports.createError = (message = 'Error Performing Action', statusCode = STATUS_CODE.INTERNAL_SERVER_ERROR) =>
 {
   const error = new Error(message);
   error.details = {
@@ -13,11 +15,12 @@ exports.handleError = (error, res, next) =>
   return error.details ? res.status(error.details.statusCode).send({ message: error.details.message }) : next(error);
 };
 
-exports.successReturn = (res, data) =>
+exports.successReturn = (res, data, code, successFlag) =>
 {
   const response = {
-    success: true,
+    success: successFlag ?? true,
     data: data ?? null
   }
-  return res.status(200).send(response)
+  const statusCode = code ?? STATUS_CODE.OK;
+  return res.status(statusCode).send(response)
 };

@@ -96,4 +96,5 @@ export interface IOrderBook {
   initializeOrderBook(): Promise<void>;
   loadInProgressOrders(): Promise<void>;
   fetchOrdersByType(isBuy: boolean): Promise<Order[]>;
+  flushOrders(): void;
 }

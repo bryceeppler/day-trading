@@ -27,10 +27,10 @@ exports.createStockTx = async (req, res, next) =>
 
         newStockTx.save();
 
-        successReturn(res, newStockTx, STATUS_CODE.CREATED);
+        return successReturn(res, newStockTx, STATUS_CODE.CREATED);
     } catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -45,16 +45,19 @@ exports.updateStockTxStatus = async (req, res, next) =>
         // Check if the transaction exists
         const existingStockTx = await StockTransaction.findById(stockTxId);
 
-        if (!existingStockTx) handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+        if (!existingStockTx) 
+        {
+            return handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+        }
 
         existingStockTx.order_status = order_status;
         await existingStockTx.save();
 
-        successReturn(res, existingStockTx);
+        return successReturn(res, existingStockTx);
     }
     catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -68,17 +71,20 @@ exports.deleteStockTx = async (req, res, next) =>
         // Check if the transaction exists
         const existingStockTx = await StockTransaction.findById(stockTxId);
 
-        if (!existingStockTx) handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+        if (!existingStockTx)
+        {
+            return handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+        }
 
         // update is_deleted flag
         existingStockTx.is_deleted = true;
         await existingStockTx.save();
 
-        successReturn(res, existingStockTx);
+        return successReturn(res, existingStockTx);
     }
     catch (error)
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -94,6 +100,7 @@ exports.getStockTransactions = async (req, res, next) =>
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
             stock_tx_id: tx._id,
+            parent_stock_tx_id: tx.parent_stock_tx_id,
             stock_id: tx.stock_id,
             wallet_tx_id: tx.wallet_tx_id,
             order_status: tx.order_status,
@@ -104,12 +111,12 @@ exports.getStockTransactions = async (req, res, next) =>
             time_stamp: tx.time_stamp,
         }));
 
-        successReturn(res, transformedStockTx);
+        return successReturn(res, transformedStockTx);
 
     }
     catch (error) 
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 
@@ -121,11 +128,11 @@ exports.getAllStockTransactions = async (req, res, next) =>
     try 
     {
         const stockTx = await StockTransaction.find({}).sort({ time_stamp: 1 }) || {};
-        successReturn(res, stockTx);
+        return successReturn(res, stockTx);
     }
     catch (error) 
     {
-        handleError(error, res, next);
+        return handleError(error, res, next);
     }
 }
 

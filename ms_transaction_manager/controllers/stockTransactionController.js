@@ -1,4 +1,4 @@
-const { successReturn } = require('../../ms_shared/lib/apiHandling');
+const { successReturn } = require('../shared/lib/apiHandling');
 const StockTransaction = require('../shared/models/stockTransactionModel');
 
 // /createWalletTransaction

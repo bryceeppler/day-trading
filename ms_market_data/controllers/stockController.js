@@ -1,5 +1,6 @@
 const Stock = require('../shared/models/stockModel');
-const { createError, handleError, successReturn } = require('../lib/apiHandling');
+const { createError, handleError, successReturn } = require('../shared/lib/apiHandling');
+const { STATUS_CODE } = require('../shared/lib/enums');
 
 exports.createStock = async (req, res) =>
 {
@@ -17,7 +18,7 @@ exports.createStock = async (req, res) =>
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
         newStock.save();
 
-        successReturn(res, newStock);
+        successReturn(res, STATUS_CODE.CREATED, newStock);
     } catch (error)
     {
         handleError(error, res, next);

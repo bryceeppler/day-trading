@@ -21,6 +21,65 @@ export default class OrderBook implements IOrderBook {
     this.expiredOrders = [];
   }
 
+  public async initializeOrderBook() {
+    await this.loadInProgressOrders();
+    console.log(
+      "Orderbook initialized with ",
+      this.buyOrders.length,
+      " buy orders and ",
+      this.sellOrders.length,
+      " sell orders..."
+    );
+  }
+
+  /**
+   * Entry point for matching, calls the proper function based on limit or market order
+   */
+  public matchOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
+    this.resortOrders();
+    if (newOrder.order_type === "MARKET") {
+      return this.matchMarketOrder(newOrder);
+    } else {
+      return this.matchLimitOrder(newOrder);
+    }
+  }
+
+  /**
+   * Given a order, remove it from the orderbook and return it
+   */
+  public removeOrder(stock_tx_id: string): OrderBookOrder | null {
+    let order = this.removeOrderFromQueue(stock_tx_id, this.buyOrders);
+    if (order) return order;
+    order = this.removeOrderFromQueue(stock_tx_id, this.sellOrders);
+    return order;
+  }
+
+  /**
+   * Check for expired buy and sell orders.
+   */
+  public checkForExpiredOrders(): void {
+    this.checkQueueForExpiredOrders(this.buyOrders);
+    this.checkQueueForExpiredOrders(this.sellOrders);
+  }
+
+  public cancelOrder(stockTxId: string): Order | null {
+    const cancelledOrder = this.removeOrder(stockTxId);
+    cancelledOrder && this.cancelledOrders.push(cancelledOrder);
+    return cancelledOrder as Order;
+  }
+
+  /**
+   * Send matched, cancelled, expired orders to order execution service
+   */
+  public flushOrders() {
+    console.log("Flushing orders");
+    this.sendOrdersToOrderExecutionService(
+      this.matchedOrders,
+      this.cancelledOrders,
+      this.expiredOrders
+    );
+  }
+
   /**
    * Check if an timestamp has expired
    */
@@ -65,10 +124,16 @@ export default class OrderBook implements IOrderBook {
     return [this.matchedOrders, remainingQty];
   }
 
+  /**
+   * Insert MatchedOrder objects into the matchedOrders array
+   */
   private insertMatchedOrders(matchedOrders: MatchedOrder[]) {
     this.matchedOrders.push(...matchedOrders);
   }
 
+  /**
+   * Resort the buy and sell orders
+   */
   private resortOrders() {
     this.buyOrders.sort((a, b) => {
       if (b.price === a.price) {
@@ -85,17 +150,6 @@ export default class OrderBook implements IOrderBook {
     });
   }
 
-  async initializeOrderBook() {
-    await this.loadInProgressOrders();
-    console.log(
-      "Orderbook initialized with ",
-      this.buyOrders.length,
-      " buy orders and ",
-      this.sellOrders.length,
-      " sell orders..."
-    );
-  }
-
   /**
    * Only run on init, loads all in progress orders from the database.
    * There is no timestamp field in the database, so we assign one
@@ -109,6 +163,9 @@ export default class OrderBook implements IOrderBook {
     this.sellOrders = sellOrderDocuments;
   }
 
+  /**
+   * Fetch all in progress orders from the database
+   */
   private async fetchOrdersByType(isBuy: boolean): Promise<OrderBookOrder[]> {
     const documents = await this.stockTransactionModel
       .find({
@@ -118,9 +175,7 @@ export default class OrderBook implements IOrderBook {
       })
       .sort({ price: isBuy ? -1 : 1, timestamp: 1 });
 
-    // Transform Mongoose documents into the Order type
     const orders = documents.map((doc) => ({
-      // map mongoose docs to Order type
       stock_tx_id: doc.stock_tx_id,
       user_id: doc.user_id,
       wallet_tx_id: doc.wallet_tx_id,
@@ -145,14 +200,6 @@ export default class OrderBook implements IOrderBook {
         i--;
       }
     }
-  }
-
-  /**
-   * Check for expired buy and sell orders.
-   */
-  checkForExpiredOrders(): void {
-    this.checkQueueForExpiredOrders(this.buyOrders);
-    this.checkQueueForExpiredOrders(this.sellOrders);
   }
 
   /**
@@ -210,6 +257,9 @@ export default class OrderBook implements IOrderBook {
     return [matched, remainingQty];
   }
 
+  /**
+   * Check if a given order matches against a given order in the orderbook
+   */
   private isMatch(order: OrderBookOrder, matchAgainst: OrderBookOrder) {
     if (order.stock_id !== matchAgainst.stock_id) return false;
     return order.is_buy
@@ -250,27 +300,8 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
-   * Given a order, remove it from the orderbook and return it
+   * Match a limit order against the orderbook and return the matched orders
    */
-  removeOrder(stock_tx_id: string): OrderBookOrder | null {
-    let order = this.removeOrderFromQueue(stock_tx_id, this.buyOrders);
-    if (order) return order;
-    order = this.removeOrderFromQueue(stock_tx_id, this.sellOrders);
-    return order;
-  }
-
-  /**
-   * Entry point for matching, calls the proper function based on limit or market order
-   */
-  matchOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
-    this.resortOrders();
-    if (newOrder.order_type === "MARKET") {
-      return this.matchMarketOrder(newOrder);
-    } else {
-      return this.matchLimitOrder(newOrder);
-    }
-  }
-
   private matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
@@ -279,34 +310,21 @@ export default class OrderBook implements IOrderBook {
   }
 
   /**
-   * Send matched, cancelled, expired orders to order execution service
-   */
-  flushOrders() {
-    console.log("Flushing orders");
-    this.sendOrdersToOrderExecutionService(
-      this.matchedOrders,
-      this.cancelledOrders,
-      this.expiredOrders
-    );
-  }
-
-  /**
    * Insert a new order into the orderbook and resort
    */
-  insertToOrderBook(order: OrderBookOrder) {
-    // if (order.order_type === "LIMIT") {
+  private insertToOrderBook(order: OrderBookOrder) {
     if (order.is_buy) {
       this.buyOrders.push(order);
     } else {
       this.sellOrders.push(order);
     }
     this.resortOrders();
-    // } else {
-    //   this.matchMarketOrder(order);
-    // }
   }
 
-  async sendOrdersToOrderExecutionService(
+  /**
+   * Send matched, cancelled, expired orders to order execution service
+   */
+  private async sendOrdersToOrderExecutionService(
     matchedOrders: MatchedOrder[],
     cancelledOrders: OrderBookOrder[],
     expiredOrders: OrderBookOrder[]
@@ -352,11 +370,5 @@ export default class OrderBook implements IOrderBook {
     } catch (error) {
       console.error("Error sending orders to order execution service:", error);
     }
-  }
-
-  cancelOrder(stockTxId: string): Order | null {
-    const cancelledOrder = this.removeOrder(stockTxId);
-    cancelledOrder && this.cancelledOrders.push(cancelledOrder);
-    return cancelledOrder as Order;
   }
 }

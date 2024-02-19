@@ -1194,3 +1194,10 @@ def executeTests():
     step_59_add_money_to_wallet_with_invalid_token("<invalidToken>")
     step_60_place_stock_order_with_invalid_token("<invalidToken>", "<googleStockId>")
     print("All tests finished.")
+
+
+def main():
+    executeTests()
+
+if __name__ == "__main__":
+    main()

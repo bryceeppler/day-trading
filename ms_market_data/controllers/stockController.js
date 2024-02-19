@@ -2,15 +2,15 @@ const Stock = require('../shared/models/stockModel');
 const { createError, handleError, successReturn } = require('../shared/lib/apiHandling');
 const { STATUS_CODE } = require('../shared/lib/enums');
 
-exports.createStock = async (req, res) =>
+exports.createStock = async (req, res, next) =>
 {
     try
     {
         const { stock_name } = req.body;
         // check if the stock name already exists in db
         const existingStock = await Stock.findOne({ stock_name });
-        
-        if (existingStock) handleError(createError("stock already exists", 400), res, next);
+
+        if (existingStock) handleError(createError("stock already exists", STATUS_CODE.BAD_REQUEST), res, next);
 
         // generate a random initial price in the range of $20.00 - $80.00.
         const startingPrice = Math.random() * (80 - 20) + 20;
@@ -18,7 +18,7 @@ exports.createStock = async (req, res) =>
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
         newStock.save();
 
-        successReturn(res, STATUS_CODE.CREATED, newStock);
+        successReturn(res, newStock, STATUS_CODE.CREATED);
     } catch (error)
     {
         handleError(error, res, next);
@@ -26,7 +26,7 @@ exports.createStock = async (req, res) =>
 }
 
 // /getStockPrices
-exports.getStockPrices = async (req, res) => 
+exports.getStockPrices = async (req, res, next) => 
 {
     try 
     {
@@ -47,7 +47,7 @@ exports.getStockPrices = async (req, res) =>
 }
 
 // /getAllStocks
-exports.getAllStocks = async (req, res) => 
+exports.getAllStocks = async (req, res, next) => 
 {
     try 
     {
@@ -61,7 +61,7 @@ exports.getAllStocks = async (req, res) =>
 }
 
 // /updateStockPrice/:stockId
-exports.updateStockPrice = async (req, res) =>
+exports.updateStockPrice = async (req, res, next) =>
 {
     try
     {
@@ -71,7 +71,7 @@ exports.updateStockPrice = async (req, res) =>
         // Check if the stock exists
         const existingStock = await Stock.findById(stockId);
 
-        if (!existingStock) handleError(createError('Stock not found', 400), res, next);
+        if (!existingStock) handleError(createError('Stock not found', STATUS_CODE.NOT_FOUND), res, next);
 
         existingStock.current_price = new_price;
         await existingStock.save();

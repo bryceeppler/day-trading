@@ -15,11 +15,12 @@ exports.handleError = (error, res, next) =>
   return error.details ? res.status(error.details.statusCode).send({ message: error.details.message }) : next(error);
 };
 
-exports.successReturn = (res, statusCode = STATUS_CODE.OK, data, successFlag) =>
+exports.successReturn = (res, data, code, successFlag) =>
 {
   const response = {
     success: successFlag ?? true,
     data: data ?? null
   }
+  const statusCode = code ?? STATUS_CODE.OK;
   return res.status(statusCode).send(response)
 };

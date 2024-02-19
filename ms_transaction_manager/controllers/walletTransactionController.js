@@ -1,29 +1,28 @@
 const WalletTransaction = require('../shared/models/walletTransactionModel');
-const { successReturn } = require('../shared/lib/apiHandling');
+const { successReturn, handleError, createError } = require('../shared/lib/apiHandling');
+const { STATUS_CODE } = require('../shared/lib/enums');
 
 // /createWalletTransaction
-exports.createWalletTx = async (req, res) =>
+exports.createWalletTx = async (req, res, next) =>
 {
     try
     {
-        const { is_debit, amount } = req.body;
+        const { user_id, is_debit, amount } = req.body;
 
-        const walletTx = new WalletTransaction({ is_debit, amount })
+        const walletTx = new WalletTransaction({ user_id, is_debit, amount })
         walletTx.save();
 
-        successReturn(res, STATUS_CODE.CREATED, newStockTx);
+        successReturn(res, walletTx, STATUS_CODE.CREATED);
 
 
     } catch (error)
     {
         handleError(error, res, next);
-        console.error('Error creating wallet transaciton:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
 
 // /updateStockTxId/:walletTxId
-exports.updateStockTxId = async (req, res) =>
+exports.updateStockTxId = async (req, res, next) =>
 {
     try
     {
@@ -35,7 +34,7 @@ exports.updateStockTxId = async (req, res) =>
 
         if (!existingWalletTx)
         {
-            return res.status(404).json({ message: 'Wallet Transaction not found' });
+            handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
         }
 
         existingWalletTx.stock_tx_id = stock_tx_id;
@@ -46,13 +45,11 @@ exports.updateStockTxId = async (req, res) =>
     catch (error)
     {
         handleError(error, res, next);
-        console.error('Error updating wallet transaction:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
 
 // /deleteWalletTx/:walletTxId
-exports.deleteWalletTx = async (req, res) =>
+exports.deleteWalletTx = async (req, res, next) =>
 {
     try
     {
@@ -63,24 +60,22 @@ exports.deleteWalletTx = async (req, res) =>
 
         if (!existingWalletTx)
         {
-            return res.status(404).json({ message: 'Wallet Transaction not found' });
+            handleError(createError('Wallet transaction not found', STATUS_CODE.NOT_FOUND), res, next);
         }
         // update 
         existingWalletTx.is_deleted = true;
         await existingWalletTx.save();
-        
+
         successReturn(res, existingWalletTx);
     }
     catch (error)
     {
         handleError(error, res, next);
-        console.error('Error updating wallet transaction:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
 
 // /getWalletTransactions
-exports.getWalletTransactions = async (req, res) =>
+exports.getWalletTransactions = async (req, res, next) =>
 {
 
     try 
@@ -102,13 +97,11 @@ exports.getWalletTransactions = async (req, res) =>
     catch (error) 
     {
         handleError(error, res, next);
-        console.error('Error getting wallet trasactions:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }
 
 // /geAlltWalletTransactions
-exports.getAllWalletTransactions = async (req, res) =>
+exports.getAllWalletTransactions = async (req, res, next) =>
 {
     try 
     {
@@ -118,7 +111,5 @@ exports.getAllWalletTransactions = async (req, res) =>
     catch (error) 
     {
         handleError(error, res, next);
-        console.error('Error getting wallet transactions:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
 }

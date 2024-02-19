@@ -3,6 +3,8 @@ const { validate } = require('../../shared/middleware/base.validation');
 
 
 exports.createWalletTxValidation = validate([
+  body('user_id').notEmpty().withMessage('user_id is required')
+    .isMongoId().withMessage('Invalid user ID format'),
   body('is_debit').notEmpty().withMessage('Is debit is required')
     .isBoolean().withMessage('is_debit must be a boolean'),
   body('amount').notEmpty().withMessage('amount is required')

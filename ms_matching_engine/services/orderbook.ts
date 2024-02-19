@@ -346,7 +346,7 @@ export default class OrderBook implements IOrderBook {
       for (const cancelledOrder of cancelledOrders) {
         data.push({
           stock_tx_id: cancelledOrder.stock_tx_id,
-          action: "CANCELLED",
+          action: "CANCELED",
         });
       }
     }

@@ -9,7 +9,7 @@ import morgan from 'morgan';
 
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);
-orderBook.initializeOrderBook();
+// orderBook.initializeOrderBook();
 
 console.log('Connecting to database...');
 connectDB();

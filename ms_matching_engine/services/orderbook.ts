@@ -337,8 +337,8 @@ export default class OrderBook implements IOrderBook {
       for (const matchedOrder of matchedOrders) {
         const buyStockTxId = matchedOrder.buyOrder.stock_tx_id;
         const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
-        data.push({ stock_tx_id: buyStockTxId, action: "COMPLETE" });
-        data.push({ stock_tx_id: sellStockTxId, action: "COMPLETE" });
+        data.push({ stock_tx_id: buyStockTxId, action: "COMPLETED" });
+        data.push({ stock_tx_id: sellStockTxId, action: "COMPLETED" });
       }
     }
 
@@ -346,14 +346,14 @@ export default class OrderBook implements IOrderBook {
       for (const cancelledOrder of cancelledOrders) {
         data.push({
           stock_tx_id: cancelledOrder.stock_tx_id,
-          action: "CANCEL",
+          action: "CANCELLED",
         });
       }
     }
 
     if (expiredOrders.length > 0) {
       for (const expiredOrder of expiredOrders) {
-        data.push({ stock_tx_id: expiredOrder.stock_tx_id, action: "EXPIRE" });
+        data.push({ stock_tx_id: expiredOrder.stock_tx_id, action: "EXPIRED" });
       }
     }
 

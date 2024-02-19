@@ -1,9 +1,12 @@
 const express = require('express');
-const { createStockTx, updateStockTxStatus, deleteStockTx, getStockTransactions, getAllStockTransactions } = require('../controllers/stockTransactionController');
-const { createWalletTx, updateStockTxId, deleteWalletTx, getWalletTransactions, getAllWalletTransactions } = require('../controllers/walletTransactionController');
+const stockTxController = require('../controllers/stockTransactionController');
+const walletTxController = require('../controllers/walletTransactionController');
 const walletTxValidation = require('./validations/walletTxValidation')
 const stockTxValidation = require('./validations/stockTxValidation')
 const router = express.Router();
+
+const { authenticateToken } = require('../shared/middleware/authentication');
+const acccessToken = process.env.JWT_SECRET;
 
 /**
  * @swagger
@@ -24,7 +27,7 @@ router.route('/').get((req, res) =>
  *     get:
  *       summary: Retrieve all active wallet transactions (excludes deleted transactions)
  */
-router.route('/getWalletTransactions').get(getWalletTransactions);
+router.route('/getWalletTransactions').get(authenticateToken(acccessToken), walletTxController.getWalletTransactions);
 
 /**
  * @swagger
@@ -33,7 +36,7 @@ router.route('/getWalletTransactions').get(getWalletTransactions);
  *     get:
  *       summary: Retrieve all wallet transactions (includes deleted transactions)
  */
-router.route('/getAllWalletTransactions').get(getAllWalletTransactions);
+router.route('/getAllWalletTransactions').get(walletTxController.getAllWalletTransactions);
 
 /**
  * @swagger
@@ -42,7 +45,7 @@ router.route('/getAllWalletTransactions').get(getAllWalletTransactions);
  *     get:
  *       summary: Retrieve all stock transactions (includes deleted transactions)
  */
-router.route('/getStockTransactions').get(getStockTransactions);
+router.route('/getStockTransactions').get(authenticateToken(acccessToken), stockTxController.getStockTransactions);
 /**
  * @swagger
  * paths:
@@ -50,7 +53,7 @@ router.route('/getStockTransactions').get(getStockTransactions);
  *     get:
  *       summary: Retrieve all active stock transactions (excludes deleted transactions)
  */
-router.route('/getAllStockTransactions').get(getAllStockTransactions);
+router.route('/getAllStockTransactions').get(stockTxController.getAllStockTransactions);
 
 /**
  * @swagger
@@ -94,7 +97,7 @@ router.route('/getAllStockTransactions').get(getAllStockTransactions);
 router.route('/createStockTransaction')
     .post(
         [stockTxValidation.createStockTxValidation],
-        createStockTx
+        stockTxController.createStockTx
     );
 
 /**
@@ -124,7 +127,7 @@ router.route('/createStockTransaction')
 router.route('/createWalletTransaction')
     .post(
         [walletTxValidation.createWalletTxValidation],
-        createWalletTx
+        walletTxController.createWalletTx
     );
 
 /**
@@ -156,7 +159,7 @@ router.route('/createWalletTransaction')
 router.route('/updateStockTxStatus/:stock_tx_id').
     put(
         [stockTxValidation.updateStockTxStatusValidation],
-        updateStockTxStatus);
+        stockTxController.updateStockTxStatus);
 
 /**
  * @swagger
@@ -187,7 +190,7 @@ router.route('/updateStockTxStatus/:stock_tx_id').
 router.route('/updateStockTxId/:wallet_tx_id').
     put(
         [walletTxValidation.updateWalletTxValidation],
-        updateStockTxId)
+        walletTxController.updateStockTxId)
 
 /**
  * @swagger
@@ -206,7 +209,7 @@ router.route('/updateStockTxId/:wallet_tx_id').
 router.route('/deleteStockTransaction/:stock_tx_id')
     .put(
         [stockTxValidation.deleteStockTxValidation],
-        deleteStockTx);
+        stockTxController.deleteStockTx);
 
 
 /**
@@ -227,7 +230,7 @@ router.route('/deleteStockTransaction/:stock_tx_id')
 router.route('/deleteWalletTransaction/:wallet_tx_id')
     .put(
         [walletTxValidation.deleteWalletTxValidation],
-        deleteWalletTx
+        walletTxController.deleteWalletTx
     );
 
 

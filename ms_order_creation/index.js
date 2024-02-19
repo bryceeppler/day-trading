@@ -1,48 +1,15 @@
-var express = require("express");
-var app = express();
+'use strict';
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const startApp = require('./app');
+const express = require('express');
+const { todayDateTime } = require('./lib/date');
 
-
-// mongo db uri for this microservice's database
-const mongoUri = process.env.MONGO_URI;
-
-const client = new MongoClient(mongoUri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }
-}
-);
-
-async function pingDb() {
-  try {
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("successfully pinged mongo");
-  } finally {
-    await client.close();
-  }
-}
-
-app.get("/healthcheck", async (req, res) => {
-  try {
-    await pingDb();
-    res.send("MongoDB connection successful");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    res.status(500).send("MongoDB connection failed");
-  }
+const app = express();
+app.use((req, res, next) => {
+  console.log(`${todayDateTime} - ${req.method} ${req.url}`);
+  next();
 });
+app.use(express.json());
+app.use(express.urlencoded());
 
-app.get("/", (req, res) => {
-  res.send("This is the order creation microservice");
-});
-
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-  console.log(`Order creation microservice on port ${port}...`);
-});
+startApp(app);

@@ -1,17 +1,16 @@
-const Stock = require('../models/stockModel');
+const Stock = require('../shared/models/stockModel');
+const { createError, handleError, successReturn } = require('../shared/lib/apiHandling');
+const { STATUS_CODE } = require('../shared/lib/enums');
 
-
-async function createStock(req, res)
+exports.createStock = async (req, res, next) =>
 {
     try
     {
         const { stock_name } = req.body;
         // check if the stock name already exists in db
         const existingStock = await Stock.findOne({ stock_name });
-        if (existingStock)
-        {
-            return res.status(400).json({ message: "Stock already exists" });
-        }
+
+        if (existingStock) handleError(createError("stock already exists", STATUS_CODE.BAD_REQUEST), res, next);
 
         // generate a random initial price in the range of $20.00 - $80.00.
         const startingPrice = Math.random() * (80 - 20) + 20;
@@ -19,16 +18,15 @@ async function createStock(req, res)
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
         newStock.save();
 
-        return res.status(201).json(newStock);
+        successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
     } catch (error)
     {
-        console.error('Error creating stock:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
 // /getStockPrices
-async function getStockPrices(req, res) 
+exports.getStockPrices = async (req, res, next) => 
 {
     try 
     {
@@ -40,33 +38,30 @@ async function getStockPrices(req, res)
             stock_name: stock.stock_name,
             current_price: stock.current_price,
         }));
-
-        return res.status(200).json(transformedStocks);
+        successReturn(res, transformedStocks);
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
 // /getAllStocks
-async function getAllStocks(req, res) 
+exports.getAllStocks = async (req, res, next) => 
 {
     try 
     {
         const stocks = await Stock.find() || {};
-        return res.status(200).json(stocks);
+        successReturn(res, stocks);
     }
     catch (error) 
     {
-        console.error('Error getting stock prices:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
 
 // /updateStockPrice/:stockId
-async function updateStockPrice(req, res)
+exports.updateStockPrice = async (req, res, next) =>
 {
     try
     {
@@ -76,26 +71,15 @@ async function updateStockPrice(req, res)
         // Check if the stock exists
         const existingStock = await Stock.findById(stockId);
 
-        if (!existingStock)
-        {
-            return res.status(404).json({ message: 'Stock not found' });
-        }
+        if (!existingStock) handleError(createError('Stock not found', STATUS_CODE.NOT_FOUND), res, next);
 
         existingStock.current_price = new_price;
         await existingStock.save();
 
-        return res.status(200).json(existingStock);
+        successReturn(res, existingStock);
     }
     catch (error)
     {
-        console.error('Error updating stock price:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        handleError(error, res, next);
     }
 }
-
-module.exports = {
-    createStock,
-    getStockPrices,
-    getAllStocks,
-    updateStockPrice
-};

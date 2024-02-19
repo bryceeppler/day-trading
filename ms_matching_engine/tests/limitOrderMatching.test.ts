@@ -1,8 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
 import {
-  Order,
-  MatchedOrder,
   OrderType,
   IOrderBook,
   OrderBookOrder,

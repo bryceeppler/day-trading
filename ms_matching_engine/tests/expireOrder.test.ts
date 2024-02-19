@@ -43,7 +43,7 @@ describe("Expired Orders on Receiving Order", () => {
       timestamp: new Date(),
     };
 
-    orderbook.matchMarketOrder(newOrder);
+    orderbook.matchOrder(newOrder);
 
     expect(orderbook.buyOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);
@@ -64,7 +64,7 @@ describe("Expired Orders on Receiving Order", () => {
       timestamp: new Date(),
     };
 
-    orderbook.matchMarketOrder(newOrder);
+    orderbook.matchOrder(newOrder);
 
     expect(orderbook.sellOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);

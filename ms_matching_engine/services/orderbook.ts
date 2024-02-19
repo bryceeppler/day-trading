@@ -2,7 +2,7 @@ import { Order, MatchedOrder, IOrderBook, OrderBookOrder } from "../types";
 
 import { StockTransaction } from "../models/stockTransactionModel";
 
-const axios = require('axios');
+const axios = require("axios");
 
 export default class OrderBook implements IOrderBook {
   stockTransactionModel: typeof StockTransaction;
@@ -19,13 +19,12 @@ export default class OrderBook implements IOrderBook {
     this.matchedOrders = [];
     this.cancelledOrders = [];
     this.expiredOrders = [];
-    // this.init();
   }
 
   /**
    * Check if an timestamp has expired
    */
-  isExpired(timestamp: Date) {
+  private isExpired(timestamp: Date) {
     const now = new Date();
     return now.getTime() - timestamp.getTime() > 60 * 15 * 1000;
   }
@@ -33,7 +32,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Match a market order against the orderbook and return the matched orders
    */
-  matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
+  private matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
 
@@ -60,17 +59,17 @@ export default class OrderBook implements IOrderBook {
     }
 
     if (remainingQty > 0) {
-      // What do we do with a partially filled market order?
+      // TODO: What do we do with a partially filled market order?
     }
 
     return [this.matchedOrders, remainingQty];
   }
 
-  insertMatchedOrders(matchedOrders: MatchedOrder[]) {
+  private insertMatchedOrders(matchedOrders: MatchedOrder[]) {
     this.matchedOrders.push(...matchedOrders);
   }
 
-  resortOrders() {
+  private resortOrders() {
     this.buyOrders.sort((a, b) => {
       if (b.price === a.price) {
         return a.timestamp.getTime() - b.timestamp.getTime();
@@ -102,7 +101,7 @@ export default class OrderBook implements IOrderBook {
    * There is no timestamp field in the database, so we assign one
    * to be 15 mins from now.
    */
-  async loadInProgressOrders() {
+  private async loadInProgressOrders() {
     const buyOrderDocuments = await this.fetchOrdersByType(true); // isBuy = true
     const sellOrderDocuments = await this.fetchOrdersByType(false); // isBuy = false
     // These are Orders we need to convert them to OrderBookOrders by adding timestamp
@@ -110,7 +109,7 @@ export default class OrderBook implements IOrderBook {
     this.sellOrders = sellOrderDocuments;
   }
 
-  async fetchOrdersByType(isBuy: boolean): Promise<OrderBookOrder[]> {
+  private async fetchOrdersByType(isBuy: boolean): Promise<OrderBookOrder[]> {
     const documents = await this.stockTransactionModel
       .find({
         order_type: "LIMIT",
@@ -134,36 +133,32 @@ export default class OrderBook implements IOrderBook {
     }));
     return orders;
   }
-  /**
-   * Check for expired orders and add them to the expiredOrders array
-   */
-  checkForExpiredOrders() {
-    console.log("checking for expired orders");
-    const now = new Date();
-    // 15 minutes
-    for (let i = 0; i < this.buyOrders.length; i++) {
-      if (now.getTime() - this.buyOrders[i].timestamp.getTime() > 60 * 15 * 1000) {
-        this.expiredOrders.push(this.buyOrders.splice(i, 1)[0]);
-        i--;
-      }
-    }
 
-    for (let i = 0; i < this.sellOrders.length; i++) {
-      if (now.getTime() - this.sellOrders[i].timestamp.getTime() > 60 * 15 * 1000) {
-        this.expiredOrders.push(this.sellOrders.splice(i, 1)[0]);
+  /**
+   * Check for expired orders in the given Q and add them to the expiredOrders array
+   */
+  private checkQueueForExpiredOrders(orderQ: OrderBookOrder[]) {
+    const now = new Date();
+    for (let i = 0; i < orderQ.length; i++) {
+      if (now.getTime() - orderQ[i].timestamp.getTime() > 60 * 15 * 1000) {
+        this.expiredOrders.push(orderQ.splice(i, 1)[0]);
         i--;
       }
     }
-    if (this.expiredOrders.length > 0) {
-      this.flushOrders();
-    }
-    return;
+  }
+
+  /**
+   * Check for expired buy and sell orders.
+   */
+  checkForExpiredOrders(): void {
+    this.checkQueueForExpiredOrders(this.buyOrders);
+    this.checkQueueForExpiredOrders(this.sellOrders);
   }
 
   /**
    * Given a pair of matched orders, create a new matched order object
    */
-  createMatchedOrder(
+  private createMatchedOrder(
     order: OrderBookOrder,
     matchAgainst: Order,
     quantity: number
@@ -180,7 +175,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Find all matches for a given order and return the matched orders and the remaining quantity
    */
-  findMatches(order: OrderBookOrder): [MatchedOrder[], number] {
+  private findMatches(order: OrderBookOrder): [MatchedOrder[], number] {
     const matched: MatchedOrder[] = [];
     let remainingQty = order.quantity;
     const orderQueue = order.is_buy ? this.sellOrders : this.buyOrders;
@@ -215,7 +210,7 @@ export default class OrderBook implements IOrderBook {
     return [matched, remainingQty];
   }
 
-  isMatch(order: OrderBookOrder, matchAgainst: OrderBookOrder) {
+  private isMatch(order: OrderBookOrder, matchAgainst: OrderBookOrder) {
     if (order.stock_id !== matchAgainst.stock_id) return false;
     return order.is_buy
       ? matchAgainst.price <= order.price
@@ -225,7 +220,7 @@ export default class OrderBook implements IOrderBook {
   /**
    * Handle remaining quantity of a partially filled order by pushing it into the orderbook
    */
-  handlePartialOrder(order: OrderBookOrder, remainingQty: number) {
+  private handlePartialOrder(order: OrderBookOrder, remainingQty: number) {
     if (remainingQty > 0 && order.quantity !== remainingQty) {
       order.quantity = remainingQty;
       this.insertToOrderBook(order);
@@ -235,14 +230,14 @@ export default class OrderBook implements IOrderBook {
   /**
    * Compare an Order and OrderBookOrder and return true if they are the same
    */
-  isSameOrder(stockTxId: string, orderBookOrder: OrderBookOrder) {
+  private isSameOrder(stockTxId: string, orderBookOrder: OrderBookOrder) {
     return stockTxId === orderBookOrder.stock_tx_id;
   }
 
   /**
    * Remove a given order from a given order queue
    */
-  removeOrderFromQueue(
+  private removeOrderFromQueue(
     stockTxId: string,
     orderQueue: OrderBookOrder[]
   ): OrderBookOrder | null {
@@ -276,7 +271,7 @@ export default class OrderBook implements IOrderBook {
     }
   }
 
-  matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
+  private matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
@@ -291,7 +286,7 @@ export default class OrderBook implements IOrderBook {
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,
-      this.expiredOrders 
+      this.expiredOrders
     );
   }
 
@@ -318,7 +313,7 @@ export default class OrderBook implements IOrderBook {
   ) {
     const executionServiceUrl = "http://ms_order_execution:8002/executeOrder";
 
-    const data = []
+    const data = [];
 
     if (matchedOrders.length > 0) {
       for (const matchedOrder of matchedOrders) {
@@ -331,7 +326,10 @@ export default class OrderBook implements IOrderBook {
 
     if (cancelledOrders.length > 0) {
       for (const cancelledOrder of cancelledOrders) {
-        data.push({ stock_tx_id: cancelledOrder.stock_tx_id, action: "CANCEL" });
+        data.push({
+          stock_tx_id: cancelledOrder.stock_tx_id,
+          action: "CANCEL",
+        });
       }
     }
 
@@ -342,17 +340,17 @@ export default class OrderBook implements IOrderBook {
     }
 
     try {
-        const response = await axios.post(executionServiceUrl, {
-            data
-        });
+      const response = await axios.post(executionServiceUrl, {
+        data,
+      });
 
-        if (response.status === 200) {
-            this.matchedOrders = [];
-            this.cancelledOrders = [];
-            this.expiredOrders = [];
-        }
+      if (response.status === 200) {
+        this.matchedOrders = [];
+        this.cancelledOrders = [];
+        this.expiredOrders = [];
+      }
     } catch (error) {
-        console.error("Error sending orders to order execution service:", error);
+      console.error("Error sending orders to order execution service:", error);
     }
   }
 

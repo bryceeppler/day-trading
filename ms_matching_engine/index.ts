@@ -4,8 +4,6 @@ import matchingRoutes from './routes/matchingRoutes';
 import OrderBook from './services/orderbook';
 import {StockTransaction} from './models/stockTransactionModel';
 import morgan from 'morgan';
-// Having issues importing from the shared volume
-// const StockTransaction = require('../shared/models/stockTransactionModel');
 
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);

@@ -18,7 +18,7 @@ exports.createStock = async (req, res, next) =>
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
         newStock.save();
 
-        successReturn(res, newStock, STATUS_CODE.CREATED);
+        successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
     } catch (error)
     {
         handleError(error, res, next);

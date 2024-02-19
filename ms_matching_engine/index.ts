@@ -4,12 +4,10 @@ import matchingRoutes from './routes/matchingRoutes';
 import OrderBook from './services/orderbook';
 import {StockTransaction} from './models/stockTransactionModel';
 import morgan from 'morgan';
-// Having issues importing from the shared volume
-// const StockTransaction = require('../shared/models/stockTransactionModel');
 
 console.log('Initializing order book...');
 const orderBook = new OrderBook(StockTransaction);
-orderBook.initializeOrderBook();
+// orderBook.initializeOrderBook();
 
 console.log('Connecting to database...');
 connectDB();
@@ -25,8 +23,7 @@ app.listen(port, () => {
   console.log(`Matching engine microservice on port ${port}...`);
 });
 
-// periodically check for expired orders and notify order exec service
 setInterval(() => {
   orderBook.checkForExpiredOrders();
-  // orderBook.flushOrders();
-}, 60000); // every 60 sec for now
+  orderBook.flushOrders();
+}, 10000); // every 10 sec for now

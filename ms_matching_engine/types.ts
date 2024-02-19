@@ -44,8 +44,6 @@ export interface StockTransactionDocument extends Document {
   is_deleted?: boolean;
 }
 
-// Order is the incoming order from order creation
-// no timestamp, since I create it
 export type Order = {
   wallet_tx_id: string;
   stock_tx_id: string;
@@ -78,22 +76,10 @@ export interface IOrderBook {
   matchedOrders: MatchedOrder[];
   expiredOrders: OrderBookOrder[];
   cancelledOrders: OrderBookOrder[];
-  matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number];
-  resortOrders(): void;
   removeOrder(stockTxId: string): OrderBookOrder | null;
   matchOrder(order: Order): [MatchedOrder[], number];
   checkForExpiredOrders(): void;
-  createMatchedOrder(
-    order: OrderBookOrder,
-    matchAgainst: Order,
-    quantity: number
-  ): MatchedOrder;
-  findMatches(order: OrderBookOrder): [MatchedOrder[], number];
-  isMatch(order: OrderBookOrder, matchAgainst: OrderBookOrder): boolean;
-  removeOrderFromQueue(stockTxId: string, orderQueue: Order[]): Order | null;
   cancelOrder(stockTxId: string): Order | null;
-  insertMatchedOrders(matchedOrders: MatchedOrder[]): void;
   initializeOrderBook(): Promise<void>;
-  loadInProgressOrders(): Promise<void>;
-  fetchOrdersByType(isBuy: boolean): Promise<Order[]>;
+  flushOrders(): void;
 }

@@ -13,7 +13,6 @@ services:
       - ms_matching_engine
       - ms_market_data
 
-
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
@@ -36,10 +35,16 @@ services:
   # Order Creation Microservice
   ms_order_creation:
     build: ./ms_order_creation
+    expose:
+      - '3000'
     ports:
       - "8003:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+      MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
+      NODE_ENV: production
+    command: ["npm", "start"]
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -47,9 +52,13 @@ services:
     ports:
       - "8004:3000"
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   # Market Data Microservice
   ms_market_data:
@@ -58,6 +67,12 @@ services:
       - "8005:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
+
 
   # Audit Manager Microservice
   ms_transaction_manager:
@@ -66,6 +81,17 @@ services:
       - "8006:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
+    depends_on:
+    - ms_shared
+    volumes:
+      - shared_volume:/app/shared
+
+# Shared Code Microservice
+  ms_shared:
+    build: ./ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   mongo:
     image: mongo:latest
@@ -79,8 +105,4 @@ services:
 
 volumes:
   db_data:
-    # user_db_data:
-    # order_execution_db_data:
-    # order_creation_db_data:
-    # matching_engine_db_data:
-    # market_data_db_data: 
+  shared_volume:

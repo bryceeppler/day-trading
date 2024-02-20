@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
 
-const StockTransaction = require('./models/stockTransactionModel');
-const WalletTransaction = require('./models/walletTransactionModel');
-const Portfolio = require('./models/portfolioModel');
-const User = require('./models/userModel');
+const StockTransaction = require('../shared/models/stockTransactionModel');
+const WalletTransaction = require('../shared/models/walletTransactionModel');
+const Portfolio = require('../shared/models/portfolioModel');
+const User = require('../shared/models/userModel');
 
 const app = express();
 
@@ -177,11 +177,10 @@ app.post("/executeOrder", async (req, res) => {
 
                     //create new wallet transaction
                     const newWalletTransaction = new WalletTransaction({
-                        wallet_tx_id: existingStockTx.wallet_tx_id,
                         user_id: user.user_id,
                         stock_tx_id: existingStockTx.stock_tx_id,
                         is_debit: true,
-                        amount:profit,
+                        amount: profit,
                         is_deleted:false
                     });
                     await newWalletTransaction.save();

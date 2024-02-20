@@ -31,6 +31,10 @@ services:
       - "8002:3000"
     environment:
       MONGO_URI: mongodb://mongo:27017/db
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   # Order Creation Microservice
   ms_order_creation:

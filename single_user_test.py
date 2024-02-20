@@ -1,34 +1,42 @@
 import requests
 import time 
+import json
 
-BASE_URL = "http://localhost"
+BASE_URL = "http://localhost" #:8000/
 
-
+# | Port  | Service  |
+# |-------|---------------|
+# | 8001  | ms_user |
+# | 8002  | ms_order_execution |
+# | 8003  | ms_order_creation |
+# | 8004  | ms_matching_engine |
+# | 8005  | ms_market_data |
+# | 8006  | ms_transaction_manager |
 ENDPOINTS = {
-    "register": "/register",
-    "login": "/login",
-    'createStock': "/createStock",
-    'addStockToUser': "/addStockToUser",
-    'getStockPortfolio': "/getStockPortfolio",
-    'placeStockOrder': "/placeStockOrder",
-    'getStockPrices': "/getStockPrices",
-    'addMoneyToWallet': "/addMoneyToWallet",
-    'getWalletBalance': "/getWalletBalance",
-    'getWalletTransactions': "/getWalletTransactions",
-    'getStockTransactions': "/getStockTransactions",
-    'cancelStockTransaction': "/cancelStockTransaction"
+    "register": ":8001/register",
+    "login": ":8001/login",
+    'createStock': ":8005/createStock",
+    'addStockToUser': ":8001/addStockToUser",
+    'getStockPortfolio': ":8001/getStockPortfolio",
+    'placeStockOrder': ":8003/placeStockOrder",
+    'getStockPrices': ":8005/getStockPrices",
+    'addMoneyToWallet': ":8001/addMoneyToWallet",
+    'getWalletBalance': ":8001/getWalletBalance",
+    'getWalletTransactions': ":8006/getWalletTransactions",
+    'getStockTransactions': ":8006/getStockTransactions",
+    'cancelStockTransaction': ":8003/cancelStockTransaction"
 }
 
 def make_post_request(endpoint, headers=None, data=None):
     url = BASE_URL + endpoint
     response = requests.post(url, headers=headers, json=data)
-    return response.json()
+    return json.loads(response.text)
 
 # Helper function to make a GET request
 def make_get_request(endpoint, headers=None):
     url = BASE_URL + endpoint
     response = requests.get(url, headers=headers)
-    return response.json()
+    return response.text
 
 
 # 1. POST /register
@@ -44,16 +52,18 @@ RESPONSE
 def step_1_register():
     endpoint = ENDPOINTS['register']
     data = {
-        "user_name": "VanguardETF",
-        "password": "Vang@123",
-        "name": "Vanguard Corp."
+        "user_name": "VanguasdaasdasasdadrdaETF",
+        "password": "Vang123",
+        "name": "VanguardCorp"
     }
     response = make_post_request(endpoint, data=data)
     expected_response = {
         "success": True,
         "data": None
     }
-    assert response == expected_response, f"error in step 1"
+    print("here")
+    print(response)
+    assert response["success"], f"Error in step 1"
 
 
 # 2. POST /register

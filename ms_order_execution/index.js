@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;
 
-const StockTransaction = require('../ms_shared/models/stockTransactionModel');
-const WalletTransaction = require('../ms_shared/models/walletTransactionModel');
-const Portfolio = require('../ms_shared/models/portfolioModel');
-const User = require('../ms_shared/models/userModel');
+const StockTransaction = require('../shared/models/stockTransactionModel');
+const WalletTransaction = require('../shared/models/walletTransactionModel');
+const Portfolio = require('../shared/models/portfolioModel');
+const User = require('../shared/models/userModel');
 
 const app = express();
 

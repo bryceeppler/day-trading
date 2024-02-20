@@ -1,91 +1,8 @@
 const StockTransaction = require('../models/stockTransactionModel');
 
-// /createWalletTransaction
-async function createStockTx(req, res)
-{
-    try
-    {
-        const { stock_id, wallet_tx_id, is_buy, order_type, stock_price, quantity } = req.body;
-
-        const newStockTx = new StockTransaction({
-            stock_id,
-            wallet_tx_id,
-            is_buy,
-            order_type,
-            stock_price,
-            quantity,
-        })
-        newStockTx.save();
-
-        return res.status(201).json(newStockTx);
-    } catch (error)
-    {
-        console.error('Error creating stock transaciton:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
-    }
-}
-
-// /updateStockTxStatus/:stockTxId
-async function updateStockTxStatus(req, res)
-{
-    try
-    {
-        const stockTxId = req.params.stock_tx_id;
-        const { order_status } = req.body;
-
-        // Check if the transaction exists
-        const existingStockTx = await StockTransaction.findById(stockTxId);
-
-        if (!existingStockTx)
-        {
-            return res.status(404).json({ message: 'Stock Transaction not found' });
-        }
-
-        existingStockTx.order_status = order_status;
-        await existingStockTx.save();
-
-        return res.status(200).json(existingStockTx);
-    }
-    catch (error)
-    {
-        console.error('Error updating stock transaction', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
-    }
-}
-
-// /deleteStockTx/:StockTxId
-async function deleteStockTx(req, res)
-{
-    try
-    {
-        const stockTxId = req.params.stock_tx_id;
-
-        // Check if the transaction exists
-        const existingStockTx = await StockTransaction.findById(stockTxId);
-
-        if (!existingStockTx)
-        {
-            return res.status(404).json({ message: 'Wallet Transaction not found' });
-        }
-        // update is_deleted flag
-        existingStockTx.is_deleted = true;
-        await existingStockTx.save();
-
-        return res.status(200).json(existingStockTx);
-    }
-    catch (error)
-    {
-        console.error('Error updating stock transaction:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
-    }
-}
-
 // /getStockTransactions
-async function getStockTransactions(req, res)
-{
-
-    try 
-    {
+async function getStockTransactions(req, res) {
+    try {
         // get all stock transaction that are not deleted.  
         const stockTx = await StockTransaction.find({ is_deleted: false }).sort({ time_stamp: 1 }) || {};
 
@@ -103,8 +20,7 @@ async function getStockTransactions(req, res)
         }));
         return res.status(200).json(transformedStockTx);
     }
-    catch (error) 
-    {
+    catch (error) {
         console.error('Error getting stock transactions:', error);
         return res.status(500).json({ message: `Internal Server Error: ${error}` });
     }
@@ -127,10 +43,9 @@ async function getAllStockTransactions(req, res)
     }
 }
 
+
+
 module.exports = {
-    createStockTx,
-    updateStockTxStatus,
-    deleteStockTx,
     getStockTransactions,
     getAllStockTransactions
 };

@@ -30,6 +30,7 @@ export interface IStockTransaction {
 }
 
 export interface StockTransactionDocument extends Document {
+  parent_stock_tx_id: { type: String, required: false, unqiue: false, default: null },
   user_id: string;
   stock_id: string;
   wallet_tx_id: string;

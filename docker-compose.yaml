@@ -45,20 +45,20 @@ services:
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
       NODE_ENV: production
     command: ["npm", "start"]
-#
-  ## Matching Engine Microservice
-  #ms_matching_engine:
-  #  build: ./ms_matching_engine
-  #  ports:
-  #    - "8004:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-  #    NODE_ENV: production
-  #  command: ["npm", "start"]
-  #  depends_on:
-  #    - ms_shared
-  #  volumes:
-  #    - shared_volume:/app/shared
+
+  # Matching Engine Microservice
+  ms_matching_engine:
+    build: ./ms_matching_engine
+    ports:
+      - "8004:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      NODE_ENV: production
+    command: ["npm", "start"]
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 #
   ## Market Data Microservice
   #ms_market_data:

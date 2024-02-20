@@ -24,13 +24,13 @@ services:
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       BCRYPT_SALT_ROUNDS: 12
 
-  ## Order Execution Microservice
-  #ms_order_execution:
-  #  build: ./ms_order_execution
-  #  ports:
-  #    - "8002:3000"
-  #  environment:
-  #    MONGO_URI: mongodb://mongo:27017/db
+  # Order Execution Microservice
+  ms_order_execution:
+    build: ./ms_order_execution
+    ports:
+      - "8002:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/db
 #
   ## Order Creation Microservice
   #ms_order_creation:

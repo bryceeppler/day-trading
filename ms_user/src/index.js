@@ -1,5 +1,4 @@
 const express = require("express");
-const userRoutes = require('../routes/userRoutes');
 const env = require('dotenv').config();
 
 const app = express();
@@ -13,10 +12,13 @@ connectDB();
 
 // Import routes
 const authRoutes = require("../routes/authRoutes");
+const transactionRoutes = require("../routes/transactionRoutes");
+const userRoutes = require("../routes/userRoutes");
 
 // Use routes
 app.use("/", authRoutes);
-//app.use('/', userRoutes); 
+app.use("/", transactionRoutes);
+app.use('/', userRoutes); 
 
 // Simple route for health check
 app.get("/healthcheck", async (req, res) => {

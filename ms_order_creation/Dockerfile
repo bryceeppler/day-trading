@@ -10,3 +10,8 @@ RUN npm install
 
 # Copy remaining files
 COPY . .
+
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

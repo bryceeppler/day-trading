@@ -1,40 +1,45 @@
-// const express = require('express');
-// const StockTransaction = require('../../ms_transaction_manager/models/StockTransaction');
-// const WalletTransaction = require('../../ms_transaction_manager/models/WalletTransaction');
+const User = require('../models/User');
+const { authenticateToken } = require('../middleware/authenticateToken');
 
-// const router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-// router.get('/getStockPrices', async (req, res) => {
-//     // ... implementation for stock prices
-//     // Note: This might involve communicating with the ms_market_data service to get current stock prices
-//   });
+//getWalletBalance
+async function getWalletBalance(req, res) {
+    try {
+      // Assuming req.user is populated by the authenticateToken middleware
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+      // Assuming the user model has a balance field
+      const balance = user.balance;
+      return res.status(200).json({ success: true, data: { balance } });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
 
-// router.get('/getWalletBalance', async (req, res) => {
-//   // ... implementation for wallet balance
-// });
+//getStockPrices
+async function getStockPrices(req, res) {
+    try {
+      // Assuming req.user is populated by the authenticateToken middleware
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+      // Assuming the user model has a balance field
+      const balance = user.balance;
+      return res.status(200).json({ success: true, data:[{ stock_id, stock_name, current_price }, {stock_id, stock_name, current_price}] });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
 
-// router.get('/getStockPortfolio', async (req, res) => {
-//     try {
-//         const stock_id = req.params.stockId;
-//         const stock = await StockTransaction.findOne({ id: stock_id });
+// Define the route and use the authenticateToken middleware
+router.get('/getWalletBalance', authenticateToken, getWalletBalance);
+router.get('/getStockPrices', authenticateToken, getStockPrices);
 
-//         if (!stock) {
-//             return res.status(404).json({ success: false, message: 'Stock not found' });
-//         }
-
-//         res.json({ success: true, data: stock });
-//         } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Server error' });
-//         }
-// });
-
-// router.get('/getWalletTransactions', async (req, res) => {
-//   // ... implementation for wallet transactions
-// });
-
-// router.get('/getStockTransactions', async (req, res) => {
-//     // ... implementation for stock transactions
-// });
-
-// module.exports = router;
+module.exports = router;

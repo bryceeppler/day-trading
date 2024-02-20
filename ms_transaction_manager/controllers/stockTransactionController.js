@@ -47,7 +47,7 @@ exports.updateStockTxStatus = async (req, res, next) =>
 
         if (!existingStockTx) 
         {
-            return handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+            return errorReturn(res,'Stock transaction not found');
         }
 
         existingStockTx.order_status = order_status;
@@ -73,7 +73,7 @@ exports.deleteStockTx = async (req, res, next) =>
 
         if (!existingStockTx)
         {
-            return handleError(createError('Stock transaction not found', STATUS_CODE.NOT_FOUND), res, next);
+            return errorReturn(res, 'Stock transaction not found');
         }
 
         // update is_deleted flag

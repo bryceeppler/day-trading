@@ -112,20 +112,15 @@ POST /login
 RESPONSE
 {"success":true,"data":{"token":"<compToken>"}}
 """
-def step_4_login(comp_token):
+def step_4_login():
     endpoint = ENDPOINTS['login']
     data = {
         "user_name": "VanguardETF",
         "password": "Vang@123"
     }
     response = make_post_request(endpoint, data=data)
-    expected_response = {
-        "success": True,
-        "data": {
-            "token": comp_token  
-        }
-    }
-    assert response['success'] and response['data']['token'] == comp_token, f"Error in step 4: {response}"
+    assert response['success'] and response['data']['token']
+    return response['data']['token']
 
 
 
@@ -1132,16 +1127,16 @@ def executeTests():
     step_1_register()
     step_2_register()
     step_3_login()
-    step_4_login("<compToken>")
-    step_5_create_stock("<compToken>")
-    step_6_add_stock_to_user("<compToken>", "<googleStockId>")
-    step_7_create_stock("<compToken>")
-    step_8_add_stock_to_user("<compToken>", "<appleStockId>")
-    step_9_get_stock_portfolio("<compToken>")
-    step_10_place_stock_order("<compToken>", "<appleStockId>")
-    step_11_place_stock_order("<compToken>", "<googleStockId>")
-    step_12_get_stock_portfolio("<compToken>")
-    step_13_get_stock_transactions("<compToken>")
+    token = step_4_login()
+    step_5_create_stock(token)
+    step_6_add_stock_to_user(token, "<googleStockId>")
+    step_7_create_stock(token)
+    step_8_add_stock_to_user(token, "<appleStockId>")
+    step_9_get_stock_portfolio(token)
+    step_10_place_stock_order(token, "<appleStockId>")
+    step_11_place_stock_order(token, "<googleStockId>")
+    step_12_get_stock_portfolio(token)
+    step_13_get_stock_transactions(token)
     step_14_register()
     user1_token = step_15_login()
     step_16_get_stock_prices(user1_token)
@@ -1152,9 +1147,9 @@ def executeTests():
     step_21_get_wallet_transactions(user1_token)
     step_22_get_wallet_balance(user1_token)
     step_23_get_stock_portfolio(user1_token)
-    step_24_get_stock_transactions("<compToken>")
-    step_25_get_wallet_balance("<compToken>")
-    step_26_get_wallet_transactions("<compToken>")
+    step_24_get_stock_transactions(token)
+    step_25_get_wallet_balance(token)
+    step_26_get_wallet_transactions(token)
     step_27_place_stock_order(user1_token, "<appleStockId>")
     step_28_get_stock_transactions(user1_token)
     step_29_get_wallet_transactions(user1_token)
@@ -1170,21 +1165,21 @@ def executeTests():
     step_39_get_wallet_transactions(user1_token)
     step_40_get_wallet_balance(user1_token)
     step_41_get_stock_portfolio(user1_token)
-    step_42_get_stock_prices("<compToken>")
-    step_43_place_stock_order("<compToken>", "<googleStockId>")
-    step_44_get_stock_transactions("<compToken>")
+    step_42_get_stock_prices(token)
+    step_43_place_stock_order(token, "<googleStockId>")
+    step_44_get_stock_transactions(token)
 
     ############### WAIT 15 MINUTES
     time.sleep(900)
     
-    step_45_get_wallet_transactions("<compToken>")
-    step_46_get_wallet_balance("<compToken>")
-    step_47_get_stock_prices("<compToken>")
+    step_45_get_wallet_transactions(token)
+    step_46_get_wallet_balance(token)
+    step_47_get_stock_prices(token)
     step_48_get_stock_transactions(user1_token)
     step_49_get_wallet_transactions(user1_token)
     step_50_get_wallet_balance(user1_token)
-    step_51_get_stock_transactions("<compToken>")
-    step_52_get_stock_portfolio("<compToken>")
+    step_51_get_stock_transactions(token)
+    step_52_get_stock_portfolio(token)
     step_53_get_stock_transactions_with_invalid_token("<invalidToken>")
     step_54_get_wallet_transactions_with_invalid_token("<invalidToken>")
     step_55_get_stock_transactions_with_invalid_token("<invalidToken>")

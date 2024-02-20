@@ -7,7 +7,7 @@ services:
     volumes: 
       - ./client/src:/app/src
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - ms_user
       - ms_order_execution

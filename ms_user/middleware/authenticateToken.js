@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 const { handleError, createError } = require('../lib/apiHandling');
 const { STATUS_CODE } = require('../lib/enums');
 
-exports.authenticateToken = (req, res, next) => {
+module.exports.authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
+  console.log(authHeader);
   const token = authHeader && authHeader.split(' ')[1]; // More robust check for existence
 
   if (!token) {

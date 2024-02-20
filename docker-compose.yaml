@@ -2,16 +2,16 @@ version: '3.9'
 
 services:
   # React Frontend
-  react:
-    build: ./client
-    ports:
-      - "3000:80"
-    depends_on:
-      - ms_user
-      - ms_order_execution
-      - ms_order_creation
-      - ms_matching_engine
-      - ms_market_data
+  #react:
+  #  build: ./client
+  #  ports:
+  #    - "3000:80"
+  #  depends_on:
+  #    - ms_user
+  #    - ms_order_execution
+  #    - ms_order_creation
+  #    - ms_matching_engine
+  #    - ms_market_data
 
   # User & Auth Microservice
   ms_user:
@@ -72,7 +72,6 @@ services:
       - ms_shared
     volumes:
       - shared_volume:/app/shared
-
 
   # Audit Manager Microservice
   ms_transaction_manager:

@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const StockTransaction = require('../models/stockTransactionModel');
-//const stockTransactionController = require('../controllers/stockTransactionController');
+const stockTransactionController = require('../controllers/stockTransactionController');
 const WalletTransaction = require('../models/walletTransactionModel');
-//const walletTransactionController = require('../controllers/walletTransactionController');
+const walletTransactionController = require('../controllers/walletTransactionController');
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 
@@ -46,42 +46,48 @@ async function getWalletBalance(req, res) {
     }
 }
 
-// getStockTransactions
-async function getStockTransactions(req, res, next) {
+// addStockToUser
+async function addStockToUser(req, res) {
   try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
+    const { stock_id, quantity } = req.body;
 
-      // Fetch user's actual stock transactions from the database
-      const stockTransactions = await StockTransaction.find({ user: user._id, is_deleted: false }).sort({ time_stamp: 1 });
+    // Validate request body parameters
+    if (!stock_id || !quantity) {
+      return res.status(400).json({ success: false, data: null, message: "Missing required parameters" });
+    }
 
-      // Transform stock transactions
-      const transformedStockTransactions = stockTransactions.map(tx => ({
-          stock_tx_id: tx._id,
-          stock_id: tx.stock_id,
-          wallet_tx_id: tx.wallet_tx_id,
-          order_status: tx.order_status,
-          is_buy: tx.is_buy,
-          order_type: tx.order_type,
-          stock_price: tx.stock_price,
-          quantity: tx.quantity,
-          time_stamp: tx.time_stamp,
-      }));
+    // Add logic to add stock to user (e.g., save to database)
 
-      // Return the transformed data
-      return res.status(200).json({ success: true, data: transformedStockTransactions });
+    return res.status(200).json({ success: true, data: null});
   } catch (error) {
-      console.error('Error getting stock transactions:', error);
-      return res.status(500).json({ success: false, message: `Internal Server Error: ${error.message}` });
+    console.error(error);
+    return res.status(500).json({ success: false, data: null, message: 'Server error' });
   }
+}
+
+// addMoneyToWallet
+async function addMoneyToWallet(req, res) {
+  try {
+    const { amount } = req.body;
+
+    // Validate request body parameters
+    if (!amount) {
+      return res.status(400).json({ success: false, data: null, message: "Missing required parameters" });
+    }
+
+    // Add logic to add money to user's wallet (e.g., save to database)
+
+    return res.status(200).json({ success: true, data: null});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, data: null, message: 'Server error' });
+  } 
 }
 
 // Define the routes and use the authenticateToken middleware
 router.get('/getStockPortfolio', authenticateToken, getStockPortfolio);
 router.get('/getWalletBalance', authenticateToken, getWalletBalance);
-router.get('/getStockTransactions', authenticateToken, getStockTransactions);
+router.post('/addStockToUser', authenticateToken, addStockToUser);
+router.post('/addMoneyToWallet', authenticateToken, addMoneyToWallet);
 
 module.exports = router;

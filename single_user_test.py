@@ -36,7 +36,7 @@ def make_post_request(endpoint, headers=None, data=None):
 def make_get_request(endpoint, headers=None):
     url = BASE_URL + endpoint
     response = requests.get(url, headers=headers)
-    return response.text
+    return json.loads(response.text)
 
 
 # 1. POST /register
@@ -52,17 +52,15 @@ RESPONSE
 def step_1_register():
     endpoint = ENDPOINTS['register']
     data = {
-        "user_name": "VanguasdaasdasasdadrdaETF",
-        "password": "Vang123",
-        "name": "VanguardCorp"
+        "user_name": "VanguardETF",
+        "password": "Vang@123",
+        "name": "Vanguard Corp."
     }
     response = make_post_request(endpoint, data=data)
     expected_response = {
         "success": True,
         "data": None
     }
-    print("here")
-    print(response)
     assert response["success"], f"Error in step 1"
 
 
@@ -1126,11 +1124,17 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
 
 def executeTests():
     step_1_register()
+    print("Step 1 passed")
     step_2_register()
+    print("Step 2 passed")
     step_3_login()
+    print("Step 3 passed")
     token = step_4_login()
+    print("Step 4 passed")
     google_stock_id = step_5_create_stock(token)
+    print("Step 5 passed")
     step_6_add_stock_to_user(token, google_stock_id)
+    print("Step 6 passed")
     apple_stock_id = step_7_create_stock(token)
     step_8_add_stock_to_user(token, apple_stock_id)
     step_9_get_stock_portfolio(token)

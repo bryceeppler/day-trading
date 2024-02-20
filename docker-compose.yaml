@@ -102,6 +102,12 @@ services:
     volumes:
       - db_data:/data/db
 
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+
+
 volumes:
   db_data:
   shared_volume:

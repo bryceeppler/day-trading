@@ -143,10 +143,11 @@ def step_5_create_stock(comp_token):
     expected_response = {
         "success": True,
         "data": {
-            "stock_id": "<googleStockId>"  # Replace <googleStockId> with actual stock ID expected
+            "stock_id": "<googleStockId>"
         }
     }
     assert response['success'] and response['data']['stock_id'], f"Error in step 5: {response}"
+    return response['data']['stock_id']
 
 # 6. POST /addStockToUser
 """
@@ -169,7 +170,8 @@ def step_6_add_stock_to_user(comp_token, google_stock_id):
         "success": True,
         "data": None
     }
-    assert response == expected_response, f"Error in step 6: {response}"
+    assert response["success"], f"Error in step 6: {response}"
+    assert response["data"] == None, f"Error in step 6: {response}"
 
 # 7. POST /createStock
 """
@@ -187,13 +189,8 @@ def step_7_create_stock(comp_token):
         "stock_name": "Apple"
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {
-        "success": True,
-        "data": {
-            "stock_id": "<appleStockId>" 
-        }
-    }
     assert response['success'] and response['data']['stock_id'], f"Error in step 7: {response}"
+    return response['data']['stock_id']
 
 # 8. POST /addStockToUser
 """
@@ -212,8 +209,7 @@ def step_8_add_stock_to_user(comp_token, apple_stock_id):
         "quantity": 369
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 8: {response}"
+    assert response['success'] and not response['data'], f"Error in step 8: {response}"
 
 # 9. GET /getStockPortfolio
 """
@@ -227,7 +223,7 @@ def step_9_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": comp_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and isinstance(response['data'], list), f"Error in step 9: {response}"
+    assert response['success'] and len(response['data']) == 2, f"Error in step 9: {response}"
 
 # 10. POST /placeStockOrder
 """
@@ -249,8 +245,7 @@ def step_10_place_stock_order(comp_token, apple_stock_id):
         "price": 140
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 10: {response}"
+    assert response["success"] and not response["data"], f"Error in step 10: {response}"
 
 # 11. POST /placeStockOrder
 """
@@ -272,8 +267,7 @@ def step_11_place_stock_order(comp_token, google_stock_id):
         "price": 135
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 11: {response}"
+    assert response["success"] and not response["data"], f"Error in step 11: {response}"
 
 
 # 12. GET /getStockPortfolio
@@ -288,8 +282,7 @@ def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": comp_token}
     response = make_get_request(endpoint, headers=headers)
-    expected_response = {"success": True, "data": []} 
-    assert response == expected_response, f"Error in step 12: {response}"
+    assert response['success'] and len(response["data"] == 0), f"Error in step 12: {response}" 
 
 # 13. GET /getStockTransactions
 """
@@ -304,7 +297,7 @@ def step_13_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": comp_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and isinstance(response['data'], list), f"Error in step 13: {response}"
+    assert response['success'] and len(response['data']) == 2, f"Error in step 13: {response}"
 
 # 14. POST /register
 """
@@ -323,8 +316,7 @@ def step_14_register():
         "name": "The Finance Guru"
     }
     response = make_post_request(endpoint, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 14: {response}"
+    assert response['success'] and not response['data'], f"Error in step 14: {response}"
 
 # 15. POST /login
 """
@@ -362,7 +354,7 @@ def step_16_get_stock_prices(user1_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and isinstance(response['data'], list), f"Error in step 16: {response}"
+    assert response['success'] and len(response['data']) == 2, f"Error in step 16: {response}"
 
 # 17. POST /addMoneyToWallet
 """
@@ -378,8 +370,7 @@ def step_17_add_money_to_wallet(user1_token):
     headers = {"token": user1_token}
     data = {"amount": 10000}
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 17: {response}"
+    assert response['success'] and not response['data'], f"Error in step 17: {response}"
 
 # 18. GET /getWalletBalance
 """
@@ -393,8 +384,7 @@ def step_18_get_wallet_balance(user1_token):
     endpoint = ENDPOINTS['getWalletBalance']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    expected_response = {"success": True, "data": {"balance": 10000}}
-    assert response == expected_response, f"Error in step 18: {response}"
+    assert response['success'] and response['data']['balance'] == 10000, f"Error in step 18: {response}"
 
 # 19. POST /placeStockOrder
 """
@@ -416,8 +406,7 @@ def step_19_place_stock_order(user1_token, google_stock_id):
         "price": None
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    expected_response = {"success": True, "data": None}
-    assert response == expected_response, f"Error in step 19: {response}"
+    assert response['success'] and not response['data'], f"Error in step 19: {response}"
 
 # 20. GET /getStockTransactions
 """
@@ -431,7 +420,7 @@ def step_20_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and isinstance(response['data'], list), f"Error in step 20: {response}"
+    assert response['success'] and len(response['data']) == 1, f"Error in step 20: {response}"
 
 
 # 21. GET /getWalletTransactions
@@ -1128,13 +1117,13 @@ def executeTests():
     step_2_register()
     step_3_login()
     token = step_4_login()
-    step_5_create_stock(token)
-    step_6_add_stock_to_user(token, "<googleStockId>")
-    step_7_create_stock(token)
-    step_8_add_stock_to_user(token, "<appleStockId>")
+    google_stock_id = step_5_create_stock(token)
+    step_6_add_stock_to_user(token, google_stock_id)
+    apple_stock_id = step_7_create_stock(token)
+    step_8_add_stock_to_user(token, apple_stock_id)
     step_9_get_stock_portfolio(token)
-    step_10_place_stock_order(token, "<appleStockId>")
-    step_11_place_stock_order(token, "<googleStockId>")
+    step_10_place_stock_order(token, apple_stock_id)
+    step_11_place_stock_order(token, google_stock_id)
     step_12_get_stock_portfolio(token)
     step_13_get_stock_transactions(token)
     step_14_register()
@@ -1142,7 +1131,7 @@ def executeTests():
     step_16_get_stock_prices(user1_token)
     step_17_add_money_to_wallet(user1_token)
     step_18_get_wallet_balance(user1_token)
-    step_19_place_stock_order(user1_token, "<googleStockId>")
+    step_19_place_stock_order(user1_token, google_stock_id)
     step_20_get_stock_transactions(user1_token)
     step_21_get_wallet_transactions(user1_token)
     step_22_get_wallet_balance(user1_token)
@@ -1150,7 +1139,7 @@ def executeTests():
     step_24_get_stock_transactions(token)
     step_25_get_wallet_balance(token)
     step_26_get_wallet_transactions(token)
-    step_27_place_stock_order(user1_token, "<appleStockId>")
+    step_27_place_stock_order(user1_token, apple_stock_id)
     step_28_get_stock_transactions(user1_token)
     step_29_get_wallet_transactions(user1_token)
     step_30_get_wallet_balance(user1_token)
@@ -1160,13 +1149,13 @@ def executeTests():
     step_34_get_wallet_transactions(user1_token)
     step_35_get_wallet_balance(user1_token)
     step_36_get_stock_portfolio(user1_token)
-    step_37_place_stock_order(user1_token, "<googleStockId>")
+    step_37_place_stock_order(user1_token, google_stock_id)
     step_38_get_stock_transactions(user1_token)
     step_39_get_wallet_transactions(user1_token)
     step_40_get_wallet_balance(user1_token)
     step_41_get_stock_portfolio(user1_token)
     step_42_get_stock_prices(token)
-    step_43_place_stock_order(token, "<googleStockId>")
+    step_43_place_stock_order(token, google_stock_id)
     step_44_get_stock_transactions(token)
 
     ############### WAIT 15 MINUTES
@@ -1184,10 +1173,10 @@ def executeTests():
     step_54_get_wallet_transactions_with_invalid_token("<invalidToken>")
     step_55_get_stock_transactions_with_invalid_token("<invalidToken>")
     step_56_add_money_to_wallet(user1_token)
-    step_57_place_stock_order(user1_token, "<googleStockId>")
+    step_57_place_stock_order(user1_token, google_stock_id)
     step_58_cancel_stock_transaction(user1_token, "<googleStockTxId2>")
     step_59_add_money_to_wallet_with_invalid_token("<invalidToken>")
-    step_60_place_stock_order_with_invalid_token("<invalidToken>", "<googleStockId>")
+    step_60_place_stock_order_with_invalid_token("<invalidToken>", google_stock_id)
     print("All tests finished.")
 
 

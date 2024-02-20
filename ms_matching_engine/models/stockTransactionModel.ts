@@ -4,6 +4,7 @@ import { StockTransactionDocument, StockTransactionModel, OrderStatus, OrderType
 const stockTransactionSchema = new mongoose.Schema<StockTransactionDocument>({
   user_id: { type: String, required: true },
   stock_id: { type: String, required: true },
+  parent_stock_tx_id: { type: String, required: false, unqiue: false, default: null },
   wallet_tx_id: { type: String, required: true },
   portfolio_id: { type: String, required: true },
   order_status: { type: String, enum: Object.values(OrderStatus), required: true },

@@ -106,6 +106,14 @@ services:
     build: ./nginx
     ports:
       - "80:80"
+    depends_on:
+      - ms_user
+      - ms_order_execution
+      - ms_order_creation
+      - ms_matching_engine
+      - ms_market_data
+      - ms_transaction_manager
+
 
 
 volumes:

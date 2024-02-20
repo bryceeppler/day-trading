@@ -60,31 +60,31 @@ services:
     volumes:
       - shared_volume:/app/shared
 
-  # Market Data Microservice
-  ms_market_data:
-    build: ./ms_market_data
-    ports:
-      - "8005:3000"
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: your_jwt_secret_here
-    depends_on:
-      - ms_shared
-    volumes:
-      - shared_volume:/app/shared
-
-  ## Audit Manager Microservice
-  #ms_transaction_manager:
-  #  build: ./ms_transaction_manager
+  ## Market Data Microservice
+  #ms_market_data:
+  #  build: ./ms_market_data
   #  ports:
-  #    - "8006:3000"
+  #    - "8005:3000"
   #  environment:
   #    MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
   #    JWT_SECRET: your_jwt_secret_here
   #  depends_on:
-  #  - ms_shared
+  #    - ms_shared
   #  volumes:
   #    - shared_volume:/app/shared
+
+  # Audit Manager Microservice
+  ms_transaction_manager:
+    build: ./ms_transaction_manager
+    ports:
+      - "8006:3000"
+    environment:
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      JWT_SECRET: your_jwt_secret_here
+    depends_on:
+    - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 #
 # Shared Code Microservice
   ms_shared:

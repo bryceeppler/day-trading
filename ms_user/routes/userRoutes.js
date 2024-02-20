@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const StockTransaction = require('../models/stockTransactionModel');
-const stockTransactionController = require('../controllers/stockTransactionController');
+//const stockTransactionController = require('../controllers/stockTransactionController');
 const WalletTransaction = require('../models/walletTransactionModel');
-const walletTransactionController = require('../controllers/walletTransactionController');
+//const walletTransactionController = require('../controllers/walletTransactionController');
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 

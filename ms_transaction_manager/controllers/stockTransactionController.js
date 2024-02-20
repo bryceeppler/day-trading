@@ -1,5 +1,5 @@
 const { STATUS_CODE } = require('../shared/lib/enums');
-const { successReturn, handleError, createError } = require('../shared/lib/apiHandling');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const StockTransaction = require('../shared/models/stockTransactionModel');
 
 // /createWalletTransaction
@@ -47,7 +47,7 @@ exports.updateStockTxStatus = async (req, res, next) =>
 
         if (!existingStockTx) 
         {
-            return errorReturn(res,'Stock transaction not found');
+            return errorReturn(res, 'Stock transaction not found');
         }
 
         existingStockTx.order_status = order_status;

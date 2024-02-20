@@ -1,5 +1,5 @@
 const WalletTransaction = require('../shared/models/walletTransactionModel');
-const { successReturn, handleError, createError } = require('../shared/lib/apiHandling');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const { STATUS_CODE } = require('../shared/lib/enums');
 
 // /createWalletTransaction

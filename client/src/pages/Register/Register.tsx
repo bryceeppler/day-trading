@@ -29,7 +29,6 @@ function Register(): ReactElement {
   const localRegister = async () => {
     if (!verified()) return;
     const error = await register(name, username, password);
-    console.log(error);
     setSuccessful(!error);
     if (error) {
       setError(error);

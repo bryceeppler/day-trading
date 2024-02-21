@@ -10,7 +10,9 @@ function InfoCard({ children, title }: InfoCardProps): ReactElement {
   return (
     <div className={styles.card}>
       {title && <div className={styles.title}>{title}</div>}
-      {children}
+			<div className={styles.content}>
+				{children}
+			</div>
     </div>
   );
 }

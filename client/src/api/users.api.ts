@@ -1,5 +1,5 @@
 import { BaseApi } from 'api';
-import { FETCH_BALANCE, FETCH_STOCK_TXS, FETCH_WALLET_TXS, PLACE_STOCK_ORDER } from 'lib/routes';
+import { CANCEL_STOCK_ORDER, FETCH_BALANCE, FETCH_STOCKS, FETCH_STOCK_PORTFOLIO, FETCH_STOCK_TXS, FETCH_WALLET_TXS, PLACE_STOCK_ORDER } from 'lib/routes';
 import { PlaceStockOrderParams } from 'types/users.types';
 import { SuccessApiResponse } from 'types/utils.types';
 
@@ -15,8 +15,12 @@ export const fetchStockTransactions = async (): Promise<SuccessApiResponse> => {
   return await BaseApi.get(`${FETCH_STOCK_TXS}`);
 };
 
+export const fetchStockPortfolio = async (): Promise<SuccessApiResponse> => {
+  return await BaseApi.get(`${FETCH_STOCK_PORTFOLIO}`);
+};
+
 export const fetchStocks = async (): Promise<SuccessApiResponse> => {
-  return await BaseApi.get(`${FETCH_WALLET_TXS}`);
+  return await BaseApi.get(`${FETCH_STOCKS}`);
 };
 
 export const addMoney = async (amount: number): Promise<SuccessApiResponse> => {
@@ -28,5 +32,5 @@ export const placeStockOrder = async (data: PlaceStockOrderParams): Promise<Succ
 };
 
 export const cancelStockOrder = async (stock_tx_id: string): Promise<SuccessApiResponse> => {
-  return await BaseApi.post(`${PLACE_STOCK_ORDER}`, { stock_tx_id });
+  return await BaseApi.post(`${CANCEL_STOCK_ORDER}`, { stock_tx_id });
 };

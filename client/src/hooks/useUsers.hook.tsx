@@ -29,7 +29,6 @@ function useUsers(): UseUsersInfo {
   const fetchBalance = async (): Promise<void> => {
     try {
       const response = await UserApi.fetchBalance();
-      console.log(response);
       setBalance(response.data.balance);
     } catch (error) {
       handleApiError(error);
@@ -39,7 +38,6 @@ function useUsers(): UseUsersInfo {
   const fetchWalletTransactions = async (): Promise<void> => {
     try {
       const response = await UserApi.fetchWalletTransactions();
-      console.log(response);
       setWalletTransactions(response.data);
     } catch (error) {
       handleApiError(error);
@@ -49,7 +47,6 @@ function useUsers(): UseUsersInfo {
   const fetchStockTransactions = async (): Promise<void> => {
     try {
       const response = await UserApi.fetchStockTransactions();
-      console.log(response);
       setStockTransactions(response.data);
     } catch (error) {
       handleApiError(error);
@@ -59,7 +56,6 @@ function useUsers(): UseUsersInfo {
   const fetchStocks = async (): Promise<void> => {
     try {
       const response = await UserApi.fetchStocks();
-      console.log(response);
       setStocks(response.data);
     } catch (error) {
       handleApiError(error);
@@ -98,8 +94,7 @@ function useUsers(): UseUsersInfo {
 
   const fetchStockPortfolios = async (): Promise<void> => {
     try {
-      const response = await UserApi.fetchBalance();
-      console.log(response);
+      const response = await UserApi.fetchStockPortfolio();
       setStockPortfolios(response.data);
     } catch (error) {
       handleApiError(error);

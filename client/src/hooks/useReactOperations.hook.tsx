@@ -57,7 +57,7 @@ function useReactOperations(): UseReactOperationsProps {
   };
 
   const navigateToWalletPage = () => {
-    localNavigate(PATHS.WALLET);
+    localNavigate(PATHS.TRANSACTIONS);
   };
 
   const navigateToRegistrationPage = () => {

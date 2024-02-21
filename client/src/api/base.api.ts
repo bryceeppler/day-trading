@@ -21,7 +21,7 @@ export const get = async (route: string, params?: any, token?: string) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;
@@ -42,7 +42,7 @@ export const getPDF = async (route: string, params?: any, token?: string) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;
@@ -63,7 +63,7 @@ export const post = async (route: string, body?: any, token?: string) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;
@@ -84,7 +84,7 @@ export const put = async (route: string, body?: any, token?: string) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;
@@ -104,7 +104,7 @@ export const del = async (route: string, body?: any, token?: string) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;
@@ -117,7 +117,7 @@ export const postRefresh = async (route: string, token: string | undefined) => {
     return response.data;
   } catch (error) {
     const e = error as APICallError;
-    if (e.response.status === 403) {
+    if (e.response.status === 401) {
       navigateToLogin();
     }
     throw e;

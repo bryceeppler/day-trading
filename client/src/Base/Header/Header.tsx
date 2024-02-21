@@ -12,7 +12,7 @@ const Header = () => {
   const [accountOpen, setAccountOpen] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);
-  const { navigateToLoginPage, navigateToWalletPage, navigateToPortfolioPage } = useReactOperations();
+  const { navigateToLoginPage, navigateToWalletPage, navigateToPortfolioPage, navigateToHomePage } = useReactOperations();
   const { logout } = useLogin();
   const onLogout = () => {
     logout();
@@ -20,18 +20,14 @@ const Header = () => {
   };
   return (
     <header className={styles.container}>
-      <div className={styles.name}>DAY TRADING INC.</div>
+      <div className={styles.name} onClick={navigateToHomePage}>DAY TRADING INC.</div>
       {!!user && (
         <div className={styles.signedIn}>
-          <div className={styles.nav} onClick={navigateToPortfolioPage}>
+          <div className={styles.nav} onClick={navigateToHomePage}>
             <img src={PortfolioIcon} alt="" />
             <div>Portfolio</div>
           </div>
-          <div className={styles.nav} onClick={navigateToWalletPage}>
-            <AccountBalanceWalletIcon className={styles.icon} />
-            <div>Wallet</div>
-          </div>
-          <div className={styles.nav}>
+					<div className={styles.nav} onClick={navigateToWalletPage}>
             <img src={TransactionIcon} alt="" />
             <div>Transactions</div>
           </div>

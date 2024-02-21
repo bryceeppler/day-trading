@@ -7,6 +7,7 @@ import { BUTTON_TYPE } from 'components/Button/Button';
 import { PlaceStockOrderParams, Stock } from 'types/users.types';
 import SlidingToggle from 'components/SlidingToggle';
 import Dropdown from 'components/Dropdown';
+import { formatPrice } from 'lib/formatting';
 
 interface PlaceOrderModalProps {
   open: boolean;
@@ -19,7 +20,7 @@ enum ORDER_TYPES {
   MARKET = 'MARKET',
 }
 function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): ReactElement {
-  const [price, setPrice] = useState<number>();
+  const [price, setPrice] = useState<number |  null>(null);
   const [quantity, setQuantity] = useState<number>();
   const [isBuy, setIsBuy] = useState<boolean>(true);
   const [orderType, setOrderType] = useState<ORDER_TYPES>(ORDER_TYPES.MARKET);
@@ -27,7 +28,6 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
   const [verify, setVerify] = useState<boolean>(false);
 
   const { placeStockOrder, fetchStocks, stocks } = useUsers();
-
   const verified = () => {
     setVerify(true);
     if (!quantity || quantity < 0) return false;
@@ -57,7 +57,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
   useEffect(() => {
     if (!open) {
       setQuantity(undefined);
-      setPrice(undefined);
+      setPrice(null);
       setIsBuy(true);
       setOrderType(ORDER_TYPES.MARKET);
       setStock(undefined);
@@ -70,6 +70,12 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
     if (!verify) return;
     verified();
   }, [price, quantity, stock]);
+
+	useEffect(() => {
+		if (ORDER_TYPES.MARKET === orderType) {
+			setPrice(null)
+		}
+	}, [orderType])
 
   return (
     <>
@@ -89,23 +95,15 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
               className={styles.field}
               items={stocks?.map((stock, index) => ({
                 id: index,
-                value: `${stock.stock_name} - ${stock.current_price}`,
+                value: `${stock.stock_name} - ${formatPrice(stock.current_price, true)}`,
                 onSelect: () => setStock(stock),
               }))}
               label="Select Stock"
-              value={stock ? `${stock.stock_name} - ${stock.current_price}` : ''}
+              value={stock ? `${stock.stock_name} - ${formatPrice(stock.current_price, true)}` : ''}
               verify={verify}
             />
 
-            <TextField
-              className={styles.text}
-              setValue={(value: string) => setPrice(+value)}
-              value={`${price}`}
-              type="number"
-              label={'Price'}
-              extraVerify={!!(price && price > 0)}
-              verify={verify}
-            />
+          
             <TextField
               className={styles.text}
               setValue={(value: string) => setQuantity(+value)}
@@ -115,6 +113,18 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
               extraVerify={!!(quantity && quantity > 0)}
               verify={verify}
             />
+
+						{orderType === ORDER_TYPES.LIMIT && (
+							<TextField
+								className={styles.text}
+								setValue={(value: string) => setPrice(+value)}
+								value={`${price}`}
+								type="number"
+								label={'Price'}
+								extraVerify={!!(price && price > 0)}
+								verify={verify}
+							/>
+						)}
 
             <div className={styles.buttons}>
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />

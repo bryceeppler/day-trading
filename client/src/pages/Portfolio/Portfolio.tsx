@@ -4,25 +4,20 @@ import Layout from 'Base';
 import useUsers from 'hooks/useUsers.hook';
 import Button from 'components/Button';
 import PlaceOrderModal from 'components/PlaceOrderModal';
+import StockPortfolios from 'components/StockPortfolios';
 function Portfolio(): ReactElement {
-  const { fetchStockPortfolios /*stockPortfolios*/ } = useUsers();
-  const [openPlaceOrder, setOpenPlaceOrder] = useState<boolean>(false);
+  const { fetchStockPortfolios , stockPortfolios } = useUsers();
 
   useEffect(() => {
     fetchStockPortfolios();
   }, []);
   return (
     <Layout>
-      <div className={styles.container}>
-        <Button className={styles.btn} label="Add Money" onClick={() => setOpenPlaceOrder(true)} />
+			<div className={styles.container}>
+        
       </div>
-      <PlaceOrderModal
-        open={openPlaceOrder}
-        onClose={() => setOpenPlaceOrder(false)}
-        onSave={() => {
-          setOpenPlaceOrder(false);
-        }}
-      />
+
+     
     </Layout>
   );
 }

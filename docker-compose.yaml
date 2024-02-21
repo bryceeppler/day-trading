@@ -50,6 +50,7 @@ services:
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
       NODE_ENV: production
     command: ["npm", "start"]
+      PORT: "3000"
 
   # Matching Engine Microservice
   ms_matching_engine:

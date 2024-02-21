@@ -10,13 +10,14 @@ interface WalletTransactionsProps {
   walletTransactions: Array<WalletTransaction>;
 }
 function WalletTransactions({ walletTransactions }: Readonly<WalletTransactionsProps>): ReactElement {
+	
   return (
-    <InfoCard title="My WalletTransactions">
+    <InfoCard title="My Wallet Transactions">
       <div className={styles.info}>
         {walletTransactions.map((item) => (
           <Item key={item.wallet_tx_id}>
             <div className={styles.data}>
-              <div className={styles.company}>
+              <div className={styles.date}>
                 <div className={styles.name}>{'Date'}</div>
                 <div className={styles.value}>{formatDate(item.time_stamp, dateFormats.fullPretty)}</div>
               </div>

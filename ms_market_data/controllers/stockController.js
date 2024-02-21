@@ -16,7 +16,7 @@ exports.createStock = async (req, res, next) =>
         const startingPrice = Math.random() * (200 - 20) + 20;
 
         const newStock = new Stock({ stock_name, starting_price: startingPrice, current_price: startingPrice })
-        newStock.save();
+        await newStock.save();
 
         return successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
     } catch (error)

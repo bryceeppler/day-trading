@@ -9,7 +9,7 @@ const getEnvironment = (name) => {
 };
 module.exports = {
   apiRootPath: getEnvironment('API_ROOT'),
-	port: getEnvironment('PORT'),
+	port: 3000,
 	mongodb: getEnvironment('MONGO_URI'),
 	mathingEngineUrl: getEnvironment('MATCHING_ENGINE_URL'),
   jwt: {

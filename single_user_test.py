@@ -326,7 +326,7 @@ def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 12 Get Stock Portfolio", data, expected_results[12], response)
+    print_results("Step 12 Get Stock Portfolio", "", expected_results[12], response)
     assert response['success'] 
     assert len(response['data']) == 0, f"Error in step 12: {response}"
 
@@ -403,7 +403,7 @@ def step_16_get_stock_prices(user1_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 16: Get Stock Prices", expected_results[16], response)
+    print_results("Step 16: Get Stock Prices", "", expected_results[16], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 16: {response}"
 
 # 17. POST /addMoneyToWallet

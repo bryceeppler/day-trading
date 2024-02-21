@@ -8,7 +8,7 @@ const router = express.Router();
 // Username and password validation functions
 const validateUsername = (username) => {
   // Check if username has more than 8 characters and doesn't contain special characters
-  const usernameRegex = /^[a-zA-Z0-9_. ]+$/;
+  const usernameRegex = /^[a-zA-Z0-9_]+$/;
   return username.length > 8 && usernameRegex.test(username);
 };
 
@@ -19,7 +19,7 @@ const validatePassword = (password) => {
 
 const validateName = (name) => {
   // Check if name is provided and contains only letters and spaces
-  const nameRegex = /^[a-zA-Z ]+$/; // Allow spaces in names
+  const nameRegex = /^[a-zA-Z]+$/;
   return name.trim().length > 0 && nameRegex.test(name);
 };
 
@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
     // Compare the plaintext password with the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, data: null, message: 'Invalid Credentials'});
+      return res.send({ success: false, data: null, message: 'Invalid Credentials' });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -52,22 +52,22 @@ router.post('/register', async (req, res) => {
 
      // Validate username
     if (!validateUsername(user_name)) {
-      return res.status(400).json({ success: false, data: null, message: 'Username must have more than 8 characters and only contain letters, numbers, or underscores' });
+      return res.status(400).send('Username must have more than 8 characters and only contain letters, numbers, or underscores');
     }
 
     // Validate password
     if (!validatePassword(password)) {
-      return res.status(400).json({ success: false, data: null, message: 'Password must be at least 6 characters long and should not contain spaces' });
+      return res.status(400).send('Password must be at least 6 characters long and should not contain spaces');
     }
 
     // Validate name
     if (!validateName(name)) {
-      return res.status(400).json({ success: false, data: null, message: 'Name is required and should only contain letters' });
+      return res.status(400).send('Name is required and should only contain letters');
     }
 
     const existingUser = await User.findOne({ user_name });
     if (existingUser) {
-      return res.status(400).json({success: false, data: null, message: 'User already exists'});
+      return res.status(400).send('User already exists');
     }
 
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
     await newUser.save();
 
     // Respond with success true and data containing user details
-    res.status(200).json({ success: true, data: null});
+    res.status(201).json({ success: true, data: { id: newUser._id, user_name: newUser.user_name, password: newUser.password, name: newUser.name }});
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, data: null, message: 'Server error' });

@@ -23,6 +23,10 @@ services:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       BCRYPT_SALT_ROUNDS: 12
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
 
   # Order Execution Microservice
   ms_order_execution:
@@ -48,7 +52,7 @@ services:
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
       NODE_ENV: production
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -58,7 +62,7 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
     depends_on:
       - ms_shared
     volumes:
@@ -86,11 +90,11 @@ services:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
     depends_on:
-    - ms_shared
+      - ms_shared
     volumes:
       - shared_volume:/app/shared
 
-# Shared Code Microservice
+  # Shared Code Microservice
   ms_shared:
     build: ./ms_shared
     volumes:

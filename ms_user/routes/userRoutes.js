@@ -18,11 +18,10 @@ async function getStockPortfolio(req, res, next) {
     const user = await User.findById(req.user.userId);
     if (!user) {
       return createError('User not found', STATUS_CODE.NOT_FOUND);
-      
     }
     
     // Fetch stock portfolio for the user
-    const portfolio = await StockPortfolio.find({ user: user._id });
+    const portfolio = await StockPortfolio.find({ user_id: user._id });
 
     // create a list to hold the stock portfolio data
     const data = []

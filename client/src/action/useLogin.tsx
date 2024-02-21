@@ -1,7 +1,7 @@
 import { LoginApi } from 'api';
 import { UserContext } from 'context/userProfile';
 import jwtDecode from 'jwt-decode';
-import { STORAGE_ACCESS_TOKEN, STORAGE_REFRESH_TOKEN, STORAGE_USER } from 'lib/config';
+import { STORAGE_ACCESS_TOKEN } from 'lib/config';
 import { useContext } from 'react';
 import { UserLogin } from 'types/users.types';
 import { handleApiError } from 'lib/errors';
@@ -26,7 +26,7 @@ function useLogin() {
       const user: UserLogin = jwtDecode(accessToken);
       userContext.setUser(user);
     } catch (error) {
-			console.log(error)
+      console.log(error);
       window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
       return handleApiError(error);
     }
@@ -48,7 +48,7 @@ function useLogin() {
 
   const logout = () => {
     localStorage.removeItem(STORAGE_ACCESS_TOKEN);
-    userContext.setUser(undefined); 
+    userContext.setUser(undefined);
   };
 
   return {

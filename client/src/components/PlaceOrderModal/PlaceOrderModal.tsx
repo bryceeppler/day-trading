@@ -20,7 +20,7 @@ enum ORDER_TYPES {
   MARKET = 'MARKET',
 }
 function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): ReactElement {
-  const [price, setPrice] = useState<number |  null>(null);
+  const [price, setPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number>();
   const [isBuy, setIsBuy] = useState<boolean>(true);
   const [orderType, setOrderType] = useState<ORDER_TYPES>(ORDER_TYPES.MARKET);
@@ -71,11 +71,11 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
     verified();
   }, [price, quantity, stock]);
 
-	useEffect(() => {
-		if (ORDER_TYPES.MARKET === orderType) {
-			setPrice(null)
-		}
-	}, [orderType])
+  useEffect(() => {
+    if (ORDER_TYPES.MARKET === orderType) {
+      setPrice(null);
+    }
+  }, [orderType]);
 
   return (
     <>
@@ -103,7 +103,6 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
               verify={verify}
             />
 
-          
             <TextField
               className={styles.text}
               setValue={(value: string) => setQuantity(+value)}
@@ -114,17 +113,17 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
               verify={verify}
             />
 
-						{orderType === ORDER_TYPES.LIMIT && (
-							<TextField
-								className={styles.text}
-								setValue={(value: string) => setPrice(+value)}
-								value={`${price}`}
-								type="number"
-								label={'Price'}
-								extraVerify={!!(price && price > 0)}
-								verify={verify}
-							/>
-						)}
+            {orderType === ORDER_TYPES.LIMIT && (
+              <TextField
+                className={styles.text}
+                setValue={(value: string) => setPrice(+value)}
+                value={`${price}`}
+                type="number"
+                label={'Price'}
+                extraVerify={!!(price && price > 0)}
+                verify={verify}
+              />
+            )}
 
             <div className={styles.buttons}>
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />

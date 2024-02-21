@@ -10,7 +10,6 @@ interface WalletTransactionsProps {
   walletTransactions: Array<WalletTransaction>;
 }
 function WalletTransactions({ walletTransactions }: Readonly<WalletTransactionsProps>): ReactElement {
-	
   return (
     <InfoCard title="My Wallet Transactions">
       <div className={styles.info}>

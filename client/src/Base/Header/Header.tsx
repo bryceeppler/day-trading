@@ -6,13 +6,12 @@ import { UserContext } from 'context/userProfile';
 import DownIcon from 'images/downChevron.svg';
 import useReactOperations from 'hooks/useReactOperations.hook';
 import useLogin from 'action/useLogin';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 const Header = () => {
   const [accountOpen, setAccountOpen] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);
-  const { navigateToLoginPage, navigateToWalletPage, navigateToPortfolioPage, navigateToHomePage } = useReactOperations();
+  const { navigateToLoginPage, navigateToWalletPage, navigateToHomePage } = useReactOperations();
   const { logout } = useLogin();
   const onLogout = () => {
     logout();
@@ -20,14 +19,16 @@ const Header = () => {
   };
   return (
     <header className={styles.container}>
-      <div className={styles.name} onClick={navigateToHomePage}>DAY TRADING INC.</div>
+      <div className={styles.name} onClick={navigateToHomePage}>
+        DAY TRADING INC.
+      </div>
       {!!user && (
         <div className={styles.signedIn}>
           <div className={styles.nav} onClick={navigateToHomePage}>
             <img src={PortfolioIcon} alt="" />
             <div>Portfolio</div>
           </div>
-					<div className={styles.nav} onClick={navigateToWalletPage}>
+          <div className={styles.nav} onClick={navigateToWalletPage}>
             <img src={TransactionIcon} alt="" />
             <div>Transactions</div>
           </div>

@@ -4,7 +4,7 @@
   flex-direction: column;
   justify-content: space-evenly;
   gap: 3px;
-	flex: 1;
+  flex: 1;
 
   .stock {
     font-weight: 600;
@@ -21,7 +21,7 @@
   flex-direction: column;
   justify-content: space-evenly;
   gap: 3px;
-	width: 120px;
+  width: 120px;
 
   .stock {
     font-weight: 600;
@@ -32,14 +32,13 @@
   }
 }
 
-
 .data {
   display: flex;
   flex-direction: row;
   gap: 10px;
-	justify-content: space-evenly;
-	width: 100%;
-	padding-right: 5px;
+  justify-content: space-evenly;
+  width: 100%;
+  padding-right: 5px;
 
   .dataItem {
     margin-left: 5px;

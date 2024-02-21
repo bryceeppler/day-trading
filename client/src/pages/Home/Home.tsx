@@ -6,28 +6,24 @@ import Layout from 'Base';
 import { formatPrice } from 'lib/formatting';
 import { BUTTON_TYPE } from 'components/Button/Button';
 import InfoCard from 'components/InfoCard';
-import WatchList from 'components/WatchList';
-import Positions from 'components/Positions';
-import Orders from 'components/Orders';
 import useUsers from 'hooks/useUsers.hook';
 import AddMoneyModal from 'components/AddMoneyModal';
 import PlaceOrderModal from 'components/PlaceOrderModal';
 import StockPortfolios from 'components/StockPortfolios';
 function Home(): ReactElement {
-
-	const [openAddMoney, setOpenAddMoney] = useState<boolean>(false)
+  const [openAddMoney, setOpenAddMoney] = useState<boolean>(false);
   const [openPlaceOrder, setOpenPlaceOrder] = useState<boolean>(false);
   const { user } = useContext(UserContext);
 
-	const { fetchBalance, balance, fetchStockPortfolios, stockPortfolios } = useUsers()
+  const { fetchBalance, balance, fetchStockPortfolios, stockPortfolios } = useUsers();
 
   useEffect(() => {
-    fetchBalance()
-		fetchStockPortfolios()
+    fetchBalance();
+    fetchStockPortfolios();
   }, []);
 
   return (
-    <Layout >
+    <Layout>
       <div className={styles.container}>
         <InfoCard>
           <div className={styles.welcome}>
@@ -41,23 +37,25 @@ function Home(): ReactElement {
               label="Make a deposit"
               onClick={() => setOpenAddMoney(true)}
             />
-						<Button className={styles.btn} style={BUTTON_TYPE.WHITE} label="Place Order" onClick={() => setOpenPlaceOrder(true)} />
+            <Button
+              className={styles.btn}
+              style={BUTTON_TYPE.WHITE}
+              label="Place Order"
+              onClick={() => setOpenPlaceOrder(true)}
+            />
           </div>
         </InfoCard>
-				<StockPortfolios 
-					stockPortfolios={stockPortfolios}
-				/>
+        <StockPortfolios stockPortfolios={stockPortfolios} />
       </div>
-			<AddMoneyModal 
-				open={openAddMoney}
-				onClose={() => setOpenAddMoney(false)}
-				onSave={() => {
-					setOpenAddMoney(false)
-					fetchBalance()
-				}}
-			
-			/>
-			<PlaceOrderModal
+      <AddMoneyModal
+        open={openAddMoney}
+        onClose={() => setOpenAddMoney(false)}
+        onSave={() => {
+          setOpenAddMoney(false);
+          fetchBalance();
+        }}
+      />
+      <PlaceOrderModal
         open={openPlaceOrder}
         onClose={() => setOpenPlaceOrder(false)}
         onSave={() => {

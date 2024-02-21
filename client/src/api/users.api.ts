@@ -1,5 +1,13 @@
 import { BaseApi } from 'api';
-import { CANCEL_STOCK_ORDER, FETCH_BALANCE, FETCH_STOCKS, FETCH_STOCK_PORTFOLIO, FETCH_STOCK_TXS, FETCH_WALLET_TXS, PLACE_STOCK_ORDER } from 'lib/routes';
+import {
+  CANCEL_STOCK_ORDER,
+  FETCH_BALANCE,
+  FETCH_STOCKS,
+  FETCH_STOCK_PORTFOLIO,
+  FETCH_STOCK_TXS,
+  FETCH_WALLET_TXS,
+  PLACE_STOCK_ORDER,
+} from 'lib/routes';
 import { PlaceStockOrderParams } from 'types/users.types';
 import { SuccessApiResponse } from 'types/utils.types';
 

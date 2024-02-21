@@ -30,11 +30,13 @@ async function getStockPortfolio(req, res, next) {
       if (!stock) {
         throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
       }
+      if (portfolioItem.quantity_owned) {
       data.push({
         stock_id: portfolioItem.stock_id,
         stock_name: stock.name,
         quantity_owned: portfolioItem.quantity_owned
       });
+    }
     }));
     return successReturn(res, data);
   } catch (error) {
@@ -114,21 +116,25 @@ async function addMoneyToWallet(req, res, next) {
       throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
     }
     // Retrieve user's wallet transaction
-    const walletTransaction = await User.findOne({ user_id: req.user.userId });
+    const user = await User.findOne({ _id: req.user.userId });
 
-    // If the user doesn't have a wallet, you might want to handle this case appropriately
-    if (!walletTransaction) {
-      throw createError('User wallet not found', STATUS_CODE.NOT_FOUND);
+    if (!user) {
+      console.log("No User")
+      return createError('User not found', STATUS_CODE.NOT_FOUND);
     }
 
     // Update wallet balance
-    walletTransaction.balance += amount;
+    user.balance += amount;
+    
+    
+
 
     // Save the updated wallet transaction to the database
-    await walletTransaction.save();
+    await user.save();
 
     return successReturn(res);
   } catch (error) {
+    console.log("Error adding to wallet", error)
     return handleError(error, res, next);
   } 
 }

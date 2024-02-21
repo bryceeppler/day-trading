@@ -25,7 +25,7 @@ exports.createStockTx = async (req, res, next) =>
             quantity,
         });
 
-        newStockTx.save();
+        await newStockTx.save();
 
         return successReturn(res, newStockTx, STATUS_CODE.CREATED);
     } catch (error)

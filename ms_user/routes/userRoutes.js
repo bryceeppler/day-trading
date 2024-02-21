@@ -124,8 +124,10 @@ async function addMoneyToWallet(req, res, next) {
     }
 
     // Update wallet balance
+    user.balance += amount;
     
-     
+    
+
 
     // Save the updated wallet transaction to the database
     await user.save();

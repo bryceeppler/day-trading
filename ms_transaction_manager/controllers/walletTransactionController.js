@@ -10,7 +10,7 @@ exports.createWalletTx = async (req, res, next) =>
         const { user_id, is_debit, amount } = req.body;
 
         const walletTx = new WalletTransaction({ user_id, is_debit, amount })
-        walletTx.save();
+        await walletTx.save();
 
         return successReturn(res, walletTx, STATUS_CODE.CREATED);
 

@@ -1,31 +1,36 @@
 const express = require('express');
-const User = require('../models/User');
+const User = require('../shared/models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
 // Username and password validation functions
-const validateUsername = (username) => {
+const validateUsername = (username) =>
+{
   // Check if username has more than 8 characters and doesn't contain special characters
   const usernameRegex = /^[a-zA-Z0-9_. ]+$/;
   return username.length > 8 && usernameRegex.test(username);
 };
 
-const validatePassword = (password) => {
+const validatePassword = (password) =>
+{
   // Check if password doesn't contain spaces and length is at least 6
   return !password.includes(' ') && password.length >= 6;
 };
 
-const validateName = (name) => {
+const validateName = (name) =>
+{
   // Check if name is provided and contains only letters and spaces
   const nameRegex = /^[a-zA-Z0-9_. !@-]+$/; 
   return name.trim().length > 0 && nameRegex.test(name);
 };
 
 // Login route
-router.post('/login', async (req, res) => {
-  try {
+router.post('/login', async (req, res) =>
+{
+  try
+  {
     const { user_name, password } = req.body;
     let user = await User.findOne({ user_name });
     if (!user) {
@@ -46,10 +51,11 @@ router.post('/login', async (req, res) => {
 });
 
 // Register route
-router.post('/register', async (req, res) => {
-  try {
+router.post('/register', async (req, res) =>
+{
+  try
+  {
     const { user_name, password, name } = req.body;
-
      // Validate username
     if (!validateUsername(user_name)) {
       return res.status(400).json({ success: false, data: {error: 'Username must have more than 8 characters and only contain letters, numbers, or underscores' }});
@@ -76,8 +82,9 @@ router.post('/register', async (req, res) => {
     await newUser.save();
 
     // Respond with success true and data containing user details
-    res.status(200).json({ success: true, data: null});
-  } catch (error) {
+    res.status(200).json({ success: true, data: null });
+  } catch (error)
+  {
     console.error(error);
     res.status(500).json({ success: false, data: {error: 'Server error' }});
   }

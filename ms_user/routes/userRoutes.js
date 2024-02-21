@@ -30,11 +30,13 @@ async function getStockPortfolio(req, res, next) {
       if (!stock) {
         throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
       }
+      if (portfolioItem.quantity_owned) {
       data.push({
         stock_id: portfolioItem.stock_id,
         stock_name: stock.name,
         quantity_owned: portfolioItem.quantity_owned
       });
+    }
     }));
     return successReturn(res, data);
   } catch (error) {
@@ -118,7 +120,7 @@ async function addMoneyToWallet(req, res, next) {
 
     // If the user doesn't have a wallet, you might want to handle this case appropriately
     if (!walletTransaction) {
-      throw createError('User wallet not found', STATUS_CODE.NOT_FOUND);
+      return successReturn(res);
     }
 
     // Update wallet balance

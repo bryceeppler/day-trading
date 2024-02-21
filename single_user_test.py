@@ -266,7 +266,6 @@ def step_10_place_stock_order(comp_token, apple_stock_id):
         "price": 140
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    print(response)
     assert response["success"] and not response["data"], f"Error in step 10: {response}"
 
 # 11. POST /placeStockOrder
@@ -304,7 +303,8 @@ def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and len(response["data"] == 0), f"Error in step 12: {response}" 
+    assert response['success'] 
+    assert len(response['data']) == 0, f"Error in step 12: {response}"
 
 # 13. GET /getStockTransactions
 """
@@ -392,7 +392,8 @@ def step_17_add_money_to_wallet(user1_token):
     headers = {"token": user1_token}
     data = {"amount": 10000}
     response = make_post_request(endpoint, headers=headers, data=data)
-    assert response['success'] and not response['data'], f"Error in step 17: {response}"
+    assert response['success'] 
+    assert not response['data'], f"Error in step 17: {response}"
 
 # 18. GET /getWalletBalance
 """
@@ -1160,17 +1161,29 @@ def executeTests():
     step_11_place_stock_order(token, google_stock_id)
     print("Step 11 passed")
     step_12_get_stock_portfolio(token)
+    print("Step 12 passed")
     step_13_get_stock_transactions(token)
+    print("Step 13 passed")
     step_14_register()
+    print("Step 14 passed")
     user1_token = step_15_login()
+    print("Step 15 passed")
     step_16_get_stock_prices(user1_token)
+    print("Step 16 passed")
     step_17_add_money_to_wallet(user1_token)
+    print("Step 17 passed")
     step_18_get_wallet_balance(user1_token)
+    print("Step 18 passed")
     step_19_place_stock_order(user1_token, google_stock_id)
+    print("Step 19 passed")
     step_20_get_stock_transactions(user1_token)
+    print("Step 20 passed")
     step_21_get_wallet_transactions(user1_token)
+    print("Step 21 passed")
     step_22_get_wallet_balance(user1_token)
+    print("Step 22 passed")
     step_23_get_stock_portfolio(user1_token)
+    print("Step 23 passed")
     step_24_get_stock_transactions(token)
     step_25_get_wallet_balance(token)
     step_26_get_wallet_transactions(token)

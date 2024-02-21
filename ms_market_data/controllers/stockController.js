@@ -1,5 +1,5 @@
 const Stock = require('../shared/models/stockModel');
-const { createError, handleError, successReturn } = require('../shared/lib/apiHandling');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const { STATUS_CODE } = require('../shared/lib/enums');
 
 exports.createStock = async (req, res, next) =>
@@ -10,7 +10,7 @@ exports.createStock = async (req, res, next) =>
         // check if the stock name already exists in db
         const existingStock = await Stock.findOne({ stock_name });
 
-        if (existingStock) return handleError(createError("stock already exists", STATUS_CODE.BAD_REQUEST), res, next);
+        if (existingStock) return errorReturn(res, "stock already exists");
 
         // generate a random initial price in the range of $20.00 - $200.00.
         const startingPrice = Math.random() * (200 - 20) + 20;
@@ -71,7 +71,7 @@ exports.updateStockPrice = async (req, res, next) =>
         // Check if the stock exists
         const existingStock = await Stock.findById(stockId);
 
-        if (!existingStock) return handleError(createError('Stock not found', STATUS_CODE.NOT_FOUND), res, next);
+        if (!existingStock) return errorReturn(res,'Stock not found');
 
         existingStock.current_price = new_price;
         await existingStock.save();

@@ -1,5 +1,17 @@
 const { STATUS_CODE } = require("./enums");
 
+
+
+exports.errorReturn = (res, message) =>
+{
+  const response = {
+    success: false,
+    data: { error: message }
+  }
+
+  return res.status(STATUS_CODE.OK).send(response)
+};
+
 exports.createError = (message = 'Error Performing Action', statusCode = STATUS_CODE.INTERNAL_SERVER_ERROR) =>
 {
   const response = {

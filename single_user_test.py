@@ -31,6 +31,7 @@ def make_post_request(endpoint, headers=None, data=None):
     try:
         url = BASE_URL + endpoint
         response = requests.post(url, headers=headers, json=data)
+        print("Response received")
         return json.loads(response.text)
     except Exception as e:
         print(e)
@@ -38,9 +39,14 @@ def make_post_request(endpoint, headers=None, data=None):
 
 # Helper function to make a GET request
 def make_get_request(endpoint, headers=None):
-    url = BASE_URL + endpoint
-    response = requests.get(url, headers=headers)
-    return json.loads(response.text)
+    try:
+        url = BASE_URL + endpoint
+        response = requests.get(url, headers=headers)
+        print("Response received")
+        return json.loads(response.text)
+    except Exception as e:
+        print(e)
+        return None
 
 
 # 1. POST /register
@@ -224,7 +230,6 @@ def step_8_add_stock_to_user(comp_token, apple_stock_id):
         "quantity": 369
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    print(response)
     assert response['success'] and not response['data'], f"Error in step 8: {response}"
 
 # 9. GET /getStockPortfolio

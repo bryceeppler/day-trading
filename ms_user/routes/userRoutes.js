@@ -1,86 +1,127 @@
 const User = require('../models/User');
 const StockTransaction = require('../models/stockTransactionModel');
-const stockTransactionController = require('../controllers/stockTransactionController');
 const WalletTransaction = require('../models/walletTransactionModel');
-const walletTransactionController = require('../controllers/walletTransactionController');
+const Stock = require('../models/stockModel');
+const StockPortfolio = require('../models/portfolioModel');
+const { STATUS_CODE } = require('../lib/enums');
+const { handleError, successReturn, createError } = require('../lib/apiHandling');
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const express = require('express');
 const router = express.Router();
 
-// getStockPortfolio
-async function getStockPortfolio(req, res) {
-  try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
-      
-      // Fetch user's actual stock portfolio from the database
-      const stocks = await StockTransaction.find({ user: user._id });
 
-      // Return the user's stock portfolio
-      return res.status(200).json({ success: true, data: stocks });
+async function getStockPortfolio(req, res, next) {
+  try {
+    // Assuming req.user is populated by the authenticateToken middleware
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return createError('User not found', STATUS_CODE.NOT_FOUND);
+      
+    }
+    
+    // Fetch stock portfolio for the user
+    const portfolio = await StockPortfolio.find({ user: user._id });
+
+    // Construct a dictionary to hold stock portfolio data
+    const data = {};
+    await Promise.all(portfolio.map(async portfolioItem => {
+      const stock = await Stock.findById(portfolioItem.stock_id);
+      data[portfolioItem.stock_id] = {
+        stock_name: stock.stock_name,
+        current_price: stock.current_price
+      };
+    }));
+
+    return successReturn(res, data);
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+    return handleError(error, res, next);
   }
 }
 
 // getWalletBalance
-async function getWalletBalance(req, res) {
-    try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-      }
-      // Assuming the user model has a balance field
-      const balance = user.balance;
-      return res.status(200).json({ success: true, data: { balance } });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+async function getWalletBalance(req, res, next) {
+  try {
+    // Assuming req.user is populated by the authenticateToken middleware
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      throw createError('User not found', STATUS_CODE.NOT_FOUND);
     }
+    // Assuming the user model has a balance field
+    const balance = user.balance;
+    return successReturn(res, { balance });
+  } catch (error) {
+    return handleError(error, res, next);
+  }
 }
 
 // addStockToUser
-async function addStockToUser(req, res) {
+async function addStockToUser(req, res, next) {
   try {
     const { stock_id, quantity } = req.body;
+    const userId = req.user.userId;
 
     // Validate request body parameters
     if (!stock_id || !quantity) {
-      return res.status(400).json({ success: false, data: null, message: "Missing required parameters" });
+      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
     }
 
-    // Add logic to add stock to user (e.g., save to database)
+    // Check if there's an existing stock transaction for the user and stock
+    let stockTransaction = await StockTransaction.findOne({ stock_id, userId });
 
-    return res.status(200).json({ success: true, data: null});
+    // If there's an existing transaction, update the quantity
+    if (stockTransaction) {
+      stockTransaction.quantity += quantity;
+    } else {
+      // If there's no existing transaction, create a new one
+      stockTransaction = new StockTransaction({
+        stock_id,
+        wallet_tx_id: null,
+        order_status: ORDER_STATUS.IN_PROGRESS,
+        is_buy: false,
+        order_type: null,
+        stock_price: 0,
+        quantity,
+        is_deleted: false,
+      });
+    }
+
+    // Save the updated or new stock transaction to the database
+    await stockTransaction.save();
+    
+    return successReturn(res);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, data: null, message: 'Server error' });
+    return handleError(error, res, next);
   }
 }
 
 // addMoneyToWallet
-async function addMoneyToWallet(req, res) {
+async function addMoneyToWallet(req, res, next) {
   try {
     const { amount } = req.body;
 
     // Validate request body parameters
     if (!amount) {
-      return res.status(400).json({ success: false, data: null, message: "Missing required parameters" });
+      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+    }
+    // Retrieve user's wallet transaction
+    const walletTransaction = await User.findOne({ user_id: req.user.userId });
+
+    // If the user doesn't have a wallet, you might want to handle this case appropriately
+    if (!walletTransaction) {
+      throw createError('User wallet not found', STATUS_CODE.NOT_FOUND);
     }
 
-    // Add logic to add money to user's wallet (e.g., save to database)
+    // Update wallet balance
+    walletTransaction.balance += amount;
 
-    return res.status(200).json({ success: true, data: null});
+    // Save the updated wallet transaction to the database
+    await walletTransaction.save();
+
+    return successReturn(res);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ success: false, data: null, message: 'Server error' });
+    return handleError(error, res, next);
   } 
 }
 

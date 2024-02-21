@@ -9,7 +9,7 @@ exports.validate = (validations) =>
     await Promise.all(validations.map((validation) => validation.run(req)));
     const errors = validationResult(req);
     if (errors.isEmpty()) return next();
-    const error = createError(errors.array(), STATUS_CODE.BAD_REQUEST);
+    const error = createError(errors.array(), STATUS_CODE.OK);
     handleError(error, res, next);
   };
 };

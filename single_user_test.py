@@ -1,6 +1,8 @@
 import requests
 import time 
 import json
+import os
+from expected_results import expected_results
 
 BASE_URL = "http://localhost" #:8000/
 
@@ -49,6 +51,14 @@ def make_get_request(endpoint, headers=None):
         return None
 
 
+def print_results(test_case, request, expected, actual):
+    with open("test_results.txt", "a") as file:
+        file.write(f"Test Case: {test_case}\n\n")
+        file.write("Request body:\n" + json.dumps(request, indent=2) + "\n")
+        file.write("Expected:\n" + json.dumps(expected, indent=2) + "\n")
+        file.write("Actual:\n" + json.dumps(actual, indent=2) + "\n")
+        file.write("-" * 50 + "\n")
+
 # 1. POST /register
 """
 POST /register
@@ -72,6 +82,7 @@ def step_1_register():
         "success": True,
         "data": None
     }
+    print_results("Step 1: Register", data, expected_results[1], response)
     # assert response["success"], f"Error in step 1"
 
 
@@ -99,6 +110,7 @@ def step_2_register():
         "success": False,
         "data": {"error": "<ErrorMessage>"}
     }
+    print_results("Step 2: Register", data, expected_results[2], response)
     assert not response["success"] and response["data"]["error"], f"Error in step 2"
 
 
@@ -121,6 +133,7 @@ def step_3_login():
         "success": False,
         "data": {"error": "<ErrorMessage>"}
     }
+    print_results("Step 3: Login", data, expected_results[3], response)
     assert not response["success"] and response["data"]["error"], f"Error in step 3"
 
 
@@ -140,6 +153,7 @@ def step_4_login():
     }
     response = make_post_request(endpoint, data=data)
     # print(response)
+    print_results("Step 4 Login", data, expected_results[4], response)
     assert response['success'] and response['data']['token']
     return response['data']['token']
 
@@ -161,6 +175,7 @@ def step_5_create_stock(comp_token):
         "stock_name": "Google"
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 5 Create Stock", data, expected_results[5], response)
     # print(response)
     # assert response['success'] and response['data']['stock_id'], f"Error in step 5: {response}"
     return response['data']['stock_id']
@@ -186,6 +201,8 @@ def step_6_add_stock_to_user(comp_token, google_stock_id):
         "success": True,
         "data": None
     }
+    print_results("Step 6 Add Stock To User", data, expected_results[6], response)
+
     assert response["success"], f"Error in step 6: {response}"
     assert response["data"] == None, f"Error in step 6: {response}"
 
@@ -205,6 +222,8 @@ def step_7_create_stock(comp_token):
         "stock_name": "Apple"
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 7 Create Stock", data, expected_results[7], response)
+
     # print(response)
     # assert response['success'] and response['data']['stock_id'], f"Error in step 7: {response}"
     # return response['data']['stock_id']
@@ -230,6 +249,7 @@ def step_8_add_stock_to_user(comp_token, apple_stock_id):
         "quantity": 369
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 8 Add Stock To User", data, expected_results[8], response)
     assert response['success'] and not response['data'], f"Error in step 8: {response}"
 
 # 9. GET /getStockPortfolio
@@ -244,6 +264,7 @@ def step_9_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 9 Get Stock Portfolio", "", expected_results[9], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 9: {response}"
 
 # 10. POST /placeStockOrder
@@ -266,6 +287,7 @@ def step_10_place_stock_order(comp_token, apple_stock_id):
         "price": 140
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 10 Place Stock Order", data, expected_results[10], response)
     assert response["success"] and not response["data"], f"Error in step 10: {response}"
 
 # 11. POST /placeStockOrder
@@ -288,6 +310,7 @@ def step_11_place_stock_order(comp_token, google_stock_id):
         "price": 135
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 11 Place Stock Order", data, expected_results[11], response)
     assert response["success"] and not response["data"], f"Error in step 11: {response}"
 
 
@@ -303,6 +326,7 @@ def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 12 Get Stock Portfolio", data, expected_results[12], response)
     assert response['success'] 
     assert len(response['data']) == 0, f"Error in step 12: {response}"
 
@@ -319,6 +343,7 @@ def step_13_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 13 Get Stock Transactions", "", expected_results[13], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 13: {response}"
 
 # 14. POST /register
@@ -338,6 +363,7 @@ def step_14_register():
         "name": "The Finance Guru"
     }
     response = make_post_request(endpoint, data=data)
+    print_results("Step 14 Get Stock Transactions", data, expected_results[14], response)
     assert response['success'] and not response['data'], f"Error in step 14: {response}"
 
 # 15. POST /login
@@ -361,6 +387,7 @@ def step_15_login():
             "token": "<user1Token>" 
         }
     }
+    print_results("Step 15: Login", data, expected_results[15], response)
     assert response['success'] and response['data']['token'], f"Error in step 15: {response}"
     return response['data']['token']
 
@@ -376,6 +403,7 @@ def step_16_get_stock_prices(user1_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 16: Get Stock Prices", expected_results[16], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 16: {response}"
 
 # 17. POST /addMoneyToWallet
@@ -392,6 +420,7 @@ def step_17_add_money_to_wallet(user1_token):
     headers = {"token": user1_token}
     data = {"amount": 10000}
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 17: Add Money To Wallet", data, expected_results[17], response)
     print(response)
     assert response['success'] 
     assert not response['data'], f"Error in step 17: {response}"
@@ -408,6 +437,7 @@ def step_18_get_wallet_balance(user1_token):
     endpoint = ENDPOINTS['getWalletBalance']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 18: Get Wallet Balance", "", expected_results[18], response)
     print(response)
     assert response['success']
     assert response['data']
@@ -433,6 +463,7 @@ def step_19_place_stock_order(user1_token, google_stock_id):
         "price": None
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 19: Place Stock order", data, expected_results[19], response)
     print(response)
     assert response['success']
     assert not response['data'], f"Error in step 19: {response}"
@@ -449,6 +480,7 @@ def step_20_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 20: Get Stock Transactions", "", expected_results[20], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 20: {response}"
 
 
@@ -465,6 +497,7 @@ def step_21_get_wallet_transactions(user1_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 21: Get WAllet Transactions", "", expected_results[21], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 21: {response}"
 
 # 22. GET /getWalletBalance
@@ -480,6 +513,7 @@ def step_22_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 8650}}
+    print_results("Step 22: Get Wallet Balance", "", expected_results[22], response)
     assert response == expected_response, f"Error in step 22: {response}"
 
 # 23. GET /getStockPortfolio
@@ -494,6 +528,7 @@ def step_23_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 23: Get WAllet Transactions", "", expected_results[23], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 23: {response}"
 
 # 24. GET /getStockTransactions
@@ -512,6 +547,7 @@ def step_24_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 24: Get Stock Transactions", "", expected_results[24], response)
     assert response['success'] and len(response['data']) == 3, f"Error in step 24: {response}"
 
 # 25. GET /getWalletBalance
@@ -527,6 +563,7 @@ def step_25_get_wallet_balance(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 1350}}
+    print_results("Step 25: Get Wallet Balance", "", expected_results[15], response)
     assert response == expected_response, f"Error in step 25: {response}"
 
 # 26. GET /getWalletTransactions
@@ -543,6 +580,7 @@ def step_26_get_wallet_transactions(comp_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 26: Get Wallet Transactions", "", expected_results[26], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 26: {response}"
 
 
@@ -568,6 +606,7 @@ def step_27_place_stock_order(user1_token, apple_stock_id):
     }
     response = make_post_request(endpoint, headers=headers, data=data)
     expected_response = {"success": True, "data": None}
+    print_results("Step 27: Place Stock Order", data, expected_results[27], response)
     assert response == expected_response, f"Error in step 27: {response}"
 
 
@@ -587,6 +626,7 @@ def step_28_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 28: Get Stock Transactions", "", expected_results[28], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 28: {response}"
 
 # 29. GET /getWalletTransactions
@@ -604,6 +644,7 @@ def step_29_get_wallet_transactions(user1_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 29: Get Wallet Transactions", "", expected_results[29], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 29: {response}"
     # return appleStockTxId
     return response['data'][1]['stock_tx_id']
@@ -621,6 +662,7 @@ def step_30_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 6250}}
+    print_results("Step 29: Get Wallet Transactions", "", expected_results[30], response)
     assert response == expected_response, f"Error in step 30: {response}"
 
 # 31. GET /getStockPortfolio
@@ -635,6 +677,7 @@ def step_31_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 20: Get Stock Portfolio", "", expected_results[31], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 31: {response}"
 
 # 32. POST /cancelStockTransaction 
@@ -663,6 +706,7 @@ def step_32_cancel_stock_transaction(user1_token, apple_stock_tx_id):
     headers = {"token": user1_token}
     data = {"stock_tx_id": apple_stock_tx_id}
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 32: Cancel Stock Transaction", data, expected_results[32], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 32: {response}"
 
 
@@ -681,6 +725,7 @@ def step_33_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 33: Get Stock Transactions", "", expected_results[33], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 33: {response}"
 
 # 34. GET /getWalletTransactions
@@ -697,6 +742,7 @@ def step_34_get_wallet_transactions(user1_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 34: Get Wallet Transactions", "", expected_results[34], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 34: {response}"
 
 # 35. GET /getWalletBalance
@@ -712,6 +758,7 @@ def step_35_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 8650}}
+    print_results("Step 35: Get Wallet Balance", "", expected_results[35], response)
     assert response == expected_response, f"Error in step 35: {response}"
 
 # 36. GET /getStockPortfolio
@@ -726,6 +773,7 @@ def step_36_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 36: Get Stock Portfolio", "", expected_results[36], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 36: {response}"
 
 # 37. POST /placeStockOrder
@@ -749,6 +797,7 @@ def step_37_place_stock_order(user1_token, google_stock_id):
     }
     response = make_post_request(endpoint, headers=headers, data=data)
     expected_response = {"success": True, "data": None}
+    print_results("Step 37: place Stock Order", "", expected_results[37], response)
     assert response == expected_response, f"Error in step 37: {response}"
 
 # 38. GET /getStockTransactions
@@ -766,6 +815,7 @@ def step_38_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 38: Get Stock Transactions", "", expected_results[38], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 38: {response}"
 
 
@@ -783,6 +833,7 @@ def step_39_get_wallet_transactions(user1_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 39: Get Wallet Transactions", "", expected_results[39], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 39: {response}"
 
 # 40. GET /getWalletBalance
@@ -798,6 +849,7 @@ def step_40_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 8650}}
+    print_results("Step 40: Get Wallet Balance", "", expected_results[40], response)
     assert response == expected_response, f"Error in step 40: {response}"
 # 41. GET /getStockPortfolio
 """
@@ -811,6 +863,7 @@ def step_41_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 41: Get Stock Portfolio", "", expected_results[41], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 41: {response}"
 
 # 42. GET /getStockPrices
@@ -825,6 +878,7 @@ def step_42_get_stock_prices(comp_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 42: Get Stock Prices", "", expected_results[42], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 42: {response}"
 
 # 43. POST /placeStockOrder
@@ -848,6 +902,7 @@ def step_43_place_stock_order(comp_token, google_stock_id):
     }
     response = make_post_request(endpoint, headers=headers, data=data)
     expected_response = {"success": True, "data": None}
+    print_results("Step 43: Place Stock Order", data, expected_results[43], response)
     assert response == expected_response, f"Error in step 43: {response}"
 
 # 44. GET /getStockTransactions
@@ -868,6 +923,7 @@ def step_44_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 44: Get Stock Transactions", "", expected_results[44], response)
     assert response['success'] and len(response['data']) == 4, f"Error in step 44: {response}"
 
 
@@ -887,6 +943,7 @@ def step_45_get_wallet_transactions(comp_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 45: Get Wallet Transactions", "", expected_results[45], response)
     # Check if the specific transactions are as expected
     assert response['success'] and len(response['data']) == 2, f"Error in step 45: {response}"
 
@@ -904,6 +961,7 @@ def step_46_get_wallet_balance(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 8143}}
+    print_results("Step 46: Get Wallet Balance", "", expected_results[46], response)
     assert response == expected_response, f"Error in step 46: {response}"
 
 
@@ -920,6 +978,7 @@ def step_47_get_stock_prices(comp_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 47: Get Stock Prices", "", expected_results[47], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 47: {response}"
 
 # 48. GET /getStockTransactions
@@ -935,6 +994,7 @@ def step_48_get_stock_transactions(user1_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 48: Get Stock Transactions", "", expected_results[48], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 48: {response}"
 
 # 49. GET /getWalletTransactions
@@ -950,6 +1010,7 @@ def step_49_get_wallet_transactions(user1_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 49: Get Wallet Transactions", "", expected_results[49], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 49: {response}"
 
 # 50. GET /getWalletBalance
@@ -965,6 +1026,7 @@ def step_50_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 9186}}
+    print_results("Step 50: Get Wallet Balance", "", expected_results[50], response)
     assert response == expected_response, f"Error in step 50: {response}"
 
 # 51. GET /getStockTransactions
@@ -984,6 +1046,7 @@ def step_51_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 51: Get Stock Transactions", "", expected_results[51], response)
     assert response['success'] and len(response['data']) == 3, f"Error in step 51: {response}"
 
 # 52. GET /getStockPortfolio
@@ -998,6 +1061,7 @@ def step_52_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 52: Get Wallet Balance", "", expected_results[52], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 52: {response}"
 
 # 53. GET /getStockTransactions
@@ -1012,6 +1076,7 @@ def step_53_get_stock_transactions_with_invalid_token(invalid_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 53: Get Stock Transactions", "", expected_results[53], response)
     assert not response['success'] and "error" in response['data'], f"Error in step 53: {response}"
 
 
@@ -1028,6 +1093,7 @@ def step_54_get_wallet_transactions_with_invalid_token(invalid_token):
     endpoint = ENDPOINTS['getWalletTransactions']
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 54: Get Wallet Transactions", "", expected_results[54], response)
     assert not response['success'] and "error" in response['data'], "Error in step 54: Expected failure due to invalid token."
 
 # 55. GET /getStockTransactions
@@ -1042,6 +1108,7 @@ def step_55_get_stock_transactions_with_invalid_token(invalid_token):
     endpoint = ENDPOINTS['getStockTransactions']
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
+    print_results("Step 52: Get Stock Transactions", "", expected_results[55], response)
     assert not response['success'] and "error" in response['data'], "Error in step 55: Expected failure due to invalid token."
 
 # 56. POST /addMoneyToWallet
@@ -1059,6 +1126,7 @@ def step_56_add_money_to_wallet(user1_token):
     headers = {"token": user1_token}
     data = {"amount": -10000}
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 56: Add Money To Wallet", data, expected_results[56], response)
     assert not response['success'] and "error" in response['data'], "Error in step 56: Attempt to withdraw more than balance should fail."
 
 # 57. POST /placeStockOrder
@@ -1081,6 +1149,7 @@ def step_57_place_stock_order(user1_token, google_stock_id):
         "price": 80  # Market order shouldn't have a price set
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 57: Place Stock Order", data, expected_results[57], response)
     assert not response['success'] and "error" in response['data'], "Error in step 57: Market buy with price should fail."
 
 # 58. POST /cancelStockTransaction
@@ -1097,6 +1166,7 @@ def step_58_cancel_stock_transaction(user1_token, google_stock_tx_id2):
     headers = {"token": user1_token}
     data = {"stock_tx_id": google_stock_tx_id2}
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 58: Cancel Stock Transaction", data, expected_results[58], response)
     assert not response['success'] and "error" in response['data'], "Error in step 58: Canceling a completed transaction should fail."
 
 
@@ -1115,6 +1185,7 @@ def step_59_add_money_to_wallet_with_invalid_token(invalid_token):
     headers = {"token": invalid_token}
     data = {"amount": -100}  # Attempt with negative amount and invalid token
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 59: Add Money To Wallet", data, expected_results[59], response)
     assert not response['success'] and "error" in response['data'], "Error in step 59: Expected failure due to invalid token and negative amount."
 
 # 60. POST /placeStockOrder
@@ -1139,6 +1210,7 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
         "price": 80  # Attempt with invalid token
     }
     response = make_post_request(endpoint, headers=headers, data=data)
+    print_results("Step 60: Place Stock Order", data, expected_results[60], response)
     assert not response['success'] and "error" in response['data'], "Error in step 60: Expected failure due to invalid token."
 
 
@@ -1213,7 +1285,14 @@ def executeTests():
     step_44_get_stock_transactions(token)
 
     ############### WAIT 15 MINUTES
-    time.sleep(900)
+    #time.sleep(900)
+
+    remaining_time = 900
+    while remaining_time > 0:
+        print(f"############### WAIT {remaining_time // 60} MINUTES {remaining_time % 60} SECONDS")
+        time.sleep(5)  # Notify every 5 seconds
+        remaining_time -= 5  # Decrease remaining time by 5 seconds
+
     
     step_45_get_wallet_transactions(token)
     step_46_get_wallet_balance(token)
@@ -1235,6 +1314,9 @@ def executeTests():
 
 
 def main():
+    # clean up previous run if any.
+    if os.path.exists("test_results.txt"):
+        os.remove("test_results.txt")
     executeTests()
 
 if __name__ == "__main__":

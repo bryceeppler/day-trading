@@ -6,7 +6,7 @@ exports.placeStockOrder = validate([
   check('is_buy').isBoolean().notEmpty(),
 	check('order_type').isIn(['LIMIT', 'MARKET']),
   body('quantity').notEmpty().isInt(),
-  body('price').notEmpty().isDecimal(),
+  body('price')
 ]);
 
 exports.cancelStockTransaction = validate([

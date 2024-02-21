@@ -1,16 +1,16 @@
 const jwt = require('jsonwebtoken');
-const { handleError, createError } = require('../lib/apiHandling');
+const { errorReturn } = require('../lib/apiHandling');
 const { STATUS_CODE } = require('../lib/enums');
 
 exports.authenticateToken = (accessToken) => async (req, res, next) =>
 {
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')?.[1];
-  if (!token) return handleError(createError("Unauthorized", STATUS_CODE.UNAUTHORIZED), res, next);
+  if (!token) return errorReturn(res, "Unauthorized", STATUS_CODE.UNAUTHORIZED);
 
   jwt.verify(token, accessToken, (error, user) =>
   {
-    if (error) return handleError(createError("Unauthorized", STATUS_CODE.UNAUTHORIZED), res, next);
+    if (error) return errorReturn(res, "Unauthorized", STATUS_CODE.UNAUTHORIZED);
     req.user = user;
     req.token = token;
     next();

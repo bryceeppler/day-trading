@@ -18,22 +18,24 @@ async function getStockPortfolio(req, res, next) {
     const user = await User.findById(req.user.userId);
     if (!user) {
       return createError('User not found', STATUS_CODE.NOT_FOUND);
-      
     }
     
     // Fetch stock portfolio for the user
-    const portfolio = await StockPortfolio.find({ user: user._id });
+    const portfolio = await StockPortfolio.find({ user_id: user._id });
 
-    // Construct a dictionary to hold stock portfolio data
-    const data = {};
+    // create a list to hold the stock portfolio data
+    const data = []
     await Promise.all(portfolio.map(async portfolioItem => {
       const stock = await Stock.findById(portfolioItem.stock_id);
-      data[portfolioItem.stock_id] = {
-        stock_name: stock.stock_name,
-        current_price: stock.current_price
-      };
+      if (!stock) {
+        throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
+      }
+      data.push({
+        stock_id: portfolioItem.stock_id,
+        stock_name: stock.name,
+        quantity_owned: portfolioItem.quantity_owned
+      });
     }));
-
     return successReturn(res, data);
   } catch (error) {
     return handleError(error, res, next);
@@ -61,34 +63,40 @@ async function addStockToUser(req, res, next) {
   try {
     const { stock_id, quantity } = req.body;
     const userId = req.user.userId;
+    console.log('userId', userId);
 
     // Validate request body parameters
     if (!stock_id || !quantity) {
       throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
     }
 
-    // Check if there's an existing stock transaction for the user and stock
-    let stockTransaction = await StockTransaction.findOne({ stock_id, userId });
 
-    // If there's an existing transaction, update the quantity
-    if (stockTransaction) {
-      stockTransaction.quantity += quantity;
-    } else {
-      // If there's no existing transaction, create a new one
-      stockTransaction = new StockTransaction({
-        stock_id,
-        wallet_tx_id: null,
-        order_status: ORDER_STATUS.IN_PROGRESS,
-        is_buy: false,
-        order_type: null,
-        stock_price: 0,
-        quantity,
-        is_deleted: false,
-      });
+    // get the user portfolio
+    const portfolio = await StockPortfolio.find({ user_id: userId });
+
+    console.log('portfolio', portfolio)
+
+    // check if the user already has some of the stock
+    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id === stock_id);
+
+    // if it's already there, update the quantity
+    if (stock) {
+      stock.quantity_owned += quantity;
+      await stock.save();
+      return successReturn(res);
     }
+    console.log("No stock found")
+    // if it's not there, create a new portfolio item
+    const newStock = new StockPortfolio({
+      user_id: userId,
+      stock_id,
+      quantity_owned: quantity
+    });
 
-    // Save the updated or new stock transaction to the database
-    await stockTransaction.save();
+    // save the new portfolio item
+    await newStock.save();
+
+    // optionally create a record of this transaction
     
     return successReturn(res);
   } catch (error) {

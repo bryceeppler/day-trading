@@ -19,7 +19,7 @@ const validatePassword = (password) => {
 
 const validateName = (name) => {
   // Check if name is provided and contains only letters and spaces
-  const nameRegex = /^[a-zA-Z ]+$/; // Allow spaces in names
+  const nameRegex = /^[a-zA-Z0-9_. !@-]+$/; 
   return name.trim().length > 0 && nameRegex.test(name);
 };
 

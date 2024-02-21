@@ -23,16 +23,9 @@ async function getStockPortfolio(req, res, next) {
     
     // Fetch stock portfolio for the user
     const portfolio = await StockPortfolio.find({ user: user._id });
-    // const PortfolioSchema = new mongoose.Schema({
-    //   user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-    //   stock_id: { type: mongoose.Schema.Types.ObjectId, required: true }, 
-    //   quantity_owned: { type: Number, required: true, min: [0, "quantity_owned must be non negative."] }
-    // });
-    // Construct a dictionary to hold stock portfolio data
-    // create a list to hold the stock portfolio data
 
+    // create a list to hold the stock portfolio data
     const data = []
-    // const data = {}
     await Promise.all(portfolio.map(async portfolioItem => {
       const stock = await Stock.findById(portfolioItem.stock_id);
       if (!stock) {

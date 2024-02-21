@@ -407,7 +407,9 @@ def step_18_get_wallet_balance(user1_token):
     endpoint = ENDPOINTS['getWalletBalance']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    assert response['success'] and response['data']['balance'] == 10000, f"Error in step 18: {response}"
+    assert response['success']
+    assert response['data']
+    assert response['data']['balance'] == 10000, f"Error in step 18: {response}"
 
 # 19. POST /placeStockOrder
 """
@@ -429,7 +431,9 @@ def step_19_place_stock_order(user1_token, google_stock_id):
         "price": None
     }
     response = make_post_request(endpoint, headers=headers, data=data)
-    assert response['success'] and not response['data'], f"Error in step 19: {response}"
+    print(response)
+    assert response['success']
+    assert not response['data'], f"Error in step 19: {response}"
 
 # 20. GET /getStockTransactions
 """

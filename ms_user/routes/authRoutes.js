@@ -72,7 +72,7 @@ router.post('/register', async (req, res) => {
 
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
     let hashedPassword = await bcrypt.hash(password, saltRounds);
-    const newUser = new User({ user_name, password: hashedPassword, name });
+    const newUser = new User({ user_name, password: hashedPassword, name, balance:0 });
     await newUser.save();
 
     // Respond with success true and data containing user details

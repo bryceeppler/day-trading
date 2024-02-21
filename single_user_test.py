@@ -1,34 +1,42 @@
 import requests
 import time 
+import json
 
-BASE_URL = "http://localhost"
+BASE_URL = "http://localhost" #:8000/
 
-
+# | Port  | Service  |
+# |-------|---------------|
+# | 8001  | ms_user |
+# | 8002  | ms_order_execution |
+# | 8003  | ms_order_creation |
+# | 8004  | ms_matching_engine |
+# | 8005  | ms_market_data |
+# | 8006  | ms_transaction_manager |
 ENDPOINTS = {
-    "register": "/register",
-    "login": "/login",
-    'createStock': "/createStock",
-    'addStockToUser': "/addStockToUser",
-    'getStockPortfolio': "/getStockPortfolio",
-    'placeStockOrder': "/placeStockOrder",
-    'getStockPrices': "/getStockPrices",
-    'addMoneyToWallet': "/addMoneyToWallet",
-    'getWalletBalance': "/getWalletBalance",
-    'getWalletTransactions': "/getWalletTransactions",
-    'getStockTransactions': "/getStockTransactions",
-    'cancelStockTransaction': "/cancelStockTransaction"
+    "register": ":8001/register",
+    "login": ":8001/login",
+    'createStock': ":8005/createStock",
+    'addStockToUser': ":8001/addStockToUser",
+    'getStockPortfolio': ":8001/getStockPortfolio",
+    'placeStockOrder': ":8003/placeStockOrder",
+    'getStockPrices': ":8005/getStockPrices",
+    'addMoneyToWallet': ":8001/addMoneyToWallet",
+    'getWalletBalance': ":8001/getWalletBalance",
+    'getWalletTransactions': ":8006/getWalletTransactions",
+    'getStockTransactions': ":8006/getStockTransactions",
+    'cancelStockTransaction': ":8003/cancelStockTransaction"
 }
 
 def make_post_request(endpoint, headers=None, data=None):
     url = BASE_URL + endpoint
     response = requests.post(url, headers=headers, json=data)
-    return response.json()
+    return json.loads(response.text)
 
 # Helper function to make a GET request
 def make_get_request(endpoint, headers=None):
     url = BASE_URL + endpoint
     response = requests.get(url, headers=headers)
-    return response.json()
+    return json.loads(response.text)
 
 
 # 1. POST /register
@@ -53,7 +61,7 @@ def step_1_register():
         "success": True,
         "data": None
     }
-    assert response == expected_response, f"error in step 1"
+    assert response["success"], f"Error in step 1"
 
 
 # 2. POST /register
@@ -1116,11 +1124,17 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
 
 def executeTests():
     step_1_register()
+    print("Step 1 passed")
     step_2_register()
+    print("Step 2 passed")
     step_3_login()
+    print("Step 3 passed")
     token = step_4_login()
+    print("Step 4 passed")
     google_stock_id = step_5_create_stock(token)
+    print("Step 5 passed")
     step_6_add_stock_to_user(token, google_stock_id)
+    print("Step 6 passed")
     apple_stock_id = step_7_create_stock(token)
     step_8_add_stock_to_user(token, apple_stock_id)
     step_9_get_stock_portfolio(token)

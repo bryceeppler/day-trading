@@ -392,6 +392,7 @@ def step_17_add_money_to_wallet(user1_token):
     headers = {"token": user1_token}
     data = {"amount": 10000}
     response = make_post_request(endpoint, headers=headers, data=data)
+    print(response)
     assert response['success'] 
     assert not response['data'], f"Error in step 17: {response}"
 
@@ -407,6 +408,7 @@ def step_18_get_wallet_balance(user1_token):
     endpoint = ENDPOINTS['getWalletBalance']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
+    print(response)
     assert response['success']
     assert response['data']
     assert response['data']['balance'] == 10000, f"Error in step 18: {response}"

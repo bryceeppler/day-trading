@@ -156,7 +156,7 @@ RESPONSE
 """
 def step_5_create_stock(comp_token):
     endpoint = ENDPOINTS['createStock']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_name": "Google"
     }
@@ -176,7 +176,7 @@ RESPONSE
 """
 def step_6_add_stock_to_user(comp_token, google_stock_id):
     endpoint = ENDPOINTS['addStockToUser']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_id": google_stock_id,
         "quantity": 550
@@ -200,7 +200,7 @@ RESPONSE
 """
 def step_7_create_stock(comp_token):
     endpoint = ENDPOINTS['createStock']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_name": "Apple"
     }
@@ -224,7 +224,7 @@ RESPONSE
 """
 def step_8_add_stock_to_user(comp_token, apple_stock_id):
     endpoint = ENDPOINTS['addStockToUser']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_id": apple_stock_id,
         "quantity": 369
@@ -242,7 +242,7 @@ RESPONSE
 """
 def step_9_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 2, f"Error in step 9: {response}"
 
@@ -257,7 +257,7 @@ RESPONSE
 """
 def step_10_place_stock_order(comp_token, apple_stock_id):
     endpoint = ENDPOINTS['placeStockOrder']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_id": apple_stock_id,
         "is_buy": False,
@@ -280,7 +280,7 @@ RESPONSE
 """
 def step_11_place_stock_order(comp_token, google_stock_id):
     endpoint = ENDPOINTS['placeStockOrder']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_id": google_stock_id,
         "is_buy": False,
@@ -302,7 +302,7 @@ RESPONSE
 """
 def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response["data"] == 0), f"Error in step 12: {response}" 
 
@@ -317,7 +317,7 @@ RESPONSE
 
 def step_13_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 2, f"Error in step 13: {response}"
 
@@ -503,7 +503,7 @@ RESPONSE
 """
 def step_24_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 3, f"Error in step 24: {response}"
 
@@ -517,7 +517,7 @@ RESPONSE
 """
 def step_25_get_wallet_balance(comp_token):
     endpoint = ENDPOINTS['getWalletBalance']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 1350}}
     assert response == expected_response, f"Error in step 25: {response}"
@@ -534,7 +534,7 @@ RESPONSE
 """
 def step_26_get_wallet_transactions(comp_token):
     endpoint = ENDPOINTS['getWalletTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 1, f"Error in step 26: {response}"
 
@@ -816,7 +816,7 @@ RESPONSE
 """
 def step_42_get_stock_prices(comp_token):
     endpoint = ENDPOINTS['getStockPrices']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 2, f"Error in step 42: {response}"
 
@@ -831,7 +831,7 @@ RESPONSE
 """
 def step_43_place_stock_order(comp_token, google_stock_id):
     endpoint = ENDPOINTS['placeStockOrder']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     data = {
         "stock_id": google_stock_id,
         "is_buy": True,
@@ -859,7 +859,7 @@ RESPONSE
 # Step 44: GET /getStockTransactions
 def step_44_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 4, f"Error in step 44: {response}"
 
@@ -878,7 +878,7 @@ RESPONSE
 # Step 45: GET /getWalletTransactions
 def step_45_get_wallet_transactions(comp_token):
     endpoint = ENDPOINTS['getWalletTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     # Check if the specific transactions are as expected
     assert response['success'] and len(response['data']) == 2, f"Error in step 45: {response}"
@@ -894,7 +894,7 @@ RESPONSE
 
 def step_46_get_wallet_balance(comp_token):
     endpoint = ENDPOINTS['getWalletBalance']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 8143}}
     assert response == expected_response, f"Error in step 46: {response}"
@@ -911,7 +911,7 @@ RESPONSE
 # Step 47: GET /getStockPrices
 def step_47_get_stock_prices(comp_token):
     endpoint = ENDPOINTS['getStockPrices']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 2, f"Error in step 47: {response}"
 
@@ -975,7 +975,7 @@ RESPONSE
 # Step 51: GET /getStockTransactions
 def step_51_get_stock_transactions(comp_token):
     endpoint = ENDPOINTS['getStockTransactions']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 3, f"Error in step 51: {response}"
 
@@ -989,7 +989,7 @@ RESPONSE
 """
 def step_52_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
-    headers = {"Authorization": f"Bearer {comp_token}"}
+    headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     assert response['success'] and len(response['data']) == 2, f"Error in step 52: {response}"
 

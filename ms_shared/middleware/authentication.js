@@ -4,8 +4,7 @@ const { STATUS_CODE } = require('../lib/enums');
 
 exports.authenticateToken = (accessToken) => async (req, res, next) =>
 {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')?.[1];
+  const token = req.headers['token'];
   if (!token) return errorReturn(res, "Unauthorized", STATUS_CODE.UNAUTHORIZED);
 
   jwt.verify(token, accessToken, (error, user) =>

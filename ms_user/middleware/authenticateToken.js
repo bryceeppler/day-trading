@@ -3,9 +3,8 @@ const { handleError, createError } = require('../lib/apiHandling');
 const { STATUS_CODE } = require('../lib/enums');
 
 module.exports.authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  console.log(authHeader);
-  const token = authHeader && authHeader.split(' ')[1]; // More robust check for existence
+  const token = req.headers['token'];
+  console.log(token);
 
   if (!token) {
     // Directly use your custom error handling

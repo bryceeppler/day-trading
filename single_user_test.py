@@ -3,6 +3,7 @@ import time
 import json
 import os
 from expected_results import expected_results
+from datetime import datetime
 
 BASE_URL = "http://localhost" #:8000/
 
@@ -1310,9 +1311,8 @@ def executeTests():
 
 
 def main():
-    # clean up previous run if any.
-    if os.path.exists("test_results.txt"):
-        os.remove("test_results.txt")
+    with open("test_results.txt", 'w') as file:
+        file.write(f"Test Run Time: {datetime.now().strftime('%A %b %d,%Y %H:%M:%S')}\n\n")
     executeTests()
 
 if __name__ == "__main__":

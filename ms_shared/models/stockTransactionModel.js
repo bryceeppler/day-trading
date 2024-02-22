@@ -5,6 +5,7 @@ const { ORDER_STATUS, ORDER_TYPE } = require('../lib/enums');
 const ObjectId = mongoose.Types.ObjectId;
 
 const stockTxSchema = new mongoose.Schema({
+    user_id: { type: ObjectId, required: true, unqiue: false },
     stock_id: { type: ObjectId, required: true, unqiue: false },
     parent_stock_tx_id: { type: ObjectId, required: false, unqiue: false, default: null },
     wallet_tx_id: { type: ObjectId, required: false, unique: false, default: null },

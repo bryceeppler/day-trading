@@ -95,7 +95,7 @@ exports.getStockTransactions = async (req, res, next) =>
     try 
     {
         // get all stock transaction that are not deleted.  
-        const stockTx = await StockTransaction.find({ is_deleted: false }).sort({ time_stamp: 1 }) || {};
+        const stockTx = await StockTransaction.find({ user_id: req.user?.userId, is_deleted: false }).sort({ time_stamp: 1 }) || {};
 
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({

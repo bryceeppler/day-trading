@@ -1,16 +1,19 @@
 const { handleError, createError } = require("../shared/lib/apiHandling");
 const ordersModel = require("../models/orders.model");
 const usersModel = require("../models/users.model");
+const Stocks = require("../shared/models/stockModel");
 const axios = require("../axios/base");
 const config = require("../config/config");
 
-exports.placeOrder = async (data, token) => {
+exports.placeOrder = async (data, token) =>
+{
   let previousBalance;
   let wallet_tx_id;
   let stock_tx_id;
   let portfolio_id;
 
-  try {
+  try
+  {
     // Fetch User
     const userData = await usersModel.fetchBalance(data.user_id);
     if (userData === null) throw handleError("Cannot find user", 400);
@@ -28,7 +31,8 @@ exports.placeOrder = async (data, token) => {
       stockId: data.stock_id,
       userId: data.user_id,
     });
-    if (!portfolio) {
+    if (!portfolio)
+    {
       const newPortfolio = {
         user_id: data.user_id,
         stock_id: data.stock_id,
@@ -52,6 +56,7 @@ exports.placeOrder = async (data, token) => {
 
     // Create a stock transaction
     const stockTxData = {
+      user_id: data.user_id,
       wallet_tx_id: wallet_tx_id,
       stock_id: data.stock_id,
       is_buy: data.is_buy,
@@ -64,6 +69,10 @@ exports.placeOrder = async (data, token) => {
     const createdStockTx =
       await ordersModel.createStockTransaction(stockTxData);
     stock_tx_id = createdStockTx._id;
+
+    // Update stock tx id in wallet transaction.
+    walletTransactionData.stock_tx_id = stock_tx_id
+    await walletTransactionData.save();
 
     // Send data to matching engine
     const matchingEngineData = {
@@ -78,7 +87,8 @@ exports.placeOrder = async (data, token) => {
       matchingEngineData,
       token,
     );
-  } catch (error) {
+  } catch (error)
+  {
     console.error(error);
     const reverseError = await reversePlaceOrder(
       data.user_id,
@@ -87,21 +97,25 @@ exports.placeOrder = async (data, token) => {
       stock_tx_id,
       portfolio_id,
     );
-    if (reverseError) {
+    if (reverseError)
+    {
       return reverseError;
     }
-    if (error.details) {
+    if (error.details)
+    {
       return error.details.message;
     }
     throw createError("Error Placing Order");
   }
 };
 
-exports.sellOrder = async (data, token) => {
+exports.sellOrder = async (data, token) =>
+{
   let portfolio_id;
   let previousQuantityOwned;
   let stock_tx_id;
-  try {
+  try
+  {
     // Find Portfolio
     const portfolio = await usersModel.fetchPortfolio({
       stockId: data.stock_id,
@@ -120,9 +134,20 @@ exports.sellOrder = async (data, token) => {
     portfolio_id = portfolio._id;
     previousQuantityOwned = portfolio.quantity_owned;
 
+    // Find stock
     const stock = await ordersModel.fetchStock(data.stock_id);
+
+    // If no price, update price.
+    if (!stock.starting_price)
+    {
+      stock.current_price = data.price
+      stock.starting_price = data.price
+    }
+    await stock.save();
+
     // Create a stock transaction
     const stockTxData = {
+      user_id: data.user_id,
       stock_id: data.stock_id,
       is_buy: data.is_buy,
       portfolio_id,
@@ -147,24 +172,29 @@ exports.sellOrder = async (data, token) => {
       matchingEngineData,
       token,
     );
-  } catch (error) {
+  } catch (error)
+  {
     console.error(error);
     const reverseError = await reverseSellOrder(
       portfolio_id,
       previousQuantityOwned,
       stock_tx_id,
     );
-    if (reverseError) {
+    if (reverseError)
+    {
       throw reverseError;
     }
     throw error.details ? error : createError("Error Selling Order");
   }
 };
 
-exports.cancelStockTransaction = async (data, token) => {
-  try {
+exports.cancelStockTransaction = async (data, token) =>
+{
+  try
+  {
     await axios.POST(`${config.mathingEngineUrl}/cancelOrder`, data, token);
-  } catch (error) {
+  } catch (error)
+  {
     console.error(error);
 
     throw error.details ? error : createError("Error Selling Order");
@@ -177,24 +207,31 @@ const reversePlaceOrder = async (
   wallet_tx_id,
   stock_tx_id,
   portfolio_id,
-) => {
-  try {
-    if (previousBalance !== undefined) {
+) =>
+{
+  try
+  {
+    if (previousBalance !== undefined)
+    {
       await usersModel.updateBalance(userId, previousBalance);
     }
 
-    if (wallet_tx_id) {
+    if (wallet_tx_id)
+    {
       await ordersModel.deleteWalletTransaction(wallet_tx_id);
     }
 
-    if (stock_tx_id) {
+    if (stock_tx_id)
+    {
       await ordersModel.deleteStockTransaction(stock_tx_id);
     }
 
-    if (portfolio_id) {
+    if (portfolio_id)
+    {
       await usersModel.deletePortfolio(portfolio_id);
     }
-  } catch (error) {
+  } catch (error)
+  {
     console.error(error);
     return createError("Error Placing Order - Reversing Data Failed");
   }
@@ -203,20 +240,26 @@ const reversePlaceOrder = async (
 const reverseSellOrder = async (
   portfolioId,
   previousQuantityOwned,
+  previousStockPrice,
   stock_tx_id,
-) => {
-  try {
-    if (previousQuantityOwned) {
+) =>
+{
+  try
+  {
+    if (previousQuantityOwned)
+    {
       await usersModel.updatePortfolioStockQuantity(
         portfolioId,
         previousQuantityOwned,
       );
     }
 
-    if (stock_tx_id) {
+    if (stock_tx_id)
+    {
       await ordersModel.deleteStockTransaction(stock_tx_id);
     }
-  } catch (error) {
+  } catch (error)
+  {
     console.error(error);
     return createError("Error Selling Order - Reversing Data Failed");
   }

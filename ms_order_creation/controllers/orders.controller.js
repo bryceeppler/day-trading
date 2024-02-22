@@ -1,4 +1,4 @@
-const { handleError, successReturn } = require('../lib/apiHandling');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const orderService = require('../services/orders.service')
 
 exports.placeStockOrder = async (req, res, next) => {
@@ -14,14 +14,17 @@ exports.placeStockOrder = async (req, res, next) => {
 			is_buy
 		}
 
+		let error;
 		if (is_buy) {
-			await orderService.placeOrder(orderDetails, token)
+			error = await orderService.placeOrder(orderDetails, token)
 		} else {
-			await orderService.sellOrder(orderDetails, token)
+			error = await orderService.sellOrder(orderDetails, token)
 		}
 
 		
-		  
+		if (error) {
+			return errorReturn(res, error)
+		}
     successReturn(res);
   } catch (error) {
     handleError(error, res, next);

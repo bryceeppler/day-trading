@@ -1,5 +1,5 @@
 import { STORAGE_ACCESS_TOKEN, STORAGE_REFRESH_TOKEN } from 'lib/config';
-import React, { createContext, ReactElement, ReactNode, useState } from 'react';
+import React, { createContext, ReactElement, ReactNode } from 'react';
 
 export interface AuthorizationData {
   logout: () => void;

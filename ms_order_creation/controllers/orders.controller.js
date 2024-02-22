@@ -6,7 +6,7 @@ exports.placeStockOrder = async (req, res, next) => {
 		const is_buy = req.body.is_buy;
 		const token = req.token;
 		const orderDetails =  {
-			user_id: req.user?.userId || "65d051e3273e059d8c4587b4",
+			user_id: req.user?.userId,
 			stock_id: req.body.stock_id,
 			quantity: req.body.quantity,
 			price: req.body.price,

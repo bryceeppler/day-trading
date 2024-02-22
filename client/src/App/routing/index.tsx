@@ -7,7 +7,6 @@ import { HOME, LOGIN, PORTFOLIO, REGISTER, TRANSACTIONS } from 'lib/pagesPaths';
 import Home from 'pages/Home';
 import Register from 'pages/Register';
 import Transactions from 'pages/Transactions';
-import Portfolio from 'pages/Portfolio';
 
 function Routing(): ReactElement {
   return (
@@ -17,7 +16,6 @@ function Routing(): ReactElement {
         <Route path={HOME} element={<Home />} />
         <Route path={REGISTER} element={<Register />} />
         <Route path={TRANSACTIONS} element={<Transactions />} />
-        <Route path={PORTFOLIO} element={<Portfolio />} />
 
         <Route path="/*" element={<Navigate to="/login" />} />
       </Routes>

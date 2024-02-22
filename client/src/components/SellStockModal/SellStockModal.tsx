@@ -1,15 +1,15 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import styles from './PlaceOrderModal.module.scss';
+import styles from './SellStockModal.module.scss';
 import TextField from 'components/TextField';
 import Button from 'components/Button';
 import useUsers from 'hooks/useUsers.hook';
 import { BUTTON_TYPE } from 'components/Button/Button';
-import { PlaceStockOrderParams, Stock } from 'types/users.types';
+import { PlaceStockOrderParams, Stock, StockPortfolio } from 'types/users.types';
 import SlidingToggle from 'components/SlidingToggle';
 import Dropdown from 'components/Dropdown';
 import { formatPrice } from 'lib/formatting';
 
-interface PlaceOrderModalProps {
+interface SellStockModalProps {
   open: boolean;
   onClose: () => void;
   onSave: () => void;
@@ -19,14 +19,14 @@ enum ORDER_TYPES {
   LIMIT = 'LIMIT',
   MARKET = 'MARKET',
 }
-function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): ReactElement {
+function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactElement {
   const [price, setPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number>();
   const [orderType, setOrderType] = useState<ORDER_TYPES>(ORDER_TYPES.MARKET);
-  const [stock, setStock] = useState<Stock>();
+  const [stock, setStock] = useState<StockPortfolio>();
   const [verify, setVerify] = useState<boolean>(false);
 
-  const { placeStockOrder, fetchStocks, stocks } = useUsers();
+  const { placeStockOrder, fetchStockPortfolios, stockPortfolios } = useUsers();
   const verified = () => {
     setVerify(true);
     if (!quantity || quantity < 0) return false;
@@ -42,7 +42,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
     if (!verified()) return;
 
     const data: PlaceStockOrderParams = {
-      is_buy: true,
+      is_buy: false,
       stock_id: stock!.stock_id,
       order_type: orderType,
       quantity: quantity!,
@@ -63,7 +63,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
       setStock(undefined);
       setVerify(false);
     }
-    fetchStocks();
+    fetchStockPortfolios();
   }, [open]);
 
   useEffect(() => {
@@ -92,13 +92,13 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
 
             <Dropdown
               className={styles.field}
-              items={stocks?.map((stock, index) => ({
+              items={stockPortfolios?.map((stock, index) => ({
                 id: index,
-                value: `${stock.stock_name} - ${formatPrice(stock.current_price, true)}`,
+                value: `${stock.stock_name} - ${formatPrice(stock.quantity_owned, true)}`,
                 onSelect: () => setStock(stock),
               }))}
               label="Select Stock"
-              value={stock ? `${stock.stock_name} - ${formatPrice(stock.current_price, true)}` : ''}
+              value={stock ? `${stock.stock_name} - ${formatPrice(stock.quantity_owned, true)}` : ''}
               verify={verify}
             />
 
@@ -126,7 +126,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
 
             <div className={styles.buttons}>
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />
-              <Button className={styles.submitButton} label={'Buy'} onClick={onLocalSave} />
+              <Button className={styles.submitButton} label={'Sell'} onClick={onLocalSave} />
             </div>
           </div>
         </div>
@@ -135,4 +135,4 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
   );
 }
 
-export default PlaceOrderModal;
+export default SellStockModal;

@@ -5,6 +5,6 @@ export const header = (token?: string) => {
   return {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
-    Authorization: `Bearer ${token ? token : storedToken}`,
+    token: `${token ? token : storedToken}`,
   };
 };

@@ -37,6 +37,7 @@ exports.getStockPrices = async (req, res, next) =>
             stock_id: stock._id,
             stock_name: stock.stock_name,
             current_price: stock.current_price,
+						starting_price: stock.starting_price
         }));
         return successReturn(res, transformedStocks);
     }

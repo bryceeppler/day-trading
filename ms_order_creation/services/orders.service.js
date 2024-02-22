@@ -17,9 +17,11 @@ exports.placeOrder = async (data, token) => {
 		if (userData === null) throw handleError('Cannot find user', 400)
 		// Check balance
 		const balance = userData.balance
+		const stock  = await ordersModel.fetchStock(data.stock_id)
+		let amount =  data.price === null ? stock.current_price * data.quantity :  data.price
 		if (balance < data.price) throw createError('Insufficient Funds', 400)
 		// Update Balance in database
-		await usersModel.updateBalance(data.user_id, balance - data.price)
+		await usersModel.updateBalance(data.user_id, balance - amount)
 
 		// Create portfolio if it doesnt exist
 		const portfolio = await usersModel.fetchPortfolio({stockId: data.stock_id, userId: data.user_id})
@@ -33,8 +35,7 @@ exports.placeOrder = async (data, token) => {
 			portfolio_id = newInsert._id
 		}
 
-		const stock  = await ordersModel.fetchStock(data.stock_id)
-		let amount =  data.price === null ? stock.current_price * data.quantity :  data.price
+
 
 		previousBalance = balance
 		// Create a wallet transaction
@@ -77,7 +78,7 @@ exports.placeOrder = async (data, token) => {
 			return reverseError
 		}
 		if (error.details) {
-			return error.deatils.message
+			return error.details.message
 		}
 		throw createError("Error Placing Order")
 	}
@@ -95,6 +96,7 @@ exports.sellOrder = async (data, token) => {
 		const portfolio = await usersModel.fetchPortfolio({stockId: data.stock_id, userId: data.user_id})
 		if (!portfolio) throw createError("Portfolio not found")
 	  // Check for portfolio Quantity
+	console.log(portfolio)
 		if (portfolio.quantity_owned < data.quantity) throw createError("Not enough owned stock", 400)
 
 		// Update the quantity
@@ -102,13 +104,14 @@ exports.sellOrder = async (data, token) => {
 		portfolio_id = portfolio._id
 		previousQuantityOwned = portfolio.quantity_owned;
 
+		const stock  = await ordersModel.fetchStock(data.stock_id)
 		// Create a stock transaction
 		const stockTxData = {
 			stock_id: data.stock_id,
 			is_buy: data.is_buy,
 			portfolio_id,
 			order_type: data.order_type,
-			stock_price: data.price,
+			stock_price: data.price ? data.price : stock.current_price,
 			quantity: data.quantity,
 		}
 
@@ -135,7 +138,8 @@ exports.sellOrder = async (data, token) => {
 
 exports.cancelStockTransaction = async (data, token) => {
 	try {
-
+		console.log("Cancelinig ----- From Service")
+		console.log(data)
 		await axios.POST(`${config.mathingEngineUrl}/cancelOrder`,data, token)
 
 	} catch (error) {

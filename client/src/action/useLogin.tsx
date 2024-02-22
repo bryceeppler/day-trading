@@ -37,7 +37,7 @@ function useLogin() {
       const response = await LoginApi.register(name, username, password);
       if (!response.success) {
         userContext.setUser(undefined);
-        return response.data.message;
+        return response.data.error;
       }
     } catch (error) {
       console.log(error);

@@ -3,7 +3,6 @@ import React, { createContext, ReactElement, ReactNode, useState } from 'react';
 
 export interface AuthorizationData {
   userType: string;
-  setUserType: (usertype: string) => void;
   logout: () => void;
 }
 interface AuthorizationProps {
@@ -12,7 +11,6 @@ interface AuthorizationProps {
 
 const defaultState = {
   userType: '',
-  setUserType: (usertype: string) => null,
   logout: () => null,
 };
 
@@ -25,10 +23,10 @@ function AuthorizationProvider({ children }: AuthorizationProps): ReactElement {
   const logout = () => {
     localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     localStorage.removeItem(STORAGE_REFRESH_TOKEN);
-    setUserType('');
+
   };
 
-  return <Provider value={{ userType, setUserType, logout }}>{children}</Provider>;
+  return <Provider value={{ userType, logout }}>{children}</Provider>;
 }
 
 export { AuthorizationContext, AuthorizationProvider };

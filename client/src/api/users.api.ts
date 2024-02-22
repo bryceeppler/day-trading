@@ -1,5 +1,6 @@
 import { BaseApi } from 'api';
 import {
+  ADD_MONEY,
   CANCEL_STOCK_ORDER,
   FETCH_BALANCE,
   FETCH_STOCKS,
@@ -32,7 +33,7 @@ export const fetchStocks = async (): Promise<SuccessApiResponse> => {
 };
 
 export const addMoney = async (amount: number): Promise<SuccessApiResponse> => {
-  return await BaseApi.post(`${FETCH_BALANCE}`, { amount });
+  return await BaseApi.post(`${ADD_MONEY}`, { amount });
 };
 
 export const placeStockOrder = async (data: PlaceStockOrderParams): Promise<SuccessApiResponse> => {

@@ -32,7 +32,10 @@ function AddMoneyModal({ open, onClose, onSave }: AddMoneyModalProps): ReactElem
   };
 
   useEffect(() => {
-    if (!open) setAmount(undefined);
+    if (!open) {
+			setAmount(undefined);
+			setVerify(false)
+		}
   }, [open]);
 
   useEffect(() => {

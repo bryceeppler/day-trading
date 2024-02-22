@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { STORAGE_ACCESS_TOKEN } from 'lib/config';
 import { dateFormats } from 'lib/date';
 import { header } from 'lib/http';
 import moment from 'moment';
@@ -23,27 +24,7 @@ export const get = async (route: string, params?: any, token?: string) => {
     const e = error as APICallError;
     if (e.response.status === 401) {
       navigateToLogin();
-    }
-    throw e;
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPDF = async (route: string, params?: any, token?: string) => {
-  try {
-    const response = await axios.get(route, {
-      params: {
-        ...params,
-        timeStamp: moment().format(dateFormats.sqlDateTimeFull),
-      },
-      responseType: 'arraybuffer',
-      headers: header(token),
-    });
-    return response.data;
-  } catch (error) {
-    const e = error as APICallError;
-    if (e.response.status === 401) {
-      navigateToLogin();
+      window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     }
     throw e;
   }
@@ -65,6 +46,7 @@ export const post = async (route: string, body?: any, token?: string) => {
     const e = error as APICallError;
     if (e.response.status === 401) {
       navigateToLogin();
+      window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     }
     throw e;
   }
@@ -86,6 +68,7 @@ export const put = async (route: string, body?: any, token?: string) => {
     const e = error as APICallError;
     if (e.response.status === 401) {
       navigateToLogin();
+      window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     }
     throw e;
   }
@@ -106,6 +89,7 @@ export const del = async (route: string, body?: any, token?: string) => {
     const e = error as APICallError;
     if (e.response.status === 401) {
       navigateToLogin();
+      window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     }
     throw e;
   }
@@ -119,6 +103,7 @@ export const postRefresh = async (route: string, token: string | undefined) => {
     const e = error as APICallError;
     if (e.response.status === 401) {
       navigateToLogin();
+      window.localStorage.removeItem(STORAGE_ACCESS_TOKEN);
     }
     throw e;
   }

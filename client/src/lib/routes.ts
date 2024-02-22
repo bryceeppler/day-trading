@@ -9,4 +9,4 @@ export const FETCH_STOCK_TXS = `${baseTransactionManagerApi}/getStockTransaction
 export const FETCH_STOCK_PORTFOLIO = `${baseUserApi}/getStockPortfolio`;
 export const FETCH_BALANCE = `${baseUserApi}/getWalletBalance`;
 export const FETCH_STOCKS = `${baseMarketDataApi}/getStockPrices`;
-export const ADD_MONEY = `${baseTransactionManagerApi}/addMoneyToWallet`;
+export const ADD_MONEY = `${baseUserApi}/addMoneyToWallet`;

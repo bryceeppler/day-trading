@@ -4,10 +4,8 @@ services:
   # React Frontend
   react:
     build: ./client
-    volumes: 
-      - ./client/src:/app/src
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       - ms_user
       - ms_order_execution
@@ -20,8 +18,6 @@ services:
   ms_user:
     build: ./ms_user
     image: ms_user    
-    volumes: 
-      - ./ms_user:/app
     ports:
       - "8001:3000"
     environment:

@@ -23,6 +23,7 @@ describe("OrderBook Market Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: olderTimeStamp,
+        executed: false,
       },
       {
         user_id: "1",
@@ -34,6 +35,7 @@ describe("OrderBook Market Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: newerTimeStamp,
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
@@ -46,6 +48,7 @@ describe("OrderBook Market Order Tests", () => {
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -66,6 +69,7 @@ describe("OrderBook Market Order Tests", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 10,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
@@ -86,6 +90,7 @@ describe("OrderBook Market Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
@@ -98,6 +103,7 @@ describe("OrderBook Market Order Tests", () => {
       order_type: OrderType.MARKET,
       price: 10,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -118,6 +124,7 @@ describe("OrderBook Market Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
@@ -129,6 +136,7 @@ describe("OrderBook Market Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
@@ -140,6 +148,7 @@ describe("OrderBook Market Order Tests", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 11,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);

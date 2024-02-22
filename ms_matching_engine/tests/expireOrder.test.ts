@@ -9,7 +9,11 @@ describe("Expired Orders on Receiving Order", () => {
     orderbook = new OrderBook(StockTransaction);
   });
 
-  function addExpiredOrder(orderbook: IOrderBook, isBuyOrder: boolean, orderType: OrderType) {
+  function addExpiredOrder(
+    orderbook: IOrderBook,
+    isBuyOrder: boolean,
+    orderType: OrderType,
+  ) {
     const expiredOrder = {
       user_id: "1",
       stock_tx_id: "1",
@@ -19,6 +23,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: isBuyOrder,
       order_type: orderType,
       timestamp: new Date(Date.now() - 60 * 60 * 1000),
+      executed: false,
     };
     if (isBuyOrder) {
       orderbook.buyOrders.push(expiredOrder);
@@ -39,6 +44,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.matchOrder(newOrder);
@@ -59,6 +65,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.matchOrder(newOrder);
@@ -66,5 +73,4 @@ describe("Expired Orders on Receiving Order", () => {
     expect(orderbook.sellOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);
   });
-
 });

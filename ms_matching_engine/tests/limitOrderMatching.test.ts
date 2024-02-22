@@ -21,6 +21,7 @@ describe("OrderBook Limit Order Tests", () => {
         quantity: 5,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order: OrderBookOrder = {
@@ -33,6 +34,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 5,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -57,6 +59,7 @@ describe("OrderBook Limit Order Tests", () => {
         quantity: 3,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -69,6 +72,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 5,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -89,6 +93,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -101,6 +106,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 5,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -121,6 +127,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
@@ -132,6 +139,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -144,6 +152,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -164,6 +173,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
@@ -175,6 +185,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -187,6 +198,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -207,6 +219,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         stock_id: "1",
@@ -218,6 +231,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -230,6 +244,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -250,6 +265,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         stock_id: "1",
@@ -261,6 +277,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const order = {
@@ -273,6 +290,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(order);
 
@@ -293,6 +311,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         stock_id: "1",
@@ -304,6 +323,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     orderbook.buyOrders = [
@@ -317,6 +337,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         stock_id: "1",
@@ -328,6 +349,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const sellOrder = {
@@ -340,6 +362,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const buyOrder = {
       user_id: "1",
@@ -351,6 +374,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [sellMatch, remainingSellQuantity] = orderbook.matchOrder(sellOrder);
     const [buyMatch, remainingBuyQuantity] = orderbook.matchOrder(buyOrder);
@@ -372,6 +396,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
@@ -383,6 +408,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ] as OrderBookOrder[];
 
@@ -397,6 +423,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
@@ -408,6 +435,7 @@ describe("OrderBook Limit Order Tests", () => {
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ] as OrderBookOrder[];
 
@@ -421,6 +449,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
 
     const buyOrder: OrderBookOrder = {
@@ -433,6 +462,7 @@ describe("OrderBook Limit Order Tests", () => {
       quantity: 10,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     const [sellMatch, remainingSellQuantity] = orderbook.matchOrder(sellOrder);
     const [buyMatch, remainingBuyQuantity] = orderbook.matchOrder(buyOrder);

@@ -62,6 +62,7 @@ export type Order = {
 
 export interface OrderBookOrder extends Order {
   timestamp: Date;
+  executed: boolean;
 }
 
 export interface MatchedOrder {
@@ -69,6 +70,7 @@ export interface MatchedOrder {
   sellOrder: OrderBookOrder;
   quantity: number;
   matchPrice: number;
+  executed: boolean;
   timestamp: Date;
 }
 

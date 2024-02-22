@@ -118,16 +118,16 @@ export default class OrderBook implements IOrderBook {
         i--;
         continue;
       }
-      if (this.isMatch(newOrder, matchAgainst) === false) continue;
+      if (this.isMatch(newOrder, matchAgainst) === false) {
+        console.log("Not a match");
+        continue;
+      }
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
       remainingQty -= matchedQuantity; // remaining qty of incoming market order
-      console.log("Match against quantity: ", matchAgainst.quantity);
       matchAgainst.quantity -= matchedQuantity;
-      console.log("Match against quantity after: ", matchAgainst.quantity);
       this.insertMatchedOrders([
         this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity),
       ]);
-      console.log("Matched orders: ", this.matchedOrders);
 
       if (matchAgainst.quantity === 0) {
         orderQueue.splice(i, 1); // remove fully matched order from the orderbook
@@ -196,13 +196,13 @@ export default class OrderBook implements IOrderBook {
     const orders = documents.map((doc) => ({
       stock_tx_id: doc.stock_tx_id,
       user_id: doc.user_id,
-      wallet_tx_id: doc.wallet_tx_id,
       price: doc.stock_price,
       quantity: doc.quantity,
       is_buy: doc.is_buy,
       order_type: doc.order_type,
       timestamp: doc.time_stamp,
       stock_id: doc.stock_id,
+      executed: false,
     }));
     return orders;
   }
@@ -234,6 +234,7 @@ export default class OrderBook implements IOrderBook {
       quantity,
       matchPrice: matchAgainst.price,
       timestamp: new Date(),
+      executed: false,
     } as MatchedOrder;
   }
 
@@ -358,6 +359,7 @@ export default class OrderBook implements IOrderBook {
 
     const data = [];
 
+    // Create array of action objects to send to order execution service
     if (matchedOrders.length > 0) {
       for (const matchedOrder of matchedOrders) {
         const buyStockTxId = matchedOrder.buyOrder.stock_tx_id;
@@ -397,17 +399,63 @@ export default class OrderBook implements IOrderBook {
 
     if (data.length === 0) return;
     try {
-      const response = await axios.post(executionServiceUrl, {
-        data,
-      });
+      // sends the array of actions to the order execution service
+      // const response = await axios.post(executionServiceUrl, {
+      //   data,
+      // });
 
-      if (response.status === 200) {
-        this.matchedOrders = [];
-        this.cancelledOrders = [];
-        this.expiredOrders = [];
+      // if (response.status === 200) {
+      //   this.matchedOrders = [];
+      //   this.cancelledOrders = [];
+      //   this.expiredOrders = [];
+      // }
+      //
+      // second implementation to send them one at a time.
+      for (const order of data) {
+        const res = await axios.post(executionServiceUrl, {
+          order,
+        });
+        if (res.status === 200) {
+          this.executeOrder(order);
+        } else {
+          console.log("Could not execute order: ", order);
+        }
       }
     } catch (error) {
       console.error("Error sending orders to order execution service:", error);
+    }
+  }
+
+  private executeOrder(order: {
+    stock_tx_id: string;
+    action: string;
+    quantity: number;
+  }) {
+    if (order.action === "COMPLETED") {
+      // find the matchedOrder containing the sellOrder or buyOrder with the stock_tx_id
+      for (const matchedOrder of this.matchedOrders) {
+        if (matchedOrder.buyOrder.stock_tx_id === order.stock_tx_id) {
+          matchedOrder.buyOrder.executed = true;
+        }
+        if (matchedOrder.sellOrder.stock_tx_id === order.stock_tx_id) {
+          matchedOrder.sellOrder.executed = true;
+        }
+        if (matchedOrder.buyOrder.executed && matchedOrder.sellOrder.executed) {
+          this.matchedOrders = this.matchedOrders.filter(
+            (o) => o !== matchedOrder,
+          );
+        }
+      }
+      // mark the buyOrder or sellOrder as executed:true
+      // if both buyOrder and sellOrder are executed, remove the matchedOrder from the list
+    } else if (order.action === "CANCELED") {
+      this.cancelledOrders = this.cancelledOrders.filter(
+        (o) => o.stock_tx_id !== order.stock_tx_id,
+      );
+    } else if (order.action === "EXPIRED") {
+      this.expiredOrders = this.expiredOrders.filter(
+        (o) => o.stock_tx_id !== order.stock_tx_id,
+      );
     }
   }
 }

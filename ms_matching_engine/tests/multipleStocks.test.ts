@@ -22,6 +22,7 @@ describe("OrderBook Market Order Tests", () => {
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     });
 
     const marketOrder: OrderBookOrder = {
@@ -32,6 +33,7 @@ describe("OrderBook Market Order Tests", () => {
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 5,
     };
 

@@ -20,6 +20,7 @@ describe("Cancel Order Tests", () => {
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     orderbook.buyOrders.push(order);
 
@@ -40,6 +41,7 @@ describe("Cancel Order Tests", () => {
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.buyOrders.push(orderInBook);

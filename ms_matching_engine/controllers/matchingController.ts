@@ -43,6 +43,7 @@ export default (orderBook: OrderBook): Routes => {
         const orderBookOrder: OrderBookOrder = {
           ...order,
           timestamp: new Date(),
+          executed: false,
         };
 
         console.log("Orderbook Order:", orderBookOrder);

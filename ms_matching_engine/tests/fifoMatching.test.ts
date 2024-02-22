@@ -23,6 +23,7 @@ describe("OrderBook FIFO Priority Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(Date.now() - time),
+        executed: false,
       });
     });
 
@@ -35,6 +36,7 @@ describe("OrderBook FIFO Priority Tests", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);

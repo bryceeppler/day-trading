@@ -28,8 +28,8 @@ jobs:
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
-            if [[ $name =~ .*ms_shared.* ]]; then
-                  continue  # Skip the ms_shared container
+            if [[ $name =~ .*shared.* ]]; then
+                  continue  # Skip the shared container
             fi
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then

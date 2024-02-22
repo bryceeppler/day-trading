@@ -1,7 +1,6 @@
 const { handleError, createError } = require("../shared/lib/apiHandling");
 const ordersModel = require("../models/orders.model");
 const usersModel = require("../models/users.model");
-const Stocks = require("../shared/models/stockModel");
 const axios = require("../axios/base");
 const config = require("../config/config");
 

@@ -358,6 +358,7 @@ export default class OrderBook implements IOrderBook {
       }
     }
 
+    if (data.length === 0) return;
     try {
       const response = await axios.post(executionServiceUrl, {
         data,

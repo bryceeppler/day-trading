@@ -1,87 +1,162 @@
-const User = require('../models/User');
+const User = require('../shared/models/userModel');
 const StockTransaction = require('../models/stockTransactionModel');
-const stockTransactionController = require('../controllers/stockTransactionController');
 const WalletTransaction = require('../models/walletTransactionModel');
-const walletTransactionController = require('../controllers/walletTransactionController');
+const Stock = require('../models/stockModel');
+const StockPortfolio = require('../models/portfolioModel');
+const { STATUS_CODE } = require('../lib/enums');
+const { handleError, successReturn, createError } = require('../lib/apiHandling');
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const express = require('express');
 const router = express.Router();
 
-// getStockPortfolio
-async function getStockPortfolio(req, res) {
-  try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
-      
-      // Fetch user's actual stock portfolio from the database
-      const stocks = await StockTransaction.find({ user: user._id });
 
-      // Return the user's stock portfolio
-      return res.status(200).json({ success: true, data: stocks });
-  } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+async function getStockPortfolio(req, res, next)
+{
+  try
+  {
+    // Assuming req.user is populated by the authenticateToken middleware
+    const user = await User.findById(req.user.userId);
+    if (!user)
+    {
+      return createError('User not found', STATUS_CODE.NOT_FOUND);
+    }
+
+    // Fetch stock portfolio for the user
+    const portfolio = await StockPortfolio.find({ user_id: user._id });
+
+    // create a list to hold the stock portfolio data
+    const data = []
+    await Promise.all(portfolio.map(async portfolioItem =>
+    {
+      const stock = await Stock.findById(portfolioItem.stock_id);
+      if (!stock)
+      {
+        throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
+      }
+      if (portfolioItem.quantity_owned) {
+      data.push({
+        stock_id: portfolioItem.stock_id,
+        stock_name: stock.stock_name,
+        quantity_owned: portfolioItem.quantity_owned
+      });
+    }
+    }));
+    return successReturn(res, data);
+  } catch (error)
+  {
+    return handleError(error, res, next);
   }
 }
 
 // getWalletBalance
-async function getWalletBalance(req, res) {
-    try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-      }
-      // Assuming the user model has a balance field
-      const balance = user.balance;
-      return res.status(200).json({ success: true, data: { balance } });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+async function getWalletBalance(req, res, next)
+{
+  try
+  {
+    // Assuming req.user is populated by the authenticateToken middleware
+    const user = await User.findById(req.user.userId);
+    if (!user)
+    {
+      throw createError('User not found', STATUS_CODE.NOT_FOUND);
     }
+    // Assuming the user model has a balance field
+    const balance = user.balance;
+    return successReturn(res, { balance });
+  } catch (error)
+  {
+    return handleError(error, res, next);
+  }
 }
 
-// getStockTransactions
-async function getStockTransactions(req, res, next) {
-  try {
-      // Assuming req.user is populated by the authenticateToken middleware
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-          return res.status(404).json({ success: false, message: "User not found" });
-      }
+// addStockToUser
+async function addStockToUser(req, res, next)
+{
+  try
+  {
+    const { stock_id, quantity } = req.body;
+    const userId = req.user.userId;
+    console.log('userId', userId);
 
-      // Fetch user's actual stock transactions from the database
-      const stockTransactions = await StockTransaction.find({ user: user._id, is_deleted: false }).sort({ time_stamp: 1 });
+    // Validate request body parameters
+    if (!stock_id || !quantity)
+    {
+      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+    }
 
-      // Transform stock transactions
-      const transformedStockTransactions = stockTransactions.map(tx => ({
-          stock_tx_id: tx._id,
-          stock_id: tx.stock_id,
-          wallet_tx_id: tx.wallet_tx_id,
-          order_status: tx.order_status,
-          is_buy: tx.is_buy,
-          order_type: tx.order_type,
-          stock_price: tx.stock_price,
-          quantity: tx.quantity,
-          time_stamp: tx.time_stamp,
-      }));
 
-      // Return the transformed data
-      return res.status(200).json({ success: true, data: transformedStockTransactions });
+    // get the user portfolio
+    const portfolio = await StockPortfolio.find({ user_id: userId });
+
+    console.log('portfolio', portfolio)
+
+    // check if the user already has some of the stock
+    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id === stock_id);
+
+    // if it's already there, update the quantity
+    if (stock)
+    {
+      stock.quantity_owned += quantity;
+      await stock.save();
+      return successReturn(res);
+    }
+    console.log("No stock found")
+    // if it's not there, create a new portfolio item
+    const newStock = new StockPortfolio({
+      user_id: userId,
+      stock_id,
+      quantity_owned: quantity
+    });
+
+    // save the new portfolio item
+    await newStock.save();
+
+    // optionally create a record of this transaction
+
+    return successReturn(res);
+  } catch (error)
+  {
+    return handleError(error, res, next);
+  }
+}
+
+// addMoneyToWallet
+async function addMoneyToWallet(req, res, next)
+{
+  try
+  {
+    const { amount } = req.body;
+    // Validate request body parameters
+    if (!amount || amount < 0)
+    {
+      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+    }
+    // Retrieve user's wallet transaction
+    const user = await User.findOne({ _id: req.user.userId });
+
+    if (!user) {
+      console.log("No User")
+      return createError('User not found', STATUS_CODE.NOT_FOUND);
+    }
+
+    // Update wallet balance
+    user.balance += amount;
+
+    // Save the updated wallet transaction to the database
+    await user.save();
+
+    return successReturn(res);
   } catch (error) {
-      console.error('Error getting stock transactions:', error);
-      return res.status(500).json({ success: false, message: `Internal Server Error: ${error.message}` });
+    console.log("Error adding to wallet", error)
+    return handleError(error, res, next);
   }
 }
 
 // Define the routes and use the authenticateToken middleware
 router.get('/getStockPortfolio', authenticateToken, getStockPortfolio);
 router.get('/getWalletBalance', authenticateToken, getWalletBalance);
-router.get('/getStockTransactions', authenticateToken, getStockTransactions);
+router.post('/addStockToUser', authenticateToken, addStockToUser);
+router.post('/addMoneyToWallet', authenticateToken, addMoneyToWallet);
 
 module.exports = router;

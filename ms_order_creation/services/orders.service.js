@@ -1,4 +1,5 @@
-const { createError } = require('../lib/apiHandling');
+
+const { handleError, createError } = require('../shared/lib/apiHandling');
 const ordersModel = require('../models/orders.model')
 const usersModel = require('../models/users.model')
 const axios = require('../axios/base');
@@ -8,26 +9,39 @@ exports.placeOrder = async (data, token) => {
 	let previousBalance;
 	let wallet_tx_id;
 	let stock_tx_id;
+	let portfolio_id;
 
 	try {
-		
 		// Fetch User
 		const userData = await usersModel.fetchBalance(data.user_id)
-		if (userData === null) throw createError('Cannot find user', 401)
-
+		if (userData === null) throw handleError('Cannot find user', 400)
 		// Check balance
 		const balance = userData.balance
-		if (balance < data.price) throw createError('Insufficient Funds', 401)
-
+		if (balance < data.price) throw createError('Insufficient Funds', 400)
 		// Update Balance in database
 		await usersModel.updateBalance(data.user_id, balance - data.price)
-		previousBalance = balance
 
+		// Create portfolio if it doesnt exist
+		const portfolio = await usersModel.fetchPortfolio({stockId: data.stock_id, userId: data.user_id})
+		if (!portfolio) {
+			const newPortfolio = {
+				user_id: data.user_id,
+				stock_id: data.stock_id,
+				quantity_owned: 0
+			}
+			const newInsert = await usersModel.createPortfolio(newPortfolio)
+			portfolio_id = newInsert._id
+		}
+
+		const stock  = await ordersModel.fetchStock(data.stock_id)
+		let amount =  data.price === null ? stock.current_price * data.quantity :  data.price
+
+		previousBalance = balance
 		// Create a wallet transaction
 		const walletTransactionData = {
 			user_id: data.user_id,
 			is_debit: true,
-			amount: data.price
+			amount,
 		}
 		const createdWalletTx = await ordersModel.createWalletTransaction(walletTransactionData)
 		wallet_tx_id = createdWalletTx._id
@@ -38,10 +52,11 @@ exports.placeOrder = async (data, token) => {
 			stock_id: data.stock_id,
 			is_buy: data.is_buy,
 			order_type: data.order_type,
-			stock_price: data.price,
+			stock_price: stock.current_price,
 			quantity: data.quantity,
+			portfolio_id: portfolio_id ? portfolio_id : portfolio.id
 		}
-		
+
 		const createdStockTx = await ordersModel.createStockTransaction(stockTxData)
 		stock_tx_id = createdStockTx._id
 
@@ -52,15 +67,19 @@ exports.placeOrder = async (data, token) => {
 			stock_tx_id
 		}
 
+
 		await axios.POST(`${config.mathingEngineUrl}/receiveOrder`, matchingEngineData, token)
 
 	} catch (error) {
 		console.error(error)
-		const reverseError = await reversePlaceOrder(data.user_id, previousBalance, wallet_tx_id, stock_tx_id)
+		const reverseError = await reversePlaceOrder(data.user_id, previousBalance, wallet_tx_id, stock_tx_id, portfolio_id)
 		if (reverseError) {
-			throw reverseError
+			return reverseError
 		}
-		throw error.details ? error : createError("Error Placing Order")
+		if (error.details) {
+			return error.deatils.message
+		}
+		throw createError("Error Placing Order")
 	}
 	
 }
@@ -76,7 +95,7 @@ exports.sellOrder = async (data, token) => {
 		const portfolio = await usersModel.fetchPortfolio({stockId: data.stock_id, userId: data.user_id})
 		if (!portfolio) throw createError("Portfolio not found")
 	  // Check for portfolio Quantity
-		if (portfolio.quantity_owned < data.quantity) throw createError("Not enough owned stock")
+		if (portfolio.quantity_owned < data.quantity) throw createError("Not enough owned stock", 400)
 
 		// Update the quantity
 		await usersModel.updatePortfolioStockQuantity(portfolio._id, portfolio.quantity_owned - data.quantity)
@@ -87,6 +106,7 @@ exports.sellOrder = async (data, token) => {
 		const stockTxData = {
 			stock_id: data.stock_id,
 			is_buy: data.is_buy,
+			portfolio_id,
 			order_type: data.order_type,
 			stock_price: data.price,
 			quantity: data.quantity,
@@ -129,7 +149,7 @@ exports.cancelStockTransaction = async (data, token) => {
 
 
 
-const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx_id) => {
+const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx_id, portfolio_id) => {
 	try {
 		if (previousBalance !== undefined)  {
 			console.log(previousBalance)
@@ -142,6 +162,10 @@ const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx
 
 		if (stock_tx_id) {
 			await ordersModel.deleteStockTransaction(stock_tx_id)
+		}
+
+		if (portfolio_id) {
+			await usersModel.deletePortfolio(portfolio_id)
 		}
 
 	} catch (error) {

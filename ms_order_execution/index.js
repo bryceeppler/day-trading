@@ -29,6 +29,7 @@ app.post("/executeOrder", async (req, res) => {
 
     const stockTxId = req.body.stock_tx_id;
     const Action = req.body.action;
+    const quantityStockInTransit = req.body.quantity;
     
     console.log("This is the request:");
     console.log(req.body);
@@ -48,7 +49,7 @@ app.post("/executeOrder", async (req, res) => {
             const existingPortfolioDocumentAndStockId = await Portfolio.findOne({portfolio_id: existingStockTx.portfolio_id, stock_id: existingStockTx.stock_id});
 
             //if stock transaction is complete AND a BUY order
-            if(Action === "COMPLETED" && existingStockTx.is_buy === true)
+            if(Action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit === existingStockTx.quantity)
             {
                 console.log("Checking if Portfolio Document Exists");
                 
@@ -97,6 +98,154 @@ app.post("/executeOrder", async (req, res) => {
                             quantity_owned: existingStockTx.quantity
                         });
                         
+                        await newPortfolioDocument.save();
+                        await existingStockTx.save();
+
+                        console.log("New Portfolio added.")
+                        return res.status(200).json({
+                            newPortfolioDocument: newPortfolioDocument,
+                            existingStockTx: existingStockTx
+                        }); 
+                      
+                    }catch (error)
+                    {
+                    console.error('Error creating portfolio document:', error);
+                    return res.status(500).json({ message: `Internal Server Error: ${error}` });
+                    }
+                }
+            }
+
+            if(Action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit !== existingStockTx.quantity)
+            {
+                console.log("In Partial order flow - checking if Portfolio Document Exists");
+                
+                existingStockTx.order_status = 'PARTIAL_FULFILLED';
+                
+                if(existingPortfolioDocumentAndStockId){
+
+                    console.log("Portfolio Document Exists");
+
+                    try
+                    {
+
+                        console.log("Updating Quantity");
+                        let newQuantity = existingPortfolioDocumentAndStockId.quantity_owned + quantityStockInTransit;
+
+                        console.log("Old quantity", existingPortfolioDocumentAndStockId.quantity_owned)
+                        console.log("Quantity to add:", quantityStockInTransit)
+                        console.log("New Quantity:", newQuantity);
+
+                        existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
+
+                        const user = await User.findOne({user_id: existingPortfolioDocumentAndStockId.user_id});
+                        
+                        const existingWalletTx = await WalletTransaction.findOne({stock_tx_id: stockTxId});
+                        existingWalletTx.is_deleted = true;
+                        await existingWalletTx.save();
+
+                        const newStockTransaction = new StockTransaction({
+                            parent_stock_tx_id: stockTxId,
+                            portfolio_id: existingStockTx.portfolio_id,
+                            order_status: 'COMPLETED',
+                            is_buy: true,
+                            order_type: existingStockTx.order_type,
+                            stock_price: existingStockTx.stock_price,
+                            quantity: quantityStockInTransit,
+                            is_deleted: false
+                        });
+                        
+                        let amountSpent = quantityStockInTransit * existingStockTx.stock_price;
+                        let refund = existingWalletTx.amount - amountSpent;
+                        let newBalance = refund + user.balance;
+
+                        console.log("OLD user.balance:", user.balance);
+                        console.log("Refund", refund);
+                        console.log("NEW user.balance:", newBalance);
+                        user.balance = newBalance;
+                        console.log("User balance updated.");
+                        
+                        const newWalletTransaction = new WalletTransaction({
+                            user_id: existingPortfolioDocumentAndStockId.user_id,
+                            is_debit: false,
+                            amount: amountSpent,
+                            is_deleted: false
+                        });
+                        await newStockTransaction.save();
+                        await newWalletTransaction.save();
+
+                        newStockTransaction.wallet_tx_id = newWalletTransaction.wallet_tx_id
+                        newWalletTransaction.stock_tx_id = newStockTransaction.stock_tx_id
+                       
+                        await newStockTransaction.save();
+                        await newWalletTransaction.save();
+                        await existingPortfolioDocumentAndStockId.save();
+                        await existingStockTx.save();
+
+                        return res.status(200).json({
+                            existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
+                            existingStockTx: existingStockTx
+                          });                    
+                    }
+                    catch(error){
+                        console.error('Error updating portfolio document:', error);
+                        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+                    }
+                }else{
+                    try{
+                        
+                        console.log("Portfolio or stockID does not exist")
+                        const existingWalletTx = await WalletTransaction.findOne({stock_tx_id: stockTxId});
+
+                        console.log(existingWalletTx);
+
+                        const newPortfolioDocument = new Portfolio({
+                            user_id: existingWalletTx.user_id, 
+                            stock_id: existingStockTx.stock_id, 
+                            quantity_owned: quantityStockInTransit
+                        });
+
+                        const user = await User.findOne({user_id: existingWalletTx.user_id});
+                        
+                        existingWalletTx.is_deleted = true;
+                        await existingWalletTx.save();
+
+                        const newStockTransaction = new StockTransaction({
+                            parent_stock_tx_id: stockTxId,
+                            portfolio_id: existingStockTx.portfolio_id,
+                            order_status: 'COMPLETED',
+                            is_buy: true,
+                            order_type: existingStockTx.order_type,
+                            stock_price: existingStockTx.stock_price,
+                            quantity: quantityStockInTransit,
+                            is_deleted: false
+                        });
+                        
+                        let amountSpent = quantityStockInTransit * existingStockTx.stock_price;
+                        let refund = existingWalletTx.amount - amountSpent;
+                        let newBalance = refund + user.balance;
+
+                        console.log("OLD user.balance:", user.balance);
+                        console.log("Refund", refund);
+                        console.log("NEW user.balance:", newBalance);
+                        user.balance = newBalance;
+                        console.log("User balance updated.");
+                        
+                        const newWalletTransaction = new WalletTransaction({
+                            user_id: existingWalletTx.user_id,
+                            is_debit: false,
+                            amount: amountSpent,
+                            is_deleted: false
+                        });
+                        await newStockTransaction.save();
+                        await newWalletTransaction.save();
+
+                        newStockTransaction.wallet_tx_id = newWalletTransaction.wallet_tx_id
+                        newWalletTransaction.stock_tx_id = newStockTransaction.stock_tx_id
+                       
+                        await newStockTransaction.save();
+                        await newWalletTransaction.save();
+                        await existingStockTx.save();
+
                         await newPortfolioDocument.save();
                         await existingStockTx.save();
 
@@ -175,13 +324,13 @@ app.post("/executeOrder", async (req, res) => {
                     user.balance = newBalance;
                     console.log("User balance updated.");
 
-                    //create new wallet transaction
+                    //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
                     const newWalletTransaction = new WalletTransaction({
                         user_id: user.user_id,
                         stock_tx_id: existingStockTx.stock_tx_id,
                         is_debit: true,
                         amount: profit,
-                        is_deleted:false
+                        is_deleted: false
                     });
                     await newWalletTransaction.save();
 
@@ -209,6 +358,7 @@ app.post("/executeOrder", async (req, res) => {
                     if(Action === "CANCELED"){existingStockTx.order_status = 'CANCELED';}
                     if(Action === "EXPIRED"){existingStockTx.order_status = 'EXPIRED';}
 
+                    // check if portfolio entry exists first and if not, make a new one \\ for the next submission
                     let newQuantity = existingStockTx.quantity + existingPortfolioDocumentAndStockId.quantity_owned;
 
                     console.log("OLD qunatity owned", existingPortfolioDocumentAndStockId.quantity_owned);

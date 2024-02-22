@@ -46,7 +46,6 @@ export interface StockTransactionDocument extends Document {
 }
 
 export type Order = {
-  wallet_tx_id: string;
   stock_tx_id: string;
   user_id: string;
   stock_id: string;
@@ -69,7 +68,7 @@ export interface MatchedOrder {
 }
 
 export interface StockTransactionModel
-  extends Model<StockTransactionDocument> {}
+  extends Model<StockTransactionDocument> { }
 
 export interface IOrderBook {
   buyOrders: OrderBookOrder[];

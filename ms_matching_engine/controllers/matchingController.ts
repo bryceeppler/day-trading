@@ -8,6 +8,7 @@ interface Routes {
   healthCheck: (req: Request, res: Response) => Promise<void>;
   receiveOrder: (req: Request, res: Response) => Promise<void>;
   cancelOrder: (req: Request, res: Response) => Promise<void>;
+  checkOrders: (req: Request, res: Response) => Promise<void>;
 }
 
 interface CancelOrderRequest {
@@ -33,17 +34,24 @@ export default (orderBook: OrderBook): Routes => {
 
     receiveOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const order: Order = req.body; 
+        console.log("Raw request body", req.body)
+        const order: Order = req.body;
+        console.log("Order received", order)
         res.status(200).send("Order received");
 
-        const orderBookOrder:OrderBookOrder = {
+        console.log("inserting order")
+        const orderBookOrder: OrderBookOrder = {
           ...order,
           timestamp: new Date()
         };
 
+        console.log("Orderbook Order:", orderBookOrder)
         const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(orderBookOrder);
+        console.log("Order matching done")
+        console.log("Matched orders", matched_orders);
+        console.log("flushing")
         orderBook.flushOrders();
-    
+
       } catch (error) {
         // TODO: better err handling
         console.error("Error processing order:", error);
@@ -53,7 +61,7 @@ export default (orderBook: OrderBook): Routes => {
 
     cancelOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const orderToCancel: CancelOrderRequest = req.body.stock_tx_id; 
+        const orderToCancel: CancelOrderRequest = req.body.stock_tx_id;
         const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
         if (result) {
           res.status(200).send("Order cancelled");
@@ -64,7 +72,20 @@ export default (orderBook: OrderBook): Routes => {
         console.error("Error cancelling order:", error);
         res.status(500).send("Error cancelling order");
       }
+    },
+
+    checkOrders: async (req: Request, res: Response): Promise<void> => {
+      // report the current state of the order book
+      try {
+        const orderBookState = orderBook.getOrderBookState();
+        res.status(200).send(orderBookState);
+      }
+      catch (error) {
+        console.error("Error checking orders:", error);
+        res.status(500).send("Error checking orders");
+      }
     }
+
 
   };
 };

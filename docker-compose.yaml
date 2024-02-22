@@ -18,7 +18,7 @@ services:
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
-    image: ms_user    
+    image: ms_user
     ports:
       - "8001:3000"
     environment:
@@ -62,6 +62,7 @@ services:
 
   # Matching Engine Microservice
   ms_matching_engine:
+    container_name: matching_engine
     build: ./ms_matching_engine
     ports:
       - "8004:3000"

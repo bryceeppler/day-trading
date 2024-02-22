@@ -21,6 +21,16 @@ export default class OrderBook implements IOrderBook {
     this.expiredOrders = [];
   }
 
+  public getOrderBookState() {
+    return {
+      buyOrders: this.buyOrders,
+      sellOrders: this.sellOrders,
+      matchedOrders: this.matchedOrders,
+      cancelledOrders: this.cancelledOrders,
+      expiredOrders: this.expiredOrders,
+    };
+  }
+
   public async initializeOrderBook() {
     await this.loadInProgressOrders();
     console.log(
@@ -28,7 +38,7 @@ export default class OrderBook implements IOrderBook {
       this.buyOrders.length,
       " buy orders and ",
       this.sellOrders.length,
-      " sell orders..."
+      " sell orders...",
     );
   }
 
@@ -38,8 +48,10 @@ export default class OrderBook implements IOrderBook {
   public matchOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
-      return this.matchMarketOrder(newOrder);
-    } else {
+      console.log("Matching market order");
+    return this.matchMarketOrder(newOrder);
+  } else {
+      console.log("Matching limit order");
       return this.matchLimitOrder(newOrder);
     }
   }
@@ -76,7 +88,7 @@ export default class OrderBook implements IOrderBook {
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,
-      this.expiredOrders
+      this.expiredOrders,
     );
   }
 
@@ -94,7 +106,7 @@ export default class OrderBook implements IOrderBook {
   private matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
-
+    console.log("matchMarketOrder()")
     for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
       const matchAgainst = orderQueue[i];
       if (this.isExpired(matchAgainst.timestamp)) {
@@ -104,12 +116,14 @@ export default class OrderBook implements IOrderBook {
       }
       if (this.isMatch(newOrder, matchAgainst) === false) continue;
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
-      remainingQty -= matchedQuantity;
+      remainingQty -= matchedQuantity; // remaining qty of incoming market order
+      console.log("Match against quantity: ", matchAgainst.quantity);
       matchAgainst.quantity -= matchedQuantity;
-
+      console.log("Match against quantity after: ", matchAgainst.quantity);
       this.insertMatchedOrders([
         this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity),
       ]);
+      console.log("Matched orders: ", this.matchedOrders);
 
       if (matchAgainst.quantity === 0) {
         orderQueue.splice(i, 1); // remove fully matched order from the orderbook
@@ -208,7 +222,7 @@ export default class OrderBook implements IOrderBook {
   private createMatchedOrder(
     order: OrderBookOrder,
     matchAgainst: Order,
-    quantity: number
+    quantity: number,
   ) {
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
@@ -245,7 +259,7 @@ export default class OrderBook implements IOrderBook {
       const matchedOrderPair = this.createMatchedOrder(
         order,
         matchAgainst,
-        matchedQuantity
+        matchedQuantity,
       );
       matched.push(matchedOrderPair);
       if (matchAgainst.quantity === 0) {
@@ -271,7 +285,8 @@ export default class OrderBook implements IOrderBook {
    * Handle remaining quantity of a partially filled order by pushing it into the orderbook
    */
   private handlePartialOrder(order: OrderBookOrder, remainingQty: number) {
-    if (remainingQty > 0 && order.quantity !== remainingQty) {
+    console.log("Handling partial order");
+    if (remainingQty > 0) {
       order.quantity = remainingQty;
       this.insertToOrderBook(order);
     }
@@ -289,7 +304,7 @@ export default class OrderBook implements IOrderBook {
    */
   private removeOrderFromQueue(
     stockTxId: string,
-    orderQueue: OrderBookOrder[]
+    orderQueue: OrderBookOrder[],
   ): OrderBookOrder | null {
     for (let i = 0; i < orderQueue.length; i++) {
       if (this.isSameOrder(stockTxId, orderQueue[i])) {
@@ -304,6 +319,12 @@ export default class OrderBook implements IOrderBook {
    */
   private matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
+    if (matchedOrders.length > 0) {
+      console.log("found match");
+    } else {
+      console.log("no match found");
+      console.log("Remaining qty: ", remainingQty);
+    }
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
     return [matchedOrders, remainingQty];
@@ -327,7 +348,7 @@ export default class OrderBook implements IOrderBook {
   private async sendOrdersToOrderExecutionService(
     matchedOrders: MatchedOrder[],
     cancelledOrders: OrderBookOrder[],
-    expiredOrders: OrderBookOrder[]
+    expiredOrders: OrderBookOrder[],
   ) {
     const executionServiceUrl = "http://ms_order_execution:8002/executeOrder";
 
@@ -337,8 +358,16 @@ export default class OrderBook implements IOrderBook {
       for (const matchedOrder of matchedOrders) {
         const buyStockTxId = matchedOrder.buyOrder.stock_tx_id;
         const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
-        data.push({ stock_tx_id: buyStockTxId, action: "COMPLETED", quantity: matchedOrder.quantity });
-        data.push({ stock_tx_id: sellStockTxId, action: "COMPLETED", quantity: matchedOrder.quantity});
+        data.push({
+          stock_tx_id: buyStockTxId,
+          action: "COMPLETED",
+          quantity: matchedOrder.quantity,
+        });
+        data.push({
+          stock_tx_id: sellStockTxId,
+          action: "COMPLETED",
+          quantity: matchedOrder.quantity,
+        });
       }
     }
 
@@ -354,7 +383,11 @@ export default class OrderBook implements IOrderBook {
 
     if (expiredOrders.length > 0) {
       for (const expiredOrder of expiredOrders) {
-        data.push({ stock_tx_id: expiredOrder.stock_tx_id, action: "EXPIRED", quantity: expiredOrder.quantity});
+        data.push({
+          stock_tx_id: expiredOrder.stock_tx_id,
+          action: "EXPIRED",
+          quantity: expiredOrder.quantity,
+        });
       }
     }
 

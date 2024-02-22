@@ -71,8 +71,8 @@ exports.placeOrder = async (data, token) =>
     stock_tx_id = createdStockTx._id;
 
     // Update stock tx id in wallet transaction.
-    walletTransactionData.stock_tx_id = stock_tx_id
-    await walletTransactionData.save();
+    createdWalletTx.stock_tx_id = stock_tx_id
+    await createdWalletTx.save();
 
     // Send data to matching engine
     const matchingEngineData = {

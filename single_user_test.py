@@ -525,7 +525,7 @@ def step_23_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 23: Get WAllet Transactions", "", expected_results[23], response)
+    print_results("Step 23: Get Stock Portfolio", "", expected_results[23], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 23: {response}"
 
 # 24. GET /getStockTransactions

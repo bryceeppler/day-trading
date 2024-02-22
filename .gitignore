@@ -4,3 +4,4 @@ docker-compose.override.yml
 reset-docker
 run-tests
 test_results.txt
+__pycache__/

@@ -3,6 +3,7 @@ import time
 import json
 import os
 from expected_results import expected_results
+from datetime import datetime
 
 BASE_URL = "http://localhost" #:8000/
 
@@ -524,7 +525,7 @@ def step_23_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 23: Get WAllet Transactions", "", expected_results[23], response)
+    print_results("Step 23: Get Stock Portfolio", "", expected_results[23], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 23: {response}"
 
 # 24. GET /getStockTransactions
@@ -1310,9 +1311,8 @@ def executeTests():
 
 
 def main():
-    # clean up previous run if any.
-    if os.path.exists("test_results.txt"):
-        os.remove("test_results.txt")
+    with open("test_results.txt", 'w') as file:
+        file.write(f"Test Run Time: {datetime.now().strftime('%A %b %d,%Y %H:%M:%S')}\n\n")
     executeTests()
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
 venv
 node_modules
 docker-compose.override.yml
+reset-docker
+run-tests
+test_results.txt

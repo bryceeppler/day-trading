@@ -1,10 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import {
-  OrderBookOrder,
-  OrderType,
-  IOrderBook,
-} from "../types";
+import { OrderBookOrder, OrderType, IOrderBook } from "../types";
 
 describe("OrderBook Market Order Tests", () => {
   let orderbook: IOrderBook;
@@ -20,7 +16,7 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 19,
         quantity: 10,
@@ -31,7 +27,7 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 20,
         quantity: 10,
@@ -43,7 +39,7 @@ describe("OrderBook Market Order Tests", () => {
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       price: 19,
       quantity: 5,
@@ -64,7 +60,7 @@ describe("OrderBook Market Order Tests", () => {
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,
@@ -83,7 +79,7 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 10,
         quantity: 3,
@@ -95,7 +91,7 @@ describe("OrderBook Market Order Tests", () => {
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,
@@ -115,7 +111,7 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 10,
         quantity: 3,
@@ -126,7 +122,7 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 11,
         quantity: 2,
@@ -138,7 +134,7 @@ describe("OrderBook Market Order Tests", () => {
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,

@@ -1,6 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import { OrderBookOrder , OrderType, IOrderBook } from "../types";
+import { OrderBookOrder, OrderType, IOrderBook } from "../types";
 
 describe("Expired Orders on Receiving Order", () => {
   let orderbook: IOrderBook;
@@ -12,7 +12,6 @@ describe("Expired Orders on Receiving Order", () => {
   function addExpiredOrder(orderbook: IOrderBook, isBuyOrder: boolean, orderType: OrderType) {
     const expiredOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,
@@ -33,7 +32,6 @@ describe("Expired Orders on Receiving Order", () => {
 
     const newOrder: OrderBookOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,
@@ -54,7 +52,6 @@ describe("Expired Orders on Receiving Order", () => {
 
     const newOrder: OrderBookOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,

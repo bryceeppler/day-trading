@@ -68,6 +68,7 @@ exports.placeOrder = async (data, token) => {
     // Send data to matching engine
     const matchingEngineData = {
       ...data,
+      price: data.price == null ? stock.current_price : data.price,
       wallet_tx_id,
       stock_tx_id,
     };
@@ -136,7 +137,7 @@ exports.sellOrder = async (data, token) => {
 
     const matchingEngineData = {
       ...data,
-      stock_price: stock.current_price,
+      price: data.price == null ? stock.current_price : data.price,
       stock_tx_id,
     };
 

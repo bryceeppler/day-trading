@@ -1,6 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import { OrderBookOrder , OrderType, IOrderBook } from "../types";
+import { OrderBookOrder, OrderType, IOrderBook } from "../types";
 
 describe("Expired Orders on Receiving Order", () => {
   let orderbook: IOrderBook;
@@ -9,10 +9,13 @@ describe("Expired Orders on Receiving Order", () => {
     orderbook = new OrderBook(StockTransaction);
   });
 
-  function addExpiredOrder(orderbook: IOrderBook, isBuyOrder: boolean, orderType: OrderType) {
+  function addExpiredOrder(
+    orderbook: IOrderBook,
+    isBuyOrder: boolean,
+    orderType: OrderType,
+  ) {
     const expiredOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,
@@ -20,6 +23,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: isBuyOrder,
       order_type: orderType,
       timestamp: new Date(Date.now() - 60 * 60 * 1000),
+      executed: false,
     };
     if (isBuyOrder) {
       orderbook.buyOrders.push(expiredOrder);
@@ -33,7 +37,6 @@ describe("Expired Orders on Receiving Order", () => {
 
     const newOrder: OrderBookOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,
@@ -41,6 +44,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.matchOrder(newOrder);
@@ -54,7 +58,6 @@ describe("Expired Orders on Receiving Order", () => {
 
     const newOrder: OrderBookOrder = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 10,
@@ -62,6 +65,7 @@ describe("Expired Orders on Receiving Order", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.matchOrder(newOrder);
@@ -69,5 +73,4 @@ describe("Expired Orders on Receiving Order", () => {
     expect(orderbook.sellOrders.length).toBe(0);
     expect(orderbook.expiredOrders.length).toBe(1);
   });
-
 });

@@ -21,6 +21,22 @@ export default class OrderBook implements IOrderBook {
     this.expiredOrders = [];
   }
 
+  public async sendTestToExecutionService(): Promise<void> {
+    const url = "http://ms_matching_engine:3000/executeOrder";
+    // await axios.post(url, data);
+    console.log("Sent test to execution service");
+  }
+
+  public getOrderBookState() {
+    return {
+      buyOrders: this.buyOrders,
+      sellOrders: this.sellOrders,
+      matchedOrders: this.matchedOrders,
+      cancelledOrders: this.cancelledOrders,
+      expiredOrders: this.expiredOrders,
+    };
+  }
+
   public async initializeOrderBook() {
     await this.loadInProgressOrders();
     console.log(
@@ -28,7 +44,7 @@ export default class OrderBook implements IOrderBook {
       this.buyOrders.length,
       " buy orders and ",
       this.sellOrders.length,
-      " sell orders..."
+      " sell orders...",
     );
   }
 
@@ -38,8 +54,10 @@ export default class OrderBook implements IOrderBook {
   public matchOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
+      console.log("Matching market order");
       return this.matchMarketOrder(newOrder);
     } else {
+      console.log("Matching limit order");
       return this.matchLimitOrder(newOrder);
     }
   }
@@ -72,11 +90,10 @@ export default class OrderBook implements IOrderBook {
    * Send matched, cancelled, expired orders to order execution service
    */
   public flushOrders() {
-    console.log("Flushing orders");
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,
-      this.expiredOrders
+      this.expiredOrders,
     );
   }
 
@@ -94,7 +111,6 @@ export default class OrderBook implements IOrderBook {
   private matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
-
     for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
       const matchAgainst = orderQueue[i];
       if (this.isExpired(matchAgainst.timestamp)) {
@@ -102,11 +118,13 @@ export default class OrderBook implements IOrderBook {
         i--;
         continue;
       }
-      if (this.isMatch(newOrder, matchAgainst) === false) continue;
+      if (this.isMatch(newOrder, matchAgainst) === false) {
+        console.log("Not a match");
+        continue;
+      }
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
-      remainingQty -= matchedQuantity;
+      remainingQty -= matchedQuantity; // remaining qty of incoming market order
       matchAgainst.quantity -= matchedQuantity;
-
       this.insertMatchedOrders([
         this.createMatchedOrder(newOrder, matchAgainst, matchedQuantity),
       ]);
@@ -178,13 +196,13 @@ export default class OrderBook implements IOrderBook {
     const orders = documents.map((doc) => ({
       stock_tx_id: doc.stock_tx_id,
       user_id: doc.user_id,
-      wallet_tx_id: doc.wallet_tx_id,
       price: doc.stock_price,
       quantity: doc.quantity,
       is_buy: doc.is_buy,
       order_type: doc.order_type,
       timestamp: doc.time_stamp,
       stock_id: doc.stock_id,
+      executed: false,
     }));
     return orders;
   }
@@ -208,7 +226,7 @@ export default class OrderBook implements IOrderBook {
   private createMatchedOrder(
     order: OrderBookOrder,
     matchAgainst: Order,
-    quantity: number
+    quantity: number,
   ) {
     return {
       buyOrder: order.is_buy ? order : matchAgainst,
@@ -216,6 +234,7 @@ export default class OrderBook implements IOrderBook {
       quantity,
       matchPrice: matchAgainst.price,
       timestamp: new Date(),
+      executed: false,
     } as MatchedOrder;
   }
 
@@ -245,7 +264,7 @@ export default class OrderBook implements IOrderBook {
       const matchedOrderPair = this.createMatchedOrder(
         order,
         matchAgainst,
-        matchedQuantity
+        matchedQuantity,
       );
       matched.push(matchedOrderPair);
       if (matchAgainst.quantity === 0) {
@@ -271,7 +290,8 @@ export default class OrderBook implements IOrderBook {
    * Handle remaining quantity of a partially filled order by pushing it into the orderbook
    */
   private handlePartialOrder(order: OrderBookOrder, remainingQty: number) {
-    if (remainingQty > 0 && order.quantity !== remainingQty) {
+    console.log("Handling partial order");
+    if (remainingQty > 0) {
       order.quantity = remainingQty;
       this.insertToOrderBook(order);
     }
@@ -289,7 +309,7 @@ export default class OrderBook implements IOrderBook {
    */
   private removeOrderFromQueue(
     stockTxId: string,
-    orderQueue: OrderBookOrder[]
+    orderQueue: OrderBookOrder[],
   ): OrderBookOrder | null {
     for (let i = 0; i < orderQueue.length; i++) {
       if (this.isSameOrder(stockTxId, orderQueue[i])) {
@@ -304,6 +324,12 @@ export default class OrderBook implements IOrderBook {
    */
   private matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
+    if (matchedOrders.length > 0) {
+      console.log("found match");
+    } else {
+      console.log("no match found");
+      console.log("Remaining qty: ", remainingQty);
+    }
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
     return [matchedOrders, remainingQty];
@@ -327,18 +353,27 @@ export default class OrderBook implements IOrderBook {
   private async sendOrdersToOrderExecutionService(
     matchedOrders: MatchedOrder[],
     cancelledOrders: OrderBookOrder[],
-    expiredOrders: OrderBookOrder[]
+    expiredOrders: OrderBookOrder[],
   ) {
-    const executionServiceUrl = "http://ms_order_execution:8002/executeOrder";
+    const executionServiceUrl = "http://ms_order_execution:3000/executeOrder";
 
     const data = [];
 
+    // Create array of action objects to send to order execution service
     if (matchedOrders.length > 0) {
       for (const matchedOrder of matchedOrders) {
         const buyStockTxId = matchedOrder.buyOrder.stock_tx_id;
         const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
-        data.push({ stock_tx_id: buyStockTxId, action: "COMPLETED", quantity: matchedOrder.quantity });
-        data.push({ stock_tx_id: sellStockTxId, action: "COMPLETED", quantity: matchedOrder.quantity});
+        data.push({
+          stock_tx_id: buyStockTxId,
+          action: "COMPLETED",
+          quantity: matchedOrder.quantity,
+        });
+        data.push({
+          stock_tx_id: sellStockTxId,
+          action: "COMPLETED",
+          quantity: matchedOrder.quantity,
+        });
       }
     }
 
@@ -354,23 +389,73 @@ export default class OrderBook implements IOrderBook {
 
     if (expiredOrders.length > 0) {
       for (const expiredOrder of expiredOrders) {
-        data.push({ stock_tx_id: expiredOrder.stock_tx_id, action: "EXPIRED", quantity: expiredOrder.quantity});
+        data.push({
+          stock_tx_id: expiredOrder.stock_tx_id,
+          action: "EXPIRED",
+          quantity: expiredOrder.quantity,
+        });
       }
     }
 
     if (data.length === 0) return;
     try {
-      const response = await axios.post(executionServiceUrl, {
-        data,
-      });
+      // sends the array of actions to the order execution service
+      // const response = await axios.post(executionServiceUrl, {
+      //   data,
+      // });
 
-      if (response.status === 200) {
-        this.matchedOrders = [];
-        this.cancelledOrders = [];
-        this.expiredOrders = [];
+      // if (response.status === 200) {
+      //   this.matchedOrders = [];
+      //   this.cancelledOrders = [];
+      //   this.expiredOrders = [];
+      // }
+      //
+      // second implementation to send them one at a time.
+      for (const order of data) {
+        const res = await axios.post(executionServiceUrl, {
+          order,
+        });
+        if (res.status === 200) {
+          this.executeOrder(order);
+        } else {
+          console.log("Could not execute order: ", order);
+        }
       }
     } catch (error) {
       console.error("Error sending orders to order execution service:", error);
+    }
+  }
+
+  private executeOrder(order: {
+    stock_tx_id: string;
+    action: string;
+    quantity: number;
+  }) {
+    if (order.action === "COMPLETED") {
+      // find the matchedOrder containing the sellOrder or buyOrder with the stock_tx_id
+      for (const matchedOrder of this.matchedOrders) {
+        if (matchedOrder.buyOrder.stock_tx_id === order.stock_tx_id) {
+          matchedOrder.buyOrder.executed = true;
+        }
+        if (matchedOrder.sellOrder.stock_tx_id === order.stock_tx_id) {
+          matchedOrder.sellOrder.executed = true;
+        }
+        if (matchedOrder.buyOrder.executed && matchedOrder.sellOrder.executed) {
+          this.matchedOrders = this.matchedOrders.filter(
+            (o) => o !== matchedOrder,
+          );
+        }
+      }
+      // mark the buyOrder or sellOrder as executed:true
+      // if both buyOrder and sellOrder are executed, remove the matchedOrder from the list
+    } else if (order.action === "CANCELED") {
+      this.cancelledOrders = this.cancelledOrders.filter(
+        (o) => o.stock_tx_id !== order.stock_tx_id,
+      );
+    } else if (order.action === "EXPIRED") {
+      this.expiredOrders = this.expiredOrders.filter(
+        (o) => o.stock_tx_id !== order.stock_tx_id,
+      );
     }
   }
 }

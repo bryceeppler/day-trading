@@ -12,6 +12,7 @@ services:
       - ms_order_creation
       - ms_matching_engine
       - ms_market_data
+      - ms_transaction_manager
     command: ["npm", "start"]
 
   # User & Auth Microservice

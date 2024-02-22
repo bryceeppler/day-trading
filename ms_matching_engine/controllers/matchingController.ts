@@ -1,14 +1,15 @@
-import mongoose from 'mongoose';
-import { Request, Response } from 'express';
+import mongoose from "mongoose";
+import { Request, Response } from "express";
 
-import OrderBook from '../services/orderbook';
-import { Order, MatchedOrder, OrderBookOrder } from '../types';
+import OrderBook from "../services/orderbook";
+import { Order, MatchedOrder, OrderBookOrder } from "../types";
 
 interface Routes {
   healthCheck: (req: Request, res: Response) => Promise<void>;
   receiveOrder: (req: Request, res: Response) => Promise<void>;
   cancelOrder: (req: Request, res: Response) => Promise<void>;
   checkOrders: (req: Request, res: Response) => Promise<void>;
+  sendTestToExecutionService: (req: Request, res: Response) => Promise<void>;
 }
 
 interface CancelOrderRequest {
@@ -28,30 +29,29 @@ export default (orderBook: OrderBook): Routes => {
         }
       } catch (error) {
         console.error("Health check failed:", error);
-        res.status(500).send("Health check failed: Unable to connect to MongoDB");
+        res
+          .status(500)
+          .send("Health check failed: Unable to connect to MongoDB");
       }
     },
 
     receiveOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        console.log("Raw request body", req.body)
         const order: Order = req.body;
-        console.log("Order received", order)
         res.status(200).send("Order received");
 
-        console.log("inserting order")
         const orderBookOrder: OrderBookOrder = {
           ...order,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
 
-        console.log("Orderbook Order:", orderBookOrder)
-        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] = orderBook.matchOrder(orderBookOrder);
-        console.log("Order matching done")
-        console.log("Matched orders", matched_orders);
-        console.log("flushing")
+        console.log("Orderbook Order:", orderBookOrder);
+        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
+          orderBook.matchOrder(orderBookOrder);
+        console.log("Order matching done.");
+        console.log("Matched orders: ", matched_orders.length);
+        console.log("Flushing to execution service...");
         orderBook.flushOrders();
-
       } catch (error) {
         // TODO: better err handling
         console.error("Error processing order:", error);
@@ -79,13 +79,18 @@ export default (orderBook: OrderBook): Routes => {
       try {
         const orderBookState = orderBook.getOrderBookState();
         res.status(200).send(orderBookState);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error checking orders:", error);
         res.status(500).send("Error checking orders");
       }
-    }
+    },
 
-
+    sendTestToExecutionService: async (
+      req: Request,
+      res: Response,
+    ): Promise<void> => {
+      orderBook.sendTestToExecutionService();
+      res.status(200).send("Test sent to execution");
+    },
   };
 };

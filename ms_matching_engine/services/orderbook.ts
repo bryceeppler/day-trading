@@ -21,6 +21,12 @@ export default class OrderBook implements IOrderBook {
     this.expiredOrders = [];
   }
 
+  public async sendTestToExecutionService(): Promise<void> {
+    const url = "http://ms_matching_engine:3000/executeOrder";
+    // await axios.post(url, data);
+    console.log("Sent test to execution service");
+  }
+
   public getOrderBookState() {
     return {
       buyOrders: this.buyOrders,
@@ -49,8 +55,8 @@ export default class OrderBook implements IOrderBook {
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
       console.log("Matching market order");
-    return this.matchMarketOrder(newOrder);
-  } else {
+      return this.matchMarketOrder(newOrder);
+    } else {
       console.log("Matching limit order");
       return this.matchLimitOrder(newOrder);
     }
@@ -84,7 +90,6 @@ export default class OrderBook implements IOrderBook {
    * Send matched, cancelled, expired orders to order execution service
    */
   public flushOrders() {
-    console.log("Flushing orders");
     this.sendOrdersToOrderExecutionService(
       this.matchedOrders,
       this.cancelledOrders,
@@ -106,7 +111,6 @@ export default class OrderBook implements IOrderBook {
   private matchMarketOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const orderQueue = newOrder.is_buy ? this.sellOrders : this.buyOrders;
     let remainingQty = newOrder.quantity;
-    console.log("matchMarketOrder()")
     for (let i = 0; i < orderQueue.length && remainingQty > 0; i++) {
       const matchAgainst = orderQueue[i];
       if (this.isExpired(matchAgainst.timestamp)) {
@@ -350,7 +354,7 @@ export default class OrderBook implements IOrderBook {
     cancelledOrders: OrderBookOrder[],
     expiredOrders: OrderBookOrder[],
   ) {
-    const executionServiceUrl = "http://ms_order_execution:8002/executeOrder";
+    const executionServiceUrl = "http://ms_order_execution:3000/executeOrder";
 
     const data = [];
 

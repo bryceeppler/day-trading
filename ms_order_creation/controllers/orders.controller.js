@@ -7,10 +7,6 @@ const orderService = require("../services/orders.service");
 
 exports.placeStockOrder = async (req, res, next) => {
   try {
-    if (!req.body.price) {
-      const price = await orderService.getCurrentStockPrice(req.body.stock_id);
-      req.body.price = price;
-    }
     const is_buy = req.body.is_buy;
     const token = req.token;
     const orderDetails = {

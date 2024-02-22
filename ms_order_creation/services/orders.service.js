@@ -4,11 +4,6 @@ const usersModel = require("../models/users.model");
 const axios = require("../axios/base");
 const config = require("../config/config");
 
-exports.getCurrentStockPrice = async (stockId) => {
-  const stock = await ordersModel.fetchStock(stockId);
-  return stock.current_price;
-};
-
 exports.placeOrder = async (data, token) => {
   let previousBalance;
   let wallet_tx_id;
@@ -24,7 +19,7 @@ exports.placeOrder = async (data, token) => {
     const stock = await ordersModel.fetchStock(data.stock_id);
     let amount =
       data.price === null ? stock.current_price * data.quantity : data.price;
-    if (balance < data.price) throw createError("Insufficient Funds", 400);
+    if (balance < amount) throw createError("Insufficient Funds", 400);
     // Update Balance in database
     await usersModel.updateBalance(data.user_id, balance - amount);
 
@@ -141,6 +136,7 @@ exports.sellOrder = async (data, token) => {
 
     const matchingEngineData = {
       ...data,
+      stock_price: stock.current_price,
       stock_tx_id,
     };
 

@@ -1,4 +1,4 @@
-const { handleError, successReturn } = require('../lib/apiHandling');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const orderService = require('../services/orders.service')
 
 exports.placeStockOrder = async (req, res, next) => {
@@ -6,7 +6,7 @@ exports.placeStockOrder = async (req, res, next) => {
 		const is_buy = req.body.is_buy;
 		const token = req.token;
 		const orderDetails =  {
-			user_id: req.user?.userId || "65d051e3273e059d8c4587b4",
+			user_id: req.user?.userId,
 			stock_id: req.body.stock_id,
 			quantity: req.body.quantity,
 			price: req.body.price,
@@ -14,14 +14,17 @@ exports.placeStockOrder = async (req, res, next) => {
 			is_buy
 		}
 
+		let error;
 		if (is_buy) {
-			await orderService.placeOrder(orderDetails, token)
+			error = await orderService.placeOrder(orderDetails, token)
 		} else {
-			await orderService.sellOrder(orderDetails, token)
+			error = await orderService.sellOrder(orderDetails, token)
 		}
 
 		
-		  
+		if (error) {
+			return errorReturn(res, error)
+		}
     successReturn(res);
   } catch (error) {
     handleError(error, res, next);

@@ -1,0 +1,8 @@
+@import 'scss/base/sizes.scss';
+
+.wrapper {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}

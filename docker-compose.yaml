@@ -2,21 +2,23 @@ version: '3.9'
 
 services:
   # React Frontend
-  #react:
-  #  build: ./client
-  #  ports:
-  #    - "3000:80"
-  #  depends_on:
-  #    - ms_user
-  #    - ms_order_execution
-  #    - ms_order_creation
-  #    - ms_matching_engine
-  #    - ms_market_data
+  react:
+    build: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ms_user
+      - ms_order_execution
+      - ms_order_creation
+      - ms_matching_engine
+      - ms_market_data
+      - ms_transaction_manager
+    command: ["npm", "start"]
 
   # User & Auth Microservice
   ms_user:
     build: ./ms_user
-    image: ms_user
+    image: ms_user    
     ports:
       - "8001:3000"
     environment:
@@ -47,6 +49,10 @@ services:
       - '3000'
     ports:
       - "8003:3000"
+    depends_on:
+      - ms_shared
+    volumes:
+      - shared_volume:/app/shared
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
@@ -103,7 +109,7 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - "27017"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb

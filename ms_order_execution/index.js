@@ -33,19 +33,9 @@ app.post("/executeOrder", async (req, res) => {
   const order = req.body.order;
   const stockTxId = order.stock_tx_id;
   const action = order.action;
-  console.log("stockTxId: ", stockTxId);
-  console.log("action: ", action);
 
   console.log("This is the request:");
   console.log(req.body);
-  // This is the request:
-  // {
-  //   order: {
-  //     stock_tx_id: '65d75a94600bcb557c631a0d',
-  //     action: 'COMPLETED',
-  //     quantity: 10
-  //   }
-  // }
 
   try {
     console.log("checking existingStockTx");
@@ -64,7 +54,6 @@ app.post("/executeOrder", async (req, res) => {
       });
 
       //if stock transaction is complete AND a BUY order
-      console.log("Action is : ", action);
       if (action === "COMPLETED" && existingStockTx.is_buy === true) {
         console.log("Checking if Portfolio Document Exists");
 
@@ -187,7 +176,6 @@ app.post("/executeOrder", async (req, res) => {
       if (action === "COMPLETED" && existingStockTx.is_buy === false) {
         try {
           //change order status to complete
-          console.log("here");
           existingStockTx.order_status = "COMPLETED";
 
           //add money to user's wallet

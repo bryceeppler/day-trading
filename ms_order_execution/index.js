@@ -30,16 +30,27 @@ app.get("/", (req, res) => {
 });
 
 app.post("/executeOrder", async (req, res) => {
-  const stockTxId = req.body.stock_tx_id;
-  const Action = req.body.action;
+  const order = req.body.order;
+  const stockTxId = order.stock_tx_id;
+  const action = order.action;
+  console.log("stockTxId: ", stockTxId);
+  console.log("action: ", action);
 
   console.log("This is the request:");
   console.log(req.body);
+  // This is the request:
+  // {
+  //   order: {
+  //     stock_tx_id: '65d75a94600bcb557c631a0d',
+  //     action: 'COMPLETED',
+  //     quantity: 10
+  //   }
+  // }
 
   try {
     console.log("checking existingStockTx");
     const existingStockTx = await StockTransaction.findOne({
-      stock_tx_id: stockTxId,
+      _id: stockTxId,
     });
 
     if (!existingStockTx) {
@@ -48,12 +59,13 @@ app.post("/executeOrder", async (req, res) => {
       console.log("StockTx EXISTS!");
 
       const existingPortfolioDocumentAndStockId = await Portfolio.findOne({
-        portfolio_id: existingStockTx.portfolio_id,
+        _id: existingStockTx.portfolio_id,
         stock_id: existingStockTx.stock_id,
       });
 
       //if stock transaction is complete AND a BUY order
-      if (Action === "COMPLETED" && existingStockTx.is_buy === true) {
+      console.log("Action is : ", action);
+      if (action === "COMPLETED" && existingStockTx.is_buy === true) {
         console.log("Checking if Portfolio Document Exists");
 
         existingStockTx.order_status = "COMPLETED";
@@ -125,14 +137,14 @@ app.post("/executeOrder", async (req, res) => {
 
       // if stock transaction is cancelled OR it expires AND is a BUY order
       if (
-        (Action === "CANCELED" || Action === "EXPIRED") &&
+        (action === "CANCELED" || action === "EXPIRED") &&
         existingStockTx.is_buy === true
       ) {
         try {
-          if (Action === "CANCELED") {
+          if (action === "CANCELED") {
             existingStockTx.order_status = "CANCELED";
           }
-          if (Action === "EXPIRED") {
+          if (action === "EXPIRED") {
             existingStockTx.order_status = "EXPIRED";
           }
 
@@ -172,14 +184,15 @@ app.post("/executeOrder", async (req, res) => {
       }
 
       //if stock transaction is complete AND a SELL order
-      if (Action === "COMPLETED" && existingStockTx.is_buy === false) {
+      if (action === "COMPLETED" && existingStockTx.is_buy === false) {
         try {
           //change order status to complete
+          console.log("here");
           existingStockTx.order_status = "COMPLETED";
 
           //add money to user's wallet
           const user = await User.findOne({
-            user_id: existingPortfolioDocumentAndStockId.user_id,
+            _id: existingPortfolioDocumentAndStockId.user_id,
           });
 
           let profit = existingStockTx.quantity * existingStockTx.stock_price;
@@ -194,7 +207,7 @@ app.post("/executeOrder", async (req, res) => {
 
           //create new wallet transaction
           const newWalletTransaction = new WalletTransaction({
-            user_id: user.user_id,
+            user_id: user._id,
             stock_tx_id: existingStockTx.stock_tx_id,
             is_debit: true,
             amount: profit,
@@ -202,7 +215,7 @@ app.post("/executeOrder", async (req, res) => {
           });
           await newWalletTransaction.save();
 
-          existingStockTx.wallet_tx_id = newWalletTransaction.wallet_tx_id;
+          existingStockTx.wallet_tx_id = newWalletTransaction._id;
 
           await existingStockTx.save();
           await user.save();
@@ -211,7 +224,7 @@ app.post("/executeOrder", async (req, res) => {
           return res.status(200).json({
             existingStockTx: existingStockTx,
             newWalletTransaction: newWalletTransaction,
-            user: user,
+            user_id: user._id,
           });
         } catch (error) {
           console.error("Error making changes:", error);
@@ -223,14 +236,14 @@ app.post("/executeOrder", async (req, res) => {
 
       // if stock transaction is cancelled OR it expires AND is a SELL order
       if (
-        (Action === "CANCELED" || Action === "EXPIRED") &&
+        (action === "CANCELED" || action === "EXPIRED") &&
         existingStockTx.is_buy === false
       ) {
         try {
-          if (Action === "CANCELED") {
+          if (action === "CANCELED") {
             existingStockTx.order_status = "CANCELED";
           }
-          if (Action === "EXPIRED") {
+          if (action === "EXPIRED") {
             existingStockTx.order_status = "EXPIRED";
           }
 

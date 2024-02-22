@@ -9,7 +9,11 @@ const Portfolio = require('./shared/models/portfolioModel');
 const User = require('./shared/models/userModel');
 
 const app = express();
-
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+app.us
 app.use(bodyParser.json());
 
 const mongoUri = process.env.MONGO_URI;

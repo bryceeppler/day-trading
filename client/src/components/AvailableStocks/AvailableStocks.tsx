@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import styles from './AvailableStocks.module.scss';
 import InfoCard from 'components/InfoCard';
 import Item from 'components/InfoCard/components/Item';
-import { Stock, StockPortfolio } from 'types/users.types';
+import { Stock } from 'types/users.types';
 import { formatPrice } from 'lib/formatting';
 
 interface AvailableStocksProps {
@@ -11,7 +11,7 @@ interface AvailableStocksProps {
 function AvailableStocks({ stocks }: Readonly<AvailableStocksProps>): ReactElement {
   return (
     <InfoCard title="Available Stocks" className={styles.info}>
-      <div >
+      <div>
         {stocks.map((item) => (
           <Item key={item.stock_id}>
             <div className={styles.data}>

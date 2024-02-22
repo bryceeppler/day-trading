@@ -7,24 +7,24 @@
   gap: 20px;
   flex-wrap: wrap;
 
-	.data {
-		display: flex;
-		flex-direction: row;
-		gap: 20px;
-		max-height: 600px;
-		overflow: auto;
-	}
+  .data {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    max-height: 600px;
+    overflow: auto;
+  }
 
   .welcome {
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-		.btns {
-			display: flex;
-			flex-direction: row;
-			gap: 10px;
-		}
+    .btns {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
 
     .greeting {
       font-size: 20px;

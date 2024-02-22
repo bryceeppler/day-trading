@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from 'pages/Login';
 
-import { HOME, LOGIN, PORTFOLIO, REGISTER, TRANSACTIONS } from 'lib/pagesPaths';
+import { HOME, LOGIN, REGISTER, TRANSACTIONS } from 'lib/pagesPaths';
 import Home from 'pages/Home';
 import Register from 'pages/Register';
 import Transactions from 'pages/Transactions';

@@ -77,7 +77,6 @@ async function addStockToUser(req, res, next)
   {
     const { stock_id, quantity } = req.body;
     const userId = req.user.userId;
-    console.log('userId', userId);
 
     // Validate request body parameters
     if (!stock_id || !quantity)
@@ -89,7 +88,6 @@ async function addStockToUser(req, res, next)
     // get the user portfolio
     const portfolio = await StockPortfolio.find({ user_id: userId });
 
-    console.log('portfolio', portfolio)
 
     // check if the user already has some of the stock
     const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id === stock_id);
@@ -101,7 +99,6 @@ async function addStockToUser(req, res, next)
       await stock.save();
       return successReturn(res);
     }
-    console.log("No stock found")
     // if it's not there, create a new portfolio item
     const newStock = new StockPortfolio({
       user_id: userId,

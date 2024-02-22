@@ -23,13 +23,12 @@ function UserProfileProvider({ children }: UserProfileProviderProps): ReactEleme
   const [user, setUser] = useState<UserLogin | undefined>();
 
   useEffect(() => {
-    
-		localStorage.getItem(STORAGE_ACCESS_TOKEN);
-		const accessToken = localStorage.getItem(STORAGE_ACCESS_TOKEN);
-		if (accessToken) {
-			const user: UserLogin = jwtDecode(accessToken);
-			setUser(user);
-		}
+    localStorage.getItem(STORAGE_ACCESS_TOKEN);
+    const accessToken = localStorage.getItem(STORAGE_ACCESS_TOKEN);
+    if (accessToken) {
+      const user: UserLogin = jwtDecode(accessToken);
+      setUser(user);
+    }
   }, []);
 
   return <Provider value={{ user, setUser }}>{children}</Provider>;

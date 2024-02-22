@@ -33,9 +33,9 @@ function AddMoneyModal({ open, onClose, onSave }: AddMoneyModalProps): ReactElem
 
   useEffect(() => {
     if (!open) {
-			setAmount(undefined);
-			setVerify(false)
-		}
+      setAmount(undefined);
+      setVerify(false);
+    }
   }, [open]);
 
   useEffect(() => {

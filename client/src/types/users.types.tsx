@@ -35,7 +35,7 @@ export type Stock = {
   stock_id: string;
   stock_name: string;
   current_price: number;
-	starting_price: number;
+  starting_price: number;
 };
 
 export type PlaceStockOrderParams = {

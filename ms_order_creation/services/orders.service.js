@@ -96,7 +96,6 @@ exports.sellOrder = async (data, token) => {
 		const portfolio = await usersModel.fetchPortfolio({stockId: data.stock_id, userId: data.user_id})
 		if (!portfolio) throw createError("Portfolio not found")
 	  // Check for portfolio Quantity
-	console.log(portfolio)
 		if (portfolio.quantity_owned < data.quantity) throw createError("Not enough owned stock", 400)
 
 		// Update the quantity
@@ -138,8 +137,6 @@ exports.sellOrder = async (data, token) => {
 
 exports.cancelStockTransaction = async (data, token) => {
 	try {
-		console.log("Cancelinig ----- From Service")
-		console.log(data)
 		await axios.POST(`${config.mathingEngineUrl}/cancelOrder`,data, token)
 
 	} catch (error) {
@@ -156,7 +153,6 @@ exports.cancelStockTransaction = async (data, token) => {
 const reversePlaceOrder = async (userId, previousBalance, wallet_tx_id, stock_tx_id, portfolio_id) => {
 	try {
 		if (previousBalance !== undefined)  {
-			console.log(previousBalance)
 			await usersModel.updateBalance(userId, previousBalance)
 		}
 

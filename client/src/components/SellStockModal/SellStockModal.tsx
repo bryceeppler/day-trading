@@ -4,7 +4,7 @@ import TextField from 'components/TextField';
 import Button from 'components/Button';
 import useUsers from 'hooks/useUsers.hook';
 import { BUTTON_TYPE } from 'components/Button/Button';
-import { PlaceStockOrderParams, Stock, StockPortfolio } from 'types/users.types';
+import { PlaceStockOrderParams, StockPortfolio } from 'types/users.types';
 import SlidingToggle from 'components/SlidingToggle';
 import Dropdown from 'components/Dropdown';
 import { formatPrice } from 'lib/formatting';
@@ -37,8 +37,6 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
   };
 
   const onLocalSave = async () => {
-		console.log("Here -0---")
-		console.log(verified())
     if (!verified()) return;
 
     const data: PlaceStockOrderParams = {

@@ -10,7 +10,7 @@ interface StockPortfoliosProps {
 function StockPortfolios({ stockPortfolios }: Readonly<StockPortfoliosProps>): ReactElement {
   return (
     <InfoCard title="My Stock Portfolio" className={styles.info}>
-      <div >
+      <div>
         {stockPortfolios.map((item) => (
           <Item key={item.stock_id}>
             <div className={styles.data}>

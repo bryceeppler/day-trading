@@ -37,8 +37,6 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
   };
 
   const onLocalSave = async () => {
-		console.log("Here -0---")
-		console.log(verified())
     if (!verified()) return;
 
     const data: PlaceStockOrderParams = {

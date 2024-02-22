@@ -23,7 +23,7 @@ function Home(): ReactElement {
   useEffect(() => {
     fetchBalance();
     fetchStockPortfolios();
-		fetchStocks();
+    fetchStocks();
   }, []);
 
   return (
@@ -35,34 +35,32 @@ function Home(): ReactElement {
               Welcome <span>{user?.name}</span>, Your account value is
             </div>
             <div className={styles.price}>{formatPrice(balance, true)}</div>
-						<div className={styles.btns}>
-							<Button
-								className={styles.btn}
-								style={BUTTON_TYPE.WHITE}
-								label="Make a deposit"
-								onClick={() => setOpenAddMoney(true)}
-							/>
-							<Button
-								className={styles.btn}
-								style={BUTTON_TYPE.WHITE}
-								label="Buy Stock"
-								onClick={() => setOpenPlaceOrder(true)}
-							/>
-							<Button
-								className={styles.btn}
-								style={BUTTON_TYPE.WHITE}
-								label="Sell Stock"
-								onClick={() => setOpenSellStock(true)}
-							/>
-						</div>
-           
+            <div className={styles.btns}>
+              <Button
+                className={styles.btn}
+                style={BUTTON_TYPE.WHITE}
+                label="Make a deposit"
+                onClick={() => setOpenAddMoney(true)}
+              />
+              <Button
+                className={styles.btn}
+                style={BUTTON_TYPE.WHITE}
+                label="Buy Stock"
+                onClick={() => setOpenPlaceOrder(true)}
+              />
+              <Button
+                className={styles.btn}
+                style={BUTTON_TYPE.WHITE}
+                label="Sell Stock"
+                onClick={() => setOpenSellStock(true)}
+              />
+            </div>
           </div>
         </InfoCard>
-				<div className={styles.data}>
-					<StockPortfolios stockPortfolios={stockPortfolios} />
-					<AvailableStocks stocks={stocks} />
-				</div>
-      
+        <div className={styles.data}>
+          <StockPortfolios stockPortfolios={stockPortfolios} />
+          <AvailableStocks stocks={stocks} />
+        </div>
       </div>
       <AddMoneyModal
         open={openAddMoney}
@@ -77,21 +75,21 @@ function Home(): ReactElement {
         onClose={() => setOpenPlaceOrder(false)}
         onSave={() => {
           setOpenPlaceOrder(false);
-					fetchBalance();
-					fetchStockPortfolios();
-					fetchStocks();
+          fetchBalance();
+          fetchStockPortfolios();
+          fetchStocks();
         }}
-      /> 
-			<SellStockModal
-				open={openSellStock}
-				onClose={() => setOpenSellStock(false)}
-				onSave={() => {
-					setOpenSellStock(false);
-					fetchBalance();
-					fetchStockPortfolios();
-					fetchStocks();
-				}}
-			/>
+      />
+      <SellStockModal
+        open={openSellStock}
+        onClose={() => setOpenSellStock(false)}
+        onSave={() => {
+          setOpenSellStock(false);
+          fetchBalance();
+          fetchStockPortfolios();
+          fetchStocks();
+        }}
+      />
     </Layout>
   );
 }

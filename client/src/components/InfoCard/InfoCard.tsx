@@ -5,10 +5,10 @@ import classNames from 'classnames';
 interface InfoCardProps {
   children: ReactNode;
   title?: string;
-	className?: string;
+  className?: string;
 }
 
-function InfoCard({ children, title, className}: InfoCardProps): ReactElement {
+function InfoCard({ children, title, className }: InfoCardProps): ReactElement {
   return (
     <div className={classNames(styles.card, className)}>
       {title && <div className={styles.title}>{title}</div>}

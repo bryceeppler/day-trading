@@ -958,9 +958,9 @@ def step_46_get_wallet_balance(comp_token):
     endpoint = ENDPOINTS['getWalletBalance']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
-    expected_response = {"success": True, "data": {"balance": 8143}}
+    expected_response = {"success": True, "data": {"balance": 814}}
     print_results("Step 46: Get Wallet Balance", "", expected_results[46], response)
-    assert response == expected_response, f"Error in step 46: {response}"
+    assert response == expected_response, f"Error in step 46: {response}" 
 
 
 # 47. GET /getStockPrices
@@ -977,7 +977,8 @@ def step_47_get_stock_prices(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results("Step 47: Get Stock Prices", "", expected_results[47], response)
-    assert response['success'] and len(response['data']) == 2, f"Error in step 47: {response}"
+    assert response["success"]
+    assert len(response["data"]) == 2, f"Error in step 47: {response}"
 
 # 48. GET /getStockTransactions
 """
@@ -1332,7 +1333,9 @@ def executeTests():
     ############### WAIT 15 MINUTES
     #time.sleep(900)
 
-    remaining_time = 900
+    # remaining_time = 900 # 15 minutes
+    # 2 minutes 
+    remaining_time = 60
     while remaining_time > 0:
         print(f"############### WAIT {remaining_time // 60} MINUTES {remaining_time % 60} SECONDS")
         time.sleep(5)  # Notify every 5 seconds

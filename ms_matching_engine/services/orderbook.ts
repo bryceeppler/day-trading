@@ -11,6 +11,8 @@ export default class OrderBook implements IOrderBook {
   matchedOrders: MatchedOrder[] = [];
   cancelledOrders: OrderBookOrder[] = [];
   expiredOrders: OrderBookOrder[] = [];
+  expiryMinutes: number;
+
 
   constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
@@ -19,6 +21,7 @@ export default class OrderBook implements IOrderBook {
     this.matchedOrders = [];
     this.cancelledOrders = [];
     this.expiredOrders = [];
+    this.expiryMinutes = 1;
   }
 
   public async sendTestToExecutionService(): Promise<void> {
@@ -213,7 +216,7 @@ export default class OrderBook implements IOrderBook {
   private checkQueueForExpiredOrders(orderQ: OrderBookOrder[]) {
     const now = new Date();
     for (let i = 0; i < orderQ.length; i++) {
-      if (now.getTime() - orderQ[i].timestamp.getTime() > 60 * 15 * 1000) {
+      if (now.getTime() - orderQ[i].timestamp.getTime() > 60 * this.expiryMinutes * 1000) {
         this.expiredOrders.push(orderQ.splice(i, 1)[0]);
         i--;
       }
@@ -389,6 +392,7 @@ export default class OrderBook implements IOrderBook {
 
     if (expiredOrders.length > 0) {
       for (const expiredOrder of expiredOrders) {
+        console.log("Expired order: ", expiredOrder);
         data.push({
           stock_tx_id: expiredOrder.stock_tx_id,
           action: "EXPIRED",

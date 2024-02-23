@@ -63,7 +63,7 @@ export default (orderBook: OrderBook): Routes => {
     cancelOrder: async (req: Request, res: Response): Promise<void> => {
       try {
         const orderToCancel: CancelOrderRequest = req.body;
-        console.log("Current orders in order book:", orderBook.getOrderBookState());
+        // console.log("Current orders in order book:", orderBook.getOrderBookState());
         const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
         if (result) {
           console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)

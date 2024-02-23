@@ -3,29 +3,24 @@ const base = require('../shared/models/modelOperations')
 const { COLLECTIONS } = require('../shared/models/baseModel');
 
 
-exports.createTransaction = async (data) => {
-	return await base.createOne(COLLECTIONS.WALLET_TRANSACTION, [data])
+exports.createTransaction = (data) => {
+	return base.createOne(COLLECTIONS.WALLET_TRANSACTION, [data])
 }
 
-exports.fetchAllTransaction = async (data) => {
-	return await base.find(COLLECTIONS.WALLET_TRANSACTION, [data])
+exports.fetchAllTransactions = (data, sortBy) => {
+	return base.findAll(COLLECTIONS.WALLET_TRANSACTION, data, sortBy)
 }
 
-exports.fetchTransactionById = async (data) => {
-	return await base.findById(COLLECTIONS.WALLET_TRANSACTION, [data])
+exports.fetchTransaction = (id) => {
+	return base.findById(COLLECTIONS.WALLET_TRANSACTION, id)
 }
 
-exports.fetchTransaction = async (id) => {
-	return await base.findOne(COLLECTIONS.WALLET_TRANSACTION, id)
-}
-
-exports.softDeleteTransaction = async (id) => 
+exports.softDeleteTransaction = (id) => 
 {
-    return await base.updateOneById(COLLECTIONS.WALLET_TRANSACTION, id, { is_deleted: true});
+    return base.updateOneById(COLLECTIONS.WALLET_TRANSACTION, id, { is_deleted: true});
 }
 
-exports.updateStockTxId = async (id, stockTxId) =>
+exports.updateStockTxId = (id, stockTxId) =>
 {
-    return await base.updateOneById(COLLECTIONS.WALLET_TRANSACTION, id, { stock_tx_id: stockTxId } );
-
+    return  base.updateOneById(COLLECTIONS.WALLET_TRANSACTION, id, { stock_tx_id: stockTxId } );
 }

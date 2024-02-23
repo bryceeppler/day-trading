@@ -1,4 +1,4 @@
-const Stock = require("../models/stockModel");
+const Stock = require("../models/stock.model");
 const {
   handleError,
   successReturn,
@@ -12,11 +12,11 @@ exports.createStock = async (req, res, next) =>
   {
     const { stock_name } = req.body;
     // check if the stock name already exists in db
-    const existingStock = await Stock.findOne({ stock_name });
+    const existingStock = await Stock.fetchStockByName(stock_name);
 
     if (existingStock) return errorReturn(res, "stock already exists");
 
-    await Stock.createStock({stock_name});
+    const newStock = await Stock.createStock({stock_name});
 
     return successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
   } catch (error)

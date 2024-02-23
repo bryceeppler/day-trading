@@ -42,24 +42,24 @@ exports.findOne = async (collection, data) =>
 	return await model.findOne(data);
 }
 
-exports.findAll = async (collection, data) =>
+exports.findAll = async (collection, data, sortBy) =>
 {
 	const model = modelMap[collection];
 	if (!model) throw createError('Schema not created');
-	return await model.find(data);
+	return sortBy === null ? await model.find(data) : await model.find(data).sort(sortBy);
 }
+
 
 exports.updateOneById = async (collection, id, newValues) =>
 {
 	const model = modelMap[collection];
 	if (!model) throw createError('Schema not created');
-	
+
 	return await model.updateOne(
 		{ _id: id },
 		{ $set: newValues }
 	);
 }
-
 
 exports.deleteById = async (collection, id) =>
 {

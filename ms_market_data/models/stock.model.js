@@ -7,19 +7,19 @@ exports.createStock = (data) => {
 	return base.createOne(COLLECTIONS.STOCK, [data])
 }
 
-exports.fetchStockById = (id) => {
+exports.fetchStock = (id) => {
 	return base.findById(COLLECTIONS.STOCK, id)
 }
 
-exports.fetchStock = (id) => {
-	return base.findOne(COLLECTIONS.STOCK, id)
+exports.fetchStockByName = async (name) => {
+	return base.findOne(COLLECTIONS.STOCK, {stock_name: name})
 }
 
-exports.fetchAllStocks = (data) => {
-	return base.find(COLLECTIONS.STOCK, [data])
+exports.fetchAllStocks = async (data) => {
+	return base.findAll(COLLECTIONS.STOCK, data)
 }
 
-exports.updateStockPrice = (stock_id, new_price) =>
+exports.updateStockPrice = async (stock_id, new_price) =>
 {
-    return base.updateOneById(COLLECTIONS.STOCK, stock_id, { starting_price: new_price, current_price: new_price })
+	return base.updateOneById(COLLECTIONS.STOCK, stock_id, { starting_price: new_price, current_price: new_price })
 }

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const port = process.env.PORT || 3000;
 
+const Stock = require("./shared/models/stockModel");
 const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
 const Portfolio = require("./shared/models/portfolioModel");

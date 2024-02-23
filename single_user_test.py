@@ -659,7 +659,7 @@ def step_30_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 6250}}
-    print_results("Step 29: Get Wallet Transactions", "", expected_results[30], response)
+    print_results("Step 30: Get Wallet Transactions", "", expected_results[30], response)
     assert response == expected_response, f"Error in step 30: {response}"
 
 # 31. GET /getStockPortfolio
@@ -674,7 +674,7 @@ def step_31_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 20: Get Stock Portfolio", "", expected_results[31], response)
+    print_results("Step 31: Get Stock Portfolio", "", expected_results[31], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 31: {response}"
 
 # 32. POST /cancelStockTransaction 

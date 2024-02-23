@@ -83,6 +83,7 @@ export interface IOrderBook {
   matchedOrders: MatchedOrder[];
   expiredOrders: OrderBookOrder[];
   cancelledOrders: OrderBookOrder[];
+  expiryMinutes: number;
   removeOrder(stockTxId: string): OrderBookOrder | null;
   matchOrder(order: Order): [MatchedOrder[], number];
   checkForExpiredOrders(): void;

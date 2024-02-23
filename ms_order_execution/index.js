@@ -203,10 +203,11 @@ app.post("/executeOrder", async (req, res) =>
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
           if (action === "EXPIRED") { existingStockTx.order_status = 'EXPIRED'; }
 
-          const existingWalletTx = await WalletTransaction.findOne({ _id: stockTxId });
+          const existingWalletTx = await WalletTransaction.findOne({ stock_tx_id: stockTxId });
 
-          const user = await User.findOne({ user_id: existingStockTx.user_id });
+          const user = await User.findOne({ _id: existingWalletTx.user_id });
           let newBalance = existingWalletTx.amount + user.balance;
+
 
           console.log("OLD user.balance:", user.balance)
           console.log("existingWalletTx.amount:", existingWalletTx.amount)

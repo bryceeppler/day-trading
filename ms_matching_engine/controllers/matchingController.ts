@@ -46,12 +46,9 @@ export default (orderBook: OrderBook): Routes => {
           executed: false,
         };
 
-        console.log("Orderbook Order:", orderBookOrder);
         const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
           orderBook.matchOrder(orderBookOrder);
-        console.log("Order matching done.");
-        console.log("Matched orders: ", matched_orders.length);
-        console.log("Flushing to execution service...");
+        console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
         orderBook.flushOrders();
       } catch (error) {
         // TODO: better err handling
@@ -62,11 +59,15 @@ export default (orderBook: OrderBook): Routes => {
 
     cancelOrder: async (req: Request, res: Response): Promise<void> => {
       try {
-        const orderToCancel: CancelOrderRequest = req.body.stock_tx_id;
+        const orderToCancel: CancelOrderRequest = req.body;
+        // console.log("Current orders in order book:", orderBook.getOrderBookState());
         const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
         if (result) {
+          console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
           res.status(200).send("Order cancelled");
+          orderBook.flushOrders();
         } else {
+          console.log("Order not found");
           res.status(404).send("Order not found");
         }
       } catch (error) {

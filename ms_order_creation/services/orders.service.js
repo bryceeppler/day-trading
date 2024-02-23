@@ -23,10 +23,6 @@ exports.placeOrder = async (data, token) =>
       data.price === null ? stock.current_price * data.quantity : data.price * data.quantity;
     if (balance < amount) throw createError("Insufficient Funds", 400);
     // Update Balance in database
-    console.log("Balance: ", balance);
-    console.log("Price: ", data.price);
-    console.log("Amount: ", amount);
-    console.log("Quantity: ", data.quantity);
     await usersModel.updateBalance(data.user_id, balance - amount);
 
     // Create portfolio if it doesnt exist
@@ -142,7 +138,6 @@ exports.sellOrder = async (data, token) =>
     //If no price, update price.
     if (!stock.starting_price)
     {
-      console.log("made it here ", data.price, stock.starting_price);
       await ordersModel.updateStockPrice(data.stock_id, data.price);
     }
 

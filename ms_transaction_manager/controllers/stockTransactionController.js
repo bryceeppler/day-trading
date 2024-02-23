@@ -123,7 +123,7 @@ exports.getAllStockTransactions = async (req, res, next) =>
 
     try 
     {
-        const stockTx = await StockTransaction.fetchAllTransactions().sort({ time_stamp: 1 }) || {};
+        const stockTx = await StockTransaction.fetchAllTransactions({}, { time_stamp: 1 }) || {};
         return successReturn(res, stockTx);
     }
     catch (error) 

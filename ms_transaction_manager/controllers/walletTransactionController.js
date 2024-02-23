@@ -58,7 +58,7 @@ exports.deleteWalletTx = async (req, res, next) =>
         {
             return errorReturn(res, 'Wallet transaction not found');
         }
-        
+
         WalletTransaction.softDeleteTransaction(walletTxId);
 
         return successReturn(res, existingWalletTx);
@@ -100,7 +100,7 @@ exports.getAllWalletTransactions = async (req, res, next) =>
 {
     try 
     {
-        const walletTx = await WalletTransaction.fetchAllTransactions().sort({ time_stamp: 1 }) || {};;
+        const walletTx = await WalletTransaction.fetchAllTransactions({}, { time_stamp: 1 }) || {};;
         return successReturn(res, walletTx);
     }
     catch (error) 

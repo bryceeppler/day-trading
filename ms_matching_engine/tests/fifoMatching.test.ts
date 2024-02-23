@@ -1,10 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import {
-  OrderType,
-  OrderBookOrder,
-  IOrderBook,
-} from "../types";
+import { OrderType, OrderBookOrder, IOrderBook } from "../types";
 
 describe("OrderBook FIFO Priority Tests", () => {
   let orderbook: IOrderBook;
@@ -19,7 +15,7 @@ describe("OrderBook FIFO Priority Tests", () => {
     timestamp_offsets.forEach((time, index) => {
       orderbook.sellOrders.push({
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         user_id: "1",
         stock_id: "1",
         price: 10,
@@ -27,11 +23,11 @@ describe("OrderBook FIFO Priority Tests", () => {
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(Date.now() - time),
+        executed: false,
       });
     });
 
     const marketOrder: OrderBookOrder = {
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       user_id: "1",
       stock_id: "1",
@@ -40,6 +36,7 @@ describe("OrderBook FIFO Priority Tests", () => {
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
 
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
@@ -50,10 +47,10 @@ describe("OrderBook FIFO Priority Tests", () => {
 
     // order was fifo
     expect(matched[0].sellOrder.timestamp.getTime()).toBeLessThan(
-      matched[1].sellOrder.timestamp.getTime()
+      matched[1].sellOrder.timestamp.getTime(),
     );
     expect(matched[1].sellOrder.timestamp.getTime()).toBeLessThan(
-      matched[2].sellOrder.timestamp.getTime()
+      matched[2].sellOrder.timestamp.getTime(),
     );
   });
 });

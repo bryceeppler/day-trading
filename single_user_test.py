@@ -3,6 +3,7 @@ import time
 import json
 import os
 from expected_results import expected_results
+from datetime import datetime
 
 BASE_URL = "http://localhost" #:8000/
 
@@ -320,13 +321,13 @@ GET /getStockPortfolio
 Header: {"token":"<compToken>"}
 
 RESPONSE
-{"success":true,"data":[]}
+{"success":true,"data":[]}    
 """
 def step_12_get_stock_portfolio(comp_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 12 Get Stock Portfolio", data, expected_results[12], response)
+    print_results("Step 12 Get Stock Portfolio", None, expected_results[12], response)
     assert response['success'] 
     assert len(response['data']) == 0, f"Error in step 12: {response}"
 
@@ -381,12 +382,7 @@ def step_15_login():
         "password": "Fguru@2024"
     }
     response = make_post_request(endpoint, data=data)
-    expected_response = {
-        "success": True,
-        "data": {
-            "token": "<user1Token>" 
-        }
-    }
+
     print_results("Step 15: Login", data, expected_results[15], response)
     assert response['success'] and response['data']['token'], f"Error in step 15: {response}"
     return response['data']['token']
@@ -403,7 +399,8 @@ def step_16_get_stock_prices(user1_token):
     endpoint = ENDPOINTS['getStockPrices']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 16: Get Stock Prices", expected_results[16], response)
+  
+    print_results("Step 16: Get Stock Prices", None, expected_results[16], response)
     assert response['success'] and len(response['data']) == 2, f"Error in step 16: {response}"
 
 # 17. POST /addMoneyToWallet
@@ -528,7 +525,7 @@ def step_23_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 23: Get WAllet Transactions", "", expected_results[23], response)
+    print_results("Step 23: Get Stock Portfolio", "", expected_results[23], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 23: {response}"
 
 # 24. GET /getStockTransactions
@@ -1314,9 +1311,8 @@ def executeTests():
 
 
 def main():
-    # clean up previous run if any.
-    if os.path.exists("test_results.txt"):
-        os.remove("test_results.txt")
+    with open("test_results.txt", 'w') as file:
+        file.write(f"Test Run Time: {datetime.now().strftime('%A %b %d,%Y %H:%M:%S')}\n\n")
     executeTests()
 
 if __name__ == "__main__":

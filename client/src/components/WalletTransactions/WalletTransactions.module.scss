@@ -1,0 +1,72 @@
+.company {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 3px;
+  flex: 1;
+
+  .stock {
+    font-weight: 600;
+  }
+
+  .name {
+    color: grey;
+  }
+}
+
+.date {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 3px;
+  width: 120px;
+
+  .stock {
+    font-weight: 600;
+  }
+
+  .name {
+    color: grey;
+  }
+}
+
+.data {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-evenly;
+  width: 100%;
+  padding-right: 5px;
+
+  .dataItem {
+    margin-left: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 3px;
+    margin-right: 5px;
+
+    .value {
+      font-weight: 600;
+    }
+
+    .name {
+      color: grey;
+    }
+  }
+
+  .price {
+    width: 60px;
+  }
+  .type {
+    width: 45px;
+  }
+  .quantity {
+    width: 50px;
+  }
+  .buySell {
+    width: 30px;
+  }
+}

@@ -30,7 +30,12 @@ export interface IStockTransaction {
 }
 
 export interface StockTransactionDocument extends Document {
-  parent_stock_tx_id: { type: String, required: false, unqiue: false, default: null },
+  parent_stock_tx_id: {
+    type: String;
+    required: false;
+    unqiue: false;
+    default: null;
+  };
   user_id: string;
   stock_id: string;
   wallet_tx_id: string;
@@ -46,7 +51,6 @@ export interface StockTransactionDocument extends Document {
 }
 
 export type Order = {
-  wallet_tx_id: string;
   stock_tx_id: string;
   user_id: string;
   stock_id: string;
@@ -58,6 +62,7 @@ export type Order = {
 
 export interface OrderBookOrder extends Order {
   timestamp: Date;
+  executed: boolean;
 }
 
 export interface MatchedOrder {
@@ -65,6 +70,7 @@ export interface MatchedOrder {
   sellOrder: OrderBookOrder;
   quantity: number;
   matchPrice: number;
+  executed: boolean;
   timestamp: Date;
 }
 
@@ -83,4 +89,5 @@ export interface IOrderBook {
   cancelOrder(stockTxId: string): Order | null;
   initializeOrderBook(): Promise<void>;
   flushOrders(): void;
+  sendTestToExecutionService(): void;
 }

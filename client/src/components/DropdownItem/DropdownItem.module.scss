@@ -1,0 +1,22 @@
+@import 'scss/base/colors.scss';
+.item {
+  border-bottom: 1px solid #dddddd;
+  text-decoration: none;
+  color: #333333;
+  padding: 5px 5px;
+  display: block;
+
+  &:first-child {
+    color: $color-hint;
+  }
+
+  &:hover {
+    background-color: grey;
+  }
+  a {
+    text-decoration: none;
+    color: #333333;
+    padding: 5px 5px;
+    display: block;
+  }
+}

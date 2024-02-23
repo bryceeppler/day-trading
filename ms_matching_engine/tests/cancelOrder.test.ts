@@ -20,6 +20,7 @@ describe("Cancel Order Tests", () => {
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
     orderbook.buyOrders.push(order);
 
@@ -33,7 +34,6 @@ describe("Cancel Order Tests", () => {
   it("should return null if the order cannot be found", () => {
     const orderInBook = {
       user_id: "1",
-      wallet_tx_id: "1",
       stock_tx_id: "1",
       stock_id: "1",
       quantity: 5,
@@ -41,6 +41,7 @@ describe("Cancel Order Tests", () => {
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     };
 
     orderbook.buyOrders.push(orderInBook);
@@ -56,6 +57,5 @@ describe("Cancel Order Tests", () => {
     const result = orderbook.cancelOrder("1");
 
     expect(result).toBe(null);
-  }
-  );
+  });
 });

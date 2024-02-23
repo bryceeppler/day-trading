@@ -81,7 +81,7 @@ exports.getWalletTransactions = async (req, res, next) =>
     try 
     {
         // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
-        const walletTx = await WalletTransaction.find({ is_deleted: false }).sort({ time_stamp: 1 }) || {};
+        const walletTx = await WalletTransaction.find({ user_id: req.user?.userId, is_deleted: false }).sort({ time_stamp: 1 }) || {};
 
         // Map the documents and rename _id to wallet_tx_id
         const transformedWalletTx = walletTx.map(tx => ({

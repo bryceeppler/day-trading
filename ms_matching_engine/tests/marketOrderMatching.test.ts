@@ -1,10 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import {
-  OrderBookOrder,
-  OrderType,
-  IOrderBook,
-} from "../types";
+import { OrderBookOrder, OrderType, IOrderBook } from "../types";
 
 describe("OrderBook Market Order Tests", () => {
   let orderbook: IOrderBook;
@@ -20,36 +16,39 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 19,
         quantity: 10,
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: olderTimeStamp,
+        executed: false,
       },
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 20,
         quantity: 10,
         is_buy: true,
         order_type: OrderType.LIMIT,
         timestamp: newerTimeStamp,
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       price: 19,
       quantity: 5,
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -64,12 +63,13 @@ describe("OrderBook Market Order Tests", () => {
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 10,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
@@ -83,25 +83,27 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 10,
         quantity: 3,
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
       price: 10,
       timestamp: new Date(),
+      executed: false,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);
 
@@ -115,35 +117,38 @@ describe("OrderBook Market Order Tests", () => {
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 10,
         quantity: 3,
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
       {
         user_id: "1",
         stock_tx_id: "1",
-        wallet_tx_id: "1",
+
         stock_id: "1",
         price: 11,
         quantity: 2,
         is_buy: false,
         order_type: OrderType.LIMIT,
         timestamp: new Date(),
+        executed: false,
       },
     ];
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       quantity: 5,
       is_buy: true,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 11,
     };
     const [matched, remainingQuantity] = orderbook.matchOrder(marketOrder);

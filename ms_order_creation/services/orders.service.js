@@ -20,9 +20,13 @@ exports.placeOrder = async (data, token) =>
     const balance = userData.balance;
     const stock = await ordersModel.fetchStock(data.stock_id);
     let amount =
-      data.price === null ? stock.current_price * data.quantity : data.price;
+      data.price === null ? stock.current_price * data.quantity : data.price * data.quantity;
     if (balance < amount) throw createError("Insufficient Funds", 400);
     // Update Balance in database
+    console.log("Balance: ", balance);
+    console.log("Price: ", data.price);
+    console.log("Amount: ", amount);
+    console.log("Quantity: ", data.quantity);
     await usersModel.updateBalance(data.user_id, balance - amount);
 
     // Create portfolio if it doesnt exist
@@ -60,7 +64,7 @@ exports.placeOrder = async (data, token) =>
       stock_id: data.stock_id,
       is_buy: data.is_buy,
       order_type: data.order_type,
-      stock_price: stock.current_price,
+      stock_price: data.price ? data.price : stock.current_price,
       quantity: data.quantity,
       portfolio_id: portfolio_id ? portfolio_id : portfolio.id,
     };
@@ -70,8 +74,7 @@ exports.placeOrder = async (data, token) =>
     stock_tx_id = createdStockTx._id;
 
     // Update stock tx id in wallet transaction.
-    createdWalletTx.stock_tx_id = stock_tx_id
-    await createdWalletTx.save();
+    await ordersModel.updateStockTxId(createdWalletTx._id, stock_tx_id);
 
     // Send data to matching engine
     const matchingEngineData = {
@@ -136,13 +139,12 @@ exports.sellOrder = async (data, token) =>
     // Find stock
     const stock = await ordersModel.fetchStock(data.stock_id);
 
-    // If no price, update price.
+    //If no price, update price.
     if (!stock.starting_price)
     {
-      stock.current_price = data.price
-      stock.starting_price = data.price
+      console.log("made it here ", data.price, stock.starting_price);
+      await ordersModel.updateStockPrice(data.stock_id, data.price);
     }
-    await stock.save();
 
     // Create a stock transaction
     const stockTxData = {

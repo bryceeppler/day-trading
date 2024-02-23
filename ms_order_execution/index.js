@@ -245,7 +245,7 @@ app.post("/executeOrder", async (req, res) =>
           stockUpdate.current_price = existingStockTx.stock_price;
 
           //add money to user's wallet
-          const user = await User.findOne({ _id: existingStockTx.user_id });
+          const user = await User.findById(existingStockTx.user_id);
 
           let profit = existingStockTx.quantity * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
@@ -261,7 +261,7 @@ app.post("/executeOrder", async (req, res) =>
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
             stock_tx_id: existingStockTx.stock_tx_id,
-            is_debit: true,
+            is_debit: false,
             amount: profit,
             is_deleted: false
           });
@@ -334,7 +334,7 @@ app.post("/executeOrder", async (req, res) =>
           // new walletTx for partially fulfilled order                    
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
-            is_debit: true,
+            is_debit: false,
             amount: profit,
             is_deleted: false
           });

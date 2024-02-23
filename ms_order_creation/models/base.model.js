@@ -8,11 +8,20 @@ const WalletTransactionModel = require('../shared/models/walletTransactionModel'
 const StockModel = require('../shared/models/stockModel');
 const { COLLECTIONS } = require('../shared/models/baseModel');
 
+
+const modelMap = {
+	[COLLECTIONS.USER]: UsersModel,
+	[COLLECTIONS.PORTFOLIO]: PortfolioModel,
+	[COLLECTIONS.WALLET_TRANSACTION]: WalletTransactionModel,
+	[COLLECTIONS.STOCK]: StockModel
+};
+
 mongoose.connect(
 	config.mongodb,
-	{ authSource:'admin' }
-	)
-  .then(() => {
+	{ authSource: 'admin' }
+)
+	.then(() =>
+	{
 		console.log("Mongo DB - Connected")
 		console.log("         - Port: 27017")
 		console.log("         - Database: db")
@@ -20,15 +29,20 @@ mongoose.connect(
 	.catch((error) => console.log(error))
 
 
-exports.createOne = async (collection, data) => {
+exports.createOne = async (collection, data) =>
+{
 	let model
-	if (collection === COLLECTIONS.WALLET_TRANSACTION) {
-		model =  WalletTransactionModel
-	} else if (collection === COLLECTIONS.STOCK_TRANSACTION) { 
-		model =  StockTransactionModel
-	} else if (collection === COLLECTIONS.PORTFOLIO) {
+	if (collection === COLLECTIONS.WALLET_TRANSACTION)
+	{
+		model = WalletTransactionModel
+	} else if (collection === COLLECTIONS.STOCK_TRANSACTION)
+	{
+		model = StockTransactionModel
+	} else if (collection === COLLECTIONS.PORTFOLIO)
+	{
 		model = PortfolioModel
-	} else {
+	} else
+	{
 		throw createError('Schema not created')
 	}
 	const result = await model.create(data)
@@ -36,15 +50,20 @@ exports.createOne = async (collection, data) => {
 
 }
 
-exports.findById = async (collection, id) => {
+exports.findById = async (collection, id) =>
+{
 	let model
-	if (collection === COLLECTIONS.USER) {
+	if (collection === COLLECTIONS.USER)
+	{
 		model = UsersModel
-	} else if (collection === COLLECTIONS.PORTFOLIO) {
+	} else if (collection === COLLECTIONS.PORTFOLIO)
+	{
 		model = PortfolioModel
-	} else if (collection === COLLECTIONS.STOCK) {
+	} else if (collection === COLLECTIONS.STOCK)
+	{
 		model = StockModel
-	}else{
+	} else
+	{
 		throw createError('Schema not created')
 	}
 
@@ -52,26 +71,24 @@ exports.findById = async (collection, id) => {
 
 }
 
-exports.findOne = async (collection, data) => {
+exports.findOne = async (collection, data) =>
+{
 	let model
-	if (collection === COLLECTIONS.PORTFOLIO) {
+	if (collection === COLLECTIONS.PORTFOLIO)
+	{
 		model = PortfolioModel
-	} else {
+	} else
+	{
 		throw createError('Schema not created')
 	}
 	return await model.findOne(data);
 }
 
-exports.updateOneById = async (collection, id, newValues) => {
-	let model
-	if (collection === COLLECTIONS.USER) {
-		model = UsersModel
-	} else if (collection === COLLECTIONS.PORTFOLIO) {
-		model = PortfolioModel
-	} else {
-		throw createError('Schema not created')
-	}
-
+exports.updateOneById = async (collection, id, newValues) =>
+{
+	const model = modelMap[collection];
+	if (!model) throw createError('Schema not created');
+	
 	return await model.updateOne(
 		{ _id: id },
 		{ $set: newValues }
@@ -79,17 +96,22 @@ exports.updateOneById = async (collection, id, newValues) => {
 }
 
 
-exports.deleteById = async (collection, id) => {
+exports.deleteById = async (collection, id) =>
+{
 	let model
-	if (collection === COLLECTIONS.USER) {
+	if (collection === COLLECTIONS.USER)
+	{
 		model = UsersModel
-	} else if (collection === COLLECTIONS.WALLET_TRANSACTION) {
-		model =  WalletTransactionModel
-	} else if (collection === COLLECTIONS.STOCK_TRANSACTION) { 
-		model =  StockTransactionModel
-	} else {
+	} else if (collection === COLLECTIONS.WALLET_TRANSACTION)
+	{
+		model = WalletTransactionModel
+	} else if (collection === COLLECTIONS.STOCK_TRANSACTION)
+	{
+		model = StockTransactionModel
+	} else
+	{
 		throw createError('Schema not created')
 	}
 
-	return await model.deleteOne({_id: id});
+	return await model.deleteOne({ _id: id });
 }

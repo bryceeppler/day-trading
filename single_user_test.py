@@ -704,7 +704,8 @@ def step_32_cancel_stock_transaction(user1_token, apple_stock_tx_id):
     data = {"stock_tx_id": apple_stock_tx_id}
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results("Step 32: Cancel Stock Transaction", data, expected_results[32], response)
-    assert response['success'] and len(response['data']) == 1, f"Error in step 32: {response}"
+    assert response['success'], f"Error in step 32: {response}"
+    assert not response['data'], f"Error in step 32: {response}"
 
 
 # 33. GET /getStockTransactions

@@ -46,12 +46,9 @@ export default (orderBook: OrderBook): Routes => {
           executed: false,
         };
 
-        console.log("Orderbook Order:", orderBookOrder);
         const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
           orderBook.matchOrder(orderBookOrder);
-        console.log("Order matching done.");
-        console.log("Matched orders: ", matched_orders.length);
-        console.log("Flushing to execution service...");
+        console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
         orderBook.flushOrders();
       } catch (error) {
         // TODO: better err handling

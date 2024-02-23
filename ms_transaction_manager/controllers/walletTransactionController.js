@@ -1,4 +1,4 @@
-const WalletTransaction = require('../shared/models/walletTransactionModel');
+const WalletTransaction = require('../models/walletTx.model');
 const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const { STATUS_CODE } = require('../shared/lib/enums');
 
@@ -9,12 +9,9 @@ exports.createWalletTx = async (req, res, next) =>
     {
         const { user_id, is_debit, amount } = req.body;
 
-        const walletTx = new WalletTransaction({ user_id, is_debit, amount })
-        walletTx.save();
+        const walletTx = WalletTransaction.createTransaction({ user_id, is_debit, amount });
 
         return successReturn(res, walletTx, STATUS_CODE.CREATED);
-
-
     } catch (error)
     {
         return handleError(error, res, next);
@@ -30,15 +27,14 @@ exports.updateStockTxId = async (req, res, next) =>
         const { stock_tx_id } = req.body;
 
         // Check if the stock exists
-        const existingWalletTx = await WalletTransaction.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.fetchTransaction(walletTxId);
 
         if (!existingWalletTx)
         {
             return errorReturn(res, 'Wallet transaction not found');
         }
 
-        existingWalletTx.stock_tx_id = stock_tx_id;
-        await existingWalletTx.save();
+        WalletTransaction.updateStockTxId(walletTxId, stock_tx_id);
 
         return successReturn(res, existingWalletTx);
     }
@@ -56,7 +52,7 @@ exports.deleteWalletTx = async (req, res, next) =>
         const walletTxId = req.params.wallet_tx_id;
 
         // Check if the transaction exists
-        const existingWalletTx = await WalletTransaction.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.fetchTransaction(walletTxId);
 
         if (!existingWalletTx)
         {

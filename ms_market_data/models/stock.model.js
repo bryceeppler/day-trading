@@ -12,7 +12,11 @@ exports.fetchStockById = (id) => {
 }
 
 exports.fetchStock = (id) => {
-	return base.findOne(COLLECTIONS.STOCK, [data])
+	return base.findOne(COLLECTIONS.STOCK, id)
+}
+
+exports.fetchAllStocks = (data) => {
+	return base.find(COLLECTIONS.STOCK, [data])
 }
 
 exports.updateStockPrice = (stock_id, new_price) =>

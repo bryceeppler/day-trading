@@ -30,7 +30,7 @@ exports.getStockPrices = async (req, res, next) =>
 {
   try
   {
-    const stocks = (await Stock.findAll()) || {};
+    const stocks = (await Stock.fetchAllStocks()) || {};
 
     // Map the documents and rename _id to stock_id
     const transformedStocks = stocks.map((stock) => ({
@@ -51,7 +51,7 @@ exports.getAllStocks = async (req, res, next) =>
 {
   try
   {
-    const stocks = await Stock.findAll() || {};
+    const stocks = await Stock.fetchAllStocks() || {};
     return successReturn(res, stocks);
   } catch (error)
   {

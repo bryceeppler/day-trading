@@ -1,4 +1,4 @@
-const Stock = require("../shared/models/stockModel");
+const Stock = require("../models/stock.model");
 const {
   handleError,
   successReturn,
@@ -12,15 +12,11 @@ exports.createStock = async (req, res, next) =>
   {
     const { stock_name } = req.body;
     // check if the stock name already exists in db
-    const existingStock = await Stock.findOne({ stock_name });
+    const existingStock = await Stock.fetchStockByName(stock_name);
 
     if (existingStock) return errorReturn(res, "stock already exists");
 
-    // generate a random initial price in the range of $150.00 - $200.00.
-    // const startingPrice = Math.random() * (200 - 150) + 150;
-
-    const newStock = new Stock({ stock_name });
-    newStock.save();
+    const newStock = await Stock.createStock({stock_name});
 
     return successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
   } catch (error)
@@ -34,7 +30,7 @@ exports.getStockPrices = async (req, res, next) =>
 {
   try
   {
-    const stocks = (await Stock.find({}, "stock_name current_price")) || {};
+    const stocks = (await Stock.fetchAllStocks()) || {};
 
     // Map the documents and rename _id to stock_id
     const transformedStocks = stocks.map((stock) => ({
@@ -55,7 +51,7 @@ exports.getAllStocks = async (req, res, next) =>
 {
   try
   {
-    const stocks = (await Stock.find()) || {};
+    const stocks = await Stock.fetchAllStocks() || {};
     return successReturn(res, stocks);
   } catch (error)
   {
@@ -72,12 +68,11 @@ exports.updateStockPrice = async (req, res, next) =>
     const { new_price } = req.body;
 
     // Check if the stock exists
-    const existingStock = await Stock.findById(stockId);
+    const existingStock = await Stock.findStockById(stockId);
 
     if (!existingStock) return errorReturn(res, "Stock not found");
 
-    existingStock.current_price = new_price;
-    await existingStock.save();
+    stockModel.updateStockPrice(stockId, new_price);
 
     return successReturn(res, existingStock);
   } catch (error)

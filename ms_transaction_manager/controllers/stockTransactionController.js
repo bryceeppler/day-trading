@@ -1,6 +1,6 @@
 const { STATUS_CODE } = require('../shared/lib/enums');
 const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
-const StockTransaction = require('../shared/models/stockTransactionModel');
+const StockTransaction = require('../models/stockTx.model');
 
 // /createWalletTransaction
 exports.createStockTx = async (req, res, next) =>
@@ -15,7 +15,7 @@ exports.createStockTx = async (req, res, next) =>
             stock_price,
             quantity } = req.body;
 
-        const newStockTx = new StockTransaction({
+        const newStockTx = await StockTransaction.createTransaction({
             stock_id,
             wallet_tx_id,
             portfolio_id,
@@ -24,8 +24,6 @@ exports.createStockTx = async (req, res, next) =>
             stock_price,
             quantity,
         });
-
-        newStockTx.save();
 
         return successReturn(res, newStockTx, STATUS_CODE.CREATED);
     } catch (error)
@@ -43,15 +41,14 @@ exports.updateStockTxStatus = async (req, res, next) =>
         const { order_status } = req.body;
 
         // Check if the transaction exists
-        const existingStockTx = await StockTransaction.findById(stockTxId);
+        const existingStockTx = await StockTransaction.fetchTransaction(stockTxId);
 
         if (!existingStockTx) 
         {
             return errorReturn(res, 'Stock transaction not found');
         }
 
-        existingStockTx.order_status = order_status;
-        await existingStockTx.save();
+        await StockTransaction.updateOrderStatus(stockTxId, order_status);
 
         return successReturn(res, existingStockTx);
     }
@@ -69,7 +66,7 @@ exports.deleteStockTx = async (req, res, next) =>
         const stockTxId = req.params.stock_tx_id;
 
         // Check if the transaction exists
-        const existingStockTx = await StockTransaction.findById(stockTxId);
+        const existingStockTx = await StockTransaction.fetchTransaction(stockTxId);
 
         if (!existingStockTx)
         {
@@ -77,8 +74,7 @@ exports.deleteStockTx = async (req, res, next) =>
         }
 
         // update is_deleted flag
-        existingStockTx.is_deleted = true;
-        await existingStockTx.save();
+        await StockTransaction.softDeleteTransaction();
 
         return successReturn(res, existingStockTx);
     }
@@ -95,7 +91,7 @@ exports.getStockTransactions = async (req, res, next) =>
     try 
     {
         // get all stock transaction that are not deleted.  
-        const stockTx = await StockTransaction.find({ user_id: req.user?.userId, is_deleted: false }).sort({ time_stamp: 1 }) || {};
+        const stockTx = await StockTransaction.fetchAllTransactions({ user_id: req.user?.userId, is_deleted: false }, { time_stamp: 1 }) || {};
 
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
@@ -127,7 +123,7 @@ exports.getAllStockTransactions = async (req, res, next) =>
 
     try 
     {
-        const stockTx = await StockTransaction.find({}).sort({ time_stamp: 1 }) || {};
+        const stockTx = await StockTransaction.fetchAllTransactions({}, { time_stamp: 1 }) || {};
         return successReturn(res, stockTx);
     }
     catch (error) 

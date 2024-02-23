@@ -24,7 +24,7 @@ async function getStockPortfolio(req, res, next)
     }
 
     // Fetch stock portfolio for the user
-    const portfolio = await StockPortfolio.find({ user_id: user._id });
+    const portfolio = await StockPortfolio.find({ user_id: user._id, quantity_owned: { $gt: 0 } });
 
     // create a list to hold the stock portfolio data
     const data = []

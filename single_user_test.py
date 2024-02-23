@@ -84,7 +84,7 @@ def step_1_register():
         "data": None
     }
     print_results("Step 1: Register", data, expected_results[1], response)
-    # assert response["success"], f"Error in step 1"
+    assert response["success"], f"Error in step 1"
 
 
 # 2. POST /register
@@ -560,7 +560,7 @@ def step_25_get_wallet_balance(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 1350}}
-    print_results("Step 25: Get Wallet Balance", "", expected_results[15], response)
+    print_results("Step 25: Get Wallet Balance", "", expected_results[25], response)
     assert response == expected_response, f"Error in step 25: {response}"
 
 # 26. GET /getWalletTransactions
@@ -659,7 +659,7 @@ def step_30_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     expected_response = {"success": True, "data": {"balance": 6250}}
-    print_results("Step 29: Get Wallet Transactions", "", expected_results[30], response)
+    print_results("Step 30: Get Wallet Transactions", "", expected_results[30], response)
     assert response == expected_response, f"Error in step 30: {response}"
 
 # 31. GET /getStockPortfolio
@@ -674,7 +674,7 @@ def step_31_get_stock_portfolio(user1_token):
     endpoint = ENDPOINTS['getStockPortfolio']
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
-    print_results("Step 20: Get Stock Portfolio", "", expected_results[31], response)
+    print_results("Step 31: Get Stock Portfolio", "", expected_results[31], response)
     assert response['success'] and len(response['data']) == 1, f"Error in step 31: {response}"
 
 # 32. POST /cancelStockTransaction 
@@ -1213,72 +1213,119 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
 
 
 def executeTests():
+    sleep_time = 0.5
+    
     step_1_register()
     print("Step 1 passed")
+    time.sleep(sleep_time)
+
     step_2_register()
     print("Step 2 passed")
+    time.sleep(sleep_time)
+
     step_3_login()
     print("Step 3 passed")
+    time.sleep(sleep_time)
     token = step_4_login()
     print("Step 4 passed")
+    time.sleep(sleep_time)
     google_stock_id = step_5_create_stock(token)
     print("Step 5 passed")
+    time.sleep(sleep_time)
     step_6_add_stock_to_user(token, google_stock_id)
     print("Step 6 passed")
+    time.sleep(sleep_time)
     apple_stock_id = step_7_create_stock(token)
     print("Step 7 passed")
+    time.sleep(sleep_time)
     step_8_add_stock_to_user(token, apple_stock_id)
     print("Step 8 passed")
+    time.sleep(sleep_time)
     step_9_get_stock_portfolio(token)
     print("Step 9 passed")
+    time.sleep(sleep_time)
     step_10_place_stock_order(token, apple_stock_id)
     print("Step 10 passed")
+    time.sleep(sleep_time)
     step_11_place_stock_order(token, google_stock_id)
     print("Step 11 passed")
+    time.sleep(sleep_time)
     step_12_get_stock_portfolio(token)
     print("Step 12 passed")
+    time.sleep(sleep_time)
     step_13_get_stock_transactions(token)
     print("Step 13 passed")
+    time.sleep(sleep_time)
     step_14_register()
     print("Step 14 passed")
+    time.sleep(sleep_time)
     user1_token = step_15_login()
     print("Step 15 passed")
+    time.sleep(sleep_time)
     step_16_get_stock_prices(user1_token)
     print("Step 16 passed")
+    time.sleep(sleep_time)
     step_17_add_money_to_wallet(user1_token)
     print("Step 17 passed")
+    time.sleep(sleep_time)
     step_18_get_wallet_balance(user1_token)
     print("Step 18 passed")
+    time.sleep(sleep_time)
     step_19_place_stock_order(user1_token, google_stock_id)
     print("Step 19 passed")
+    time.sleep(sleep_time)
     step_20_get_stock_transactions(user1_token)
     print("Step 20 passed")
+    time.sleep(sleep_time)
     step_21_get_wallet_transactions(user1_token)
     print("Step 21 passed")
+    time.sleep(sleep_time)
     step_22_get_wallet_balance(user1_token)
     print("Step 22 passed")
+    time.sleep(sleep_time)
     step_23_get_stock_portfolio(user1_token)
     print("Step 23 passed")
+    time.sleep(sleep_time)
     step_24_get_stock_transactions(token)
+    time.sleep(sleep_time)
     step_25_get_wallet_balance(token)
+    time.sleep(sleep_time)
     step_26_get_wallet_transactions(token)
+    time.sleep(sleep_time)
     step_27_place_stock_order(user1_token, apple_stock_id)
+    time.sleep(sleep_time)
     step_28_get_stock_transactions(user1_token)
+    time.sleep(sleep_time)
     apple_stock_tx_id = step_29_get_wallet_transactions(user1_token)
+    time.sleep(sleep_time)
     step_30_get_wallet_balance(user1_token)
+    time.sleep(sleep_time)
     step_31_get_stock_portfolio(user1_token)
+    time.sleep(sleep_time)
     step_32_cancel_stock_transaction(user1_token, apple_stock_tx_id)
+    time.sleep(sleep_time)
     step_33_get_stock_transactions(user1_token)
+    time.sleep(sleep_time)
     step_34_get_wallet_transactions(user1_token)
+    time.sleep(sleep_time)
     step_35_get_wallet_balance(user1_token)
+    time.sleep(sleep_time)
     step_36_get_stock_portfolio(user1_token)
+    time.sleep(sleep_time)
     step_37_place_stock_order(user1_token, google_stock_id)
+    time.sleep(sleep_time)
     step_38_get_stock_transactions(user1_token)
+    time.sleep(sleep_time)
     step_39_get_wallet_transactions(user1_token)
+    time.sleep(sleep_time)
     step_40_get_wallet_balance(user1_token)
+    time.sleep(sleep_time)
     step_41_get_stock_portfolio(user1_token)
+    time.sleep(sleep_time)
     step_42_get_stock_prices(token)
+    time.sleep(sleep_time)
     step_43_place_stock_order(token, google_stock_id)
+    time.sleep(sleep_time)
     step_44_get_stock_transactions(token)
 
     ############### WAIT 15 MINUTES
@@ -1292,20 +1339,35 @@ def executeTests():
 
     
     step_45_get_wallet_transactions(token)
+    time.sleep(sleep_time)
     step_46_get_wallet_balance(token)
+    time.sleep(sleep_time)
     step_47_get_stock_prices(token)
+    time.sleep(sleep_time)
     step_48_get_stock_transactions(user1_token)
+    time.sleep(sleep_time)
     step_49_get_wallet_transactions(user1_token)
+    time.sleep(sleep_time)
     step_50_get_wallet_balance(user1_token)
+    time.sleep(sleep_time)
     step_51_get_stock_transactions(token)
+    time.sleep(sleep_time)
     step_52_get_stock_portfolio(token)
+    time.sleep(sleep_time)
     step_53_get_stock_transactions_with_invalid_token("<invalidToken>")
+    time.sleep(sleep_time)
     step_54_get_wallet_transactions_with_invalid_token("<invalidToken>")
+    time.sleep(sleep_time)
     step_55_get_stock_transactions_with_invalid_token("<invalidToken>")
+    time.sleep(sleep_time)
     step_56_add_money_to_wallet(user1_token)
+    time.sleep(sleep_time)
     step_57_place_stock_order(user1_token, google_stock_id)
+    time.sleep(sleep_time)
     step_58_cancel_stock_transaction(user1_token, "<invalid google stock id>")
+    time.sleep(sleep_time)
     step_59_add_money_to_wallet_with_invalid_token("<invalidToken>")
+    time.sleep(sleep_time)
     step_60_place_stock_order_with_invalid_token("<invalidToken>", google_stock_id)
     print("All tests finished.")
 

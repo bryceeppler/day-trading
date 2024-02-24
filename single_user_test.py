@@ -1371,23 +1371,23 @@ def executeTests():
 
 		# Tracks when a transaction has expired.  Assumes 1 minute
 		if user1AppleSellTxExpire is not None and current > user1AppleSellTxExpire:
-			print("                    User 1 Apple Sell Expired")
+			print(f"                    User 1 Apple Sell Expired at {current.strftime('%H:%M:%S:%f')}")
 			totalUser1StockTransactions -= 1
 			user1AppleSellTxExpire = None
 		if user1BuyGoogleTxExpire is not None and current > user1BuyGoogleTxExpire:
-			print("                    User 1 Google Buy Expired")
+			print(f"                    User 1 Google Buy Expired at {current.strftime('%H:%M:%S:%f')}")
 			totalUser1StockTransactions -= 1
 			user1BuyGoogleTxExpire = None
 		if user1GoogleSellTxExpire is not None and current > user1GoogleSellTxExpire:
-			print("                    User 1 Google Sell Expired")
+			print(f"                    User 1 Google Sell Expired at {current.strftime('%H:%M:%S:%f')}")
 			totalUser1StockTransactions -= 1
 			user1GoogleSellTxExpire = None
 		if user2AppleBuyTxExpire is not None and current > user2AppleBuyTxExpire:
-			print("                    User 2 Apple Buy Expired")
+			print(f"                    User 2 Apple Buy Expired at {current.strftime('%H:%M:%S:%f')}")
 			totalUser2StockTransactions -= 1
 			user2AppleBuyTxExpire = None
 		if user2GoogleSellTxExpire is not None and current > user2GoogleSellTxExpire:
-			print("                    User 2 Google Sell Expired")
+			print(f"                    User 2 Google Sell Expired at {current.strftime('%H:%M:%S:%f')}")
 			totalUser2StockTransactions -= 1
 			user2GoogleSellTxExpire = None
 

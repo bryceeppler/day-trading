@@ -104,8 +104,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongodb
     volumes:
       - db_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 volumes:
   db_data:
-  shared_volume:

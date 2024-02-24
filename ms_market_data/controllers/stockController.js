@@ -36,8 +36,7 @@ exports.getStockPrices = async (req, res, next) =>
     const transformedStocks = stocks.map((stock) => ({
       stock_id: stock._id,
       stock_name: stock.stock_name,
-      current_price: stock.current_price,
-      starting_price: stock.starting_price,
+      current_price: stock.current_price
     }));
     return successReturn(res, transformedStocks);
   } catch (error)

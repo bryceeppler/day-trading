@@ -201,7 +201,19 @@ app.post("/executeOrder", async (req, res) =>
         try
         {
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
-          if (action === "EXPIRED") { existingStockTx.order_status = 'EXPIRED'; }
+          if (action === "EXPIRED") { 
+            // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
+            // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
+
+            const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
+            if (parentStockTx) {
+              existingStockTx.order_status = 'PARTIAL_FULFILLED';
+              await existingStockTx.save();
+            } else {
+              existingStockTx.order_status = 'EXPIRED'; 
+              await existingStockTx.save();
+            };
+          }
 
           const existingWalletTx = await WalletTransaction.findOne({ stock_tx_id: stockTxId });
 
@@ -377,7 +389,16 @@ app.post("/executeOrder", async (req, res) =>
         try
         {
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
-          if (action === "EXPIRED") { existingStockTx.order_status = 'EXPIRED'; }
+          if (action === "EXPIRED") { 
+            const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
+            if (parentStockTx) {
+              existingStockTx.order_status = 'PARTIAL_FULFILLED';
+              await existingStockTx.save();
+            } else {
+              existingStockTx.order_status = 'EXPIRED'; 
+              await existingStockTx.save();
+            };
+          }      
 
           // check if portfolio entry exists first and if not, make a new one \\ for the next submission
           let newQuantity = existingStockTx.quantity + existingPortfolioDocumentAndStockId.quantity_owned;
@@ -387,7 +408,11 @@ app.post("/executeOrder", async (req, res) =>
           console.log("NEW qunatity owned", newQuantity);
 
           existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
-          existingStockTx.is_deleted = true;
+          // if the status is not PARTIAL_FULFILLED, then the stockTx is deleted
+          if (existingStockTx.order_status !== 'PARTIAL_FULFILLED') {
+            existingStockTx.is_deleted = true;
+          }
+          // existingStockTx.is_deleted = true;
 
           await existingPortfolioDocumentAndStockId.save();
           await existingStockTx.save();

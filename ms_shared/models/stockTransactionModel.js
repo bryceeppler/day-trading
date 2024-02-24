@@ -19,6 +19,9 @@ const stockTxSchema = new mongoose.Schema({
     is_deleted: { type: Boolean, required: true, default: false },
 });
 
+stockTxSchema.index({user_id: 1}); // for transaction service
+stockTxSchema.index({parent_stock_id: 1}); // for execution service
+
 const StockTransaction = mongoose.model(base.COLLECTIONS.STOCK_TRANSACTION, stockTxSchema);
 
 module.exports = StockTransaction;

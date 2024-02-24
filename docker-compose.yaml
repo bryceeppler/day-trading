@@ -26,10 +26,8 @@ services:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       BCRYPT_SALT_ROUNDS: 12
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Order Execution Microservice
   ms_order_execution:
@@ -39,10 +37,8 @@ services:
       - "8002:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Order Creation Microservice
   ms_order_creation:
@@ -52,10 +48,8 @@ services:
       - "3000"
     ports:
       - "8003:3000"
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
@@ -73,10 +67,8 @@ services:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
     command: ["npm", "start"]
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Market Data Microservice
   ms_market_data:
@@ -87,10 +79,8 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Audit Manager Microservice
   ms_transaction_manager:
@@ -101,17 +91,8 @@ services:
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
-
-  # Shared Code Microservice
-  ms_shared:
-    container_name: shared
-    build: ./ms_shared
-    volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   mongo:
     container_name: mongo
@@ -123,6 +104,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongodb
     volumes:
       - db_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 volumes:
   db_data:

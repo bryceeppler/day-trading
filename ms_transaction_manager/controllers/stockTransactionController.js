@@ -90,8 +90,11 @@ exports.getStockTransactions = async (req, res, next) =>
 
     try 
     {
-        // get all stock transaction that are not deleted.  
-        const stockTx = await StockTransaction.fetchAllTransactions({ user_id: req.user?.userId, is_deleted: false }, { time_stamp: 1 }) || {};
+        // get all stock transaction that are not deleted. Sort by time stamp, 1 for ascending.  
+        const stockTx = await StockTransaction.fetchAllTransactions(
+            { user_id: req.user?.userId, is_deleted: false }, // Filter criteria
+            { time_stamp: 1 } // Sort function
+        ) || {};
 
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({

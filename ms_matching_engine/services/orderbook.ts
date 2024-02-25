@@ -21,7 +21,7 @@ export default class OrderBook implements IOrderBook {
     this.matchedOrders = [];
     this.cancelledOrders = [];
     this.expiredOrders = [];
-    this.expiryMinutes = 1;
+    this.expiryMinutes = 15;
   }
 
   public async sendTestToExecutionService(): Promise<void> {
@@ -105,7 +105,7 @@ export default class OrderBook implements IOrderBook {
    */
   private isExpired(timestamp: Date) {
     const now = new Date();
-    return now.getTime() - timestamp.getTime() > 60 * 15 * 1000;
+    return now.getTime() - timestamp.getTime() > 60 * this.expiryMinutes * 1000;
   }
 
   /**

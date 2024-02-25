@@ -338,7 +338,7 @@ app.post("/executeOrder", async (req, res) =>
             parent_stock_tx_id: stockTxId,
             portfolio_id: existingStockTx.portfolio_id,
             order_status: 'COMPLETED',
-            is_buy: true,
+            is_buy: false,
             order_type: existingStockTx.order_type,
             stock_price: existingStockTx.stock_price,
             quantity: quantityStockInTransit,

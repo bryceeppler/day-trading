@@ -8,6 +8,7 @@ const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
 const Portfolio = require("./shared/models/portfolioModel");
 const User = require("./shared/models/userModel");
+const { ORDER_STATUS } = require("./shared/lib/enums");
 
 const app = express();
 app.use((req, res, next) =>
@@ -168,8 +169,8 @@ app.post("/executeOrder", async (req, res) =>
               amount: amountSpent,
               is_deleted: false
             });
-            await newStockTransaction.save();
-            await newWalletTransaction.save();
+            //await newStockTransaction.save();
+            //await newWalletTransaction.save();
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
             newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -326,9 +327,9 @@ app.post("/executeOrder", async (req, res) =>
           console.log("User balance updated.");
 
           // add remaining stock quantity back to portfolio
-          let stocksToAddBack = existingStockTx.quantity - quantityStockInTransit;
-          let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
-          existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
+          //let stocksToAddBack = existingStockTx.quantity - quantityStockInTransit;
+          //let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
+          //existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
 
           // new stockTx for partially fulfilled order
           const newStockTransaction = new StockTransaction({
@@ -351,8 +352,8 @@ app.post("/executeOrder", async (req, res) =>
             amount: profit,
             is_deleted: false
           });
-          await newStockTransaction.save();
-          await newWalletTransaction.save();
+          //await newStockTransaction.save();
+          //await newWalletTransaction.save();
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
           newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -393,15 +394,25 @@ app.post("/executeOrder", async (req, res) =>
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
             if (parentStockTx) {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              await existingStockTx.save();
+              //await existingStockTx.save();
             } else {
               existingStockTx.order_status = 'EXPIRED'; 
-              await existingStockTx.save();
+              //await existingStockTx.save();
             };
           }      
+          
+
+          const childTransactions = await StockTransaction.find({ parent_stock_tx_id: stockTxId })
+          let completedQuantity = existingStockTx.quantity;
+
+          childTransactions.forEach(tx => {
+            if(tx.order_status === ORDER_STATUS.COMPLETED)
+              completedQuantity -= tx.quantity;
+          });
+
 
           // check if portfolio entry exists first and if not, make a new one \\ for the next submission
-          let newQuantity = existingStockTx.quantity + existingPortfolioDocumentAndStockId.quantity_owned;
+          let newQuantity = completedQuantity + existingPortfolioDocumentAndStockId.quantity_owned;
 
           console.log("OLD qunatity owned", existingPortfolioDocumentAndStockId.quantity_owned);
           console.log("Quantity received back", existingStockTx.quantity);

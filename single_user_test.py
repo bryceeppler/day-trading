@@ -55,8 +55,9 @@ def make_get_request(endpoint, headers=None):
 
 
 def print_results(test_case, request_body, actual):
+    title = tests[test_case-1]['title'] if test_case < 45 else tests[test_case]['title']
     with open("test_results.txt", "a") as file:
-        file.write(f"Test Case: {tests[test_case]['title']}\n\n")
+        file.write(f"Test Case {test_case}: {title} - {datetime.now().strftime('%H:%M:%S')}\n\n")
         file.write("Request body:\n" + json.dumps(request_body, indent=2) + "\n")
         file.write("Expected:\n" + json.dumps(expected_results[test_case], indent=2) + "\n")
         file.write("Actual:\n" + json.dumps(actual, indent=2) + "\n")
@@ -1294,11 +1295,11 @@ tests = [
 		{'id': 15, 'title': "User 2 login", 'test': lambda: step_15_login()},
 		{'id': 16, 'title': "Get stock prices", 'test': lambda: step_16_get_stock_prices(user2Token)},
 		{'id': 17, 'title': "User 2 add money to wallet 10 000", 'test': lambda: step_17_add_money_to_wallet(user2Token)},
-		{'id': 18, 'title': "User 2 get wallet ballence", 'test': lambda: step_18_get_wallet_balance(user2Token)},
+		{'id': 18, 'title': "User 2 get wallet balance", 'test': lambda: step_18_get_wallet_balance(user2Token)},
 		{'id': 19, 'title': "User 2 User 2 Buy market google q: 10", 'test': lambda: step_19_place_stock_order(user2Token, googleStockId)},
 		{'id': 20, 'title': "User 2 get stock transactions", 'test': lambda: step_20_get_stock_transactions(user2Token)},
 		{'id': 21, 'title': "User 2 get wallet transactions", 'test': lambda: step_21_get_wallet_transactions(user2Token)},
-		{'id': 22, 'title': "User 2 get wallet ballence", 'test': lambda: step_22_get_wallet_balance(user2Token)},
+		{'id': 22, 'title': "User 2 get wallet balance", 'test': lambda: step_22_get_wallet_balance(user2Token)},
 		{'id': 23, 'title': "User 2 get stock portfolio", 'test': lambda: step_23_get_stock_portfolio(user2Token)},
 		{'id': 24, 'title': "User 1 get stock transactions", 'test': lambda: step_24_get_stock_transactions(user1token)},
 		{'id': 25, 'title': "User 1 get wallet balance", 'test': lambda: step_25_get_wallet_balance(user1token)},

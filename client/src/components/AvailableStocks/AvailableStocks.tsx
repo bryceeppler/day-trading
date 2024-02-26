@@ -21,7 +21,7 @@ function AvailableStocks({ stocks }: Readonly<AvailableStocksProps>): ReactEleme
               </div>
               <div className={styles.company}>
                 <div className={styles.name}>{'Starting Price'}</div>
-                <div className={styles.value}>{formatPrice(item.starting_price)}</div>
+                <div className={styles.value}>{formatPrice(item.starting_price, true)}</div>
               </div>
               <div className={styles.company}>
                 <div className={styles.name}>{'Current Price'}</div>

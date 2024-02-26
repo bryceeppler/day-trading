@@ -16,4 +16,4 @@ const stockTransactionSchema = new mongoose.Schema<StockTransactionDocument>({
   is_deleted: { type: Boolean, required: true, default: false },
 });
 
-export const StockTransaction: StockTransactionModel = mongoose.model<StockTransactionDocument, StockTransactionModel>('StockTransaction', stockTransactionSchema);
+export const StockTransaction: StockTransactionModel = mongoose.model<StockTransactionDocument, StockTransactionModel>('StockTransactions', stockTransactionSchema);

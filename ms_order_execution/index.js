@@ -39,6 +39,7 @@ app.post("/executeOrder", async (req, res) =>
 
   const order = req.body.order;
   const stockTxId = order.stock_tx_id;
+  const matchedStockTxId = order.matched_stock_tx_id;
   const action = order.action;
   const quantityStockInTransit = order.quantity;
 
@@ -202,17 +203,20 @@ app.post("/executeOrder", async (req, res) =>
         try
         {
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
-          if (action === "EXPIRED") { 
+          if (action === "EXPIRED")
+          {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
 
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
-            if (parentStockTx) {
+            if (parentStockTx)
+            {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              await existingStockTx.save();
-            } else {
-              existingStockTx.order_status = 'EXPIRED'; 
-              await existingStockTx.save();
+              //await existingStockTx.save();
+            } else
+            {
+              existingStockTx.order_status = 'EXPIRED';
+              //await existingStockTx.save();
             };
           }
 
@@ -331,6 +335,9 @@ app.post("/executeOrder", async (req, res) =>
           //let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
           //existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
 
+          // find matched order stock transaction
+          const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
+
           // new stockTx for partially fulfilled order
           const newStockTransaction = new StockTransaction({
             stock_id: existingStockTx.stock_id,
@@ -338,8 +345,8 @@ app.post("/executeOrder", async (req, res) =>
             parent_stock_tx_id: stockTxId,
             portfolio_id: existingStockTx.portfolio_id,
             order_status: 'COMPLETED',
-            is_buy: true,
-            order_type: existingStockTx.order_type,
+            is_buy: false,
+            order_type: matchedTransaction.order_type,
             stock_price: existingStockTx.stock_price,
             quantity: quantityStockInTransit,
             is_deleted: false
@@ -390,23 +397,27 @@ app.post("/executeOrder", async (req, res) =>
         try
         {
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
-          if (action === "EXPIRED") { 
+          if (action === "EXPIRED")
+          {
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
-            if (parentStockTx) {
+            if (parentStockTx)
+            {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
               //await existingStockTx.save();
-            } else {
-              existingStockTx.order_status = 'EXPIRED'; 
+            } else
+            {
+              existingStockTx.order_status = 'EXPIRED';
               //await existingStockTx.save();
             };
-          }      
-          
+          }
+
 
           const childTransactions = await StockTransaction.find({ parent_stock_tx_id: stockTxId })
           let completedQuantity = existingStockTx.quantity;
 
-          childTransactions.forEach(tx => {
-            if(tx.order_status === ORDER_STATUS.COMPLETED)
+          childTransactions.forEach(tx =>
+          {
+            if (tx.order_status === ORDER_STATUS.COMPLETED)
               completedQuantity -= tx.quantity;
           });
 
@@ -420,7 +431,8 @@ app.post("/executeOrder", async (req, res) =>
 
           existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
           // if the status is not PARTIAL_FULFILLED, then the stockTx is deleted
-          if (existingStockTx.order_status !== 'PARTIAL_FULFILLED') {
+          if (existingStockTx.order_status !== 'PARTIAL_FULFILLED')
+          {
             existingStockTx.is_deleted = true;
           }
           // existingStockTx.is_deleted = true;

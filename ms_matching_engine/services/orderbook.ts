@@ -12,7 +12,7 @@ export default class OrderBook implements IOrderBook {
   cancelledOrders: OrderBookOrder[] = [];
   expiredOrders: OrderBookOrder[] = [];
   expiryMinutes: number;
-
+  isSendingOrders: boolean = false;
 
   constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
@@ -22,6 +22,7 @@ export default class OrderBook implements IOrderBook {
     this.cancelledOrders = [];
     this.expiredOrders = [];
     this.expiryMinutes = 15;
+    this.isSendingOrders = false;
   }
 
   public async sendTestToExecutionService(): Promise<void> {
@@ -93,11 +94,19 @@ export default class OrderBook implements IOrderBook {
    * Send matched, cancelled, expired orders to order execution service
    */
   public flushOrders() {
-    this.sendOrdersToOrderExecutionService(
-      this.matchedOrders,
-      this.cancelledOrders,
-      this.expiredOrders,
-    );
+    if (this.isSendingOrders) return;
+    this.isSendingOrders = true;
+    try {
+      this.sendOrdersToOrderExecutionService(
+        this.matchedOrders,
+        this.cancelledOrders,
+        this.expiredOrders,
+      );
+    } catch (error) {
+      console.error("Error flushing orders:", error);
+    } finally {
+      this.isSendingOrders = false;
+    }
   }
 
   /**

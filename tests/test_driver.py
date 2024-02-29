@@ -358,7 +358,7 @@ def step_12_get_stock_portfolio(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(12, None, response)
-    assert response == expected_results[12], {generate_results_string(12, "", response)
+    assert response == expected_results[12], generate_results_string(12, "", response)
 
 # 13. GET /getStockTransactions
 """

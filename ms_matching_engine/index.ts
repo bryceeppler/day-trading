@@ -32,7 +32,7 @@ async function constantExpiryPoll() {
   while (true) {
     try {
       orderBook.checkForExpiredOrders();
-      orderBook.flushOrders();
+      await orderBook.flushOrders();
       await new Promise(resolve => setTimeout(resolve, 200)); // 200ms (5 times per second)
     } catch (error) {
       console.error('Error during order polling: ', error);

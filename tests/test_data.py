@@ -60,8 +60,8 @@ expected_results = {
         {"stock_id": "<googleStockId>", "stock_name": "Google", "quantity_owned": 10}
     ]},
     24: {"success": True, "data": [
-        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "MARKET", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"}
     ]},
     25: {"success": True, "data": {"balance": 1350}},

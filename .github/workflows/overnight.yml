@@ -2,7 +2,7 @@ name: Run Tests with 15 Minute Overnight
 
 on:
   schedule:
-    - cron: "0 1 * * *" 
+    - cron: "0 9 * * *" # Run at 1am PST (9am UTC)
 jobs:
 
   build:

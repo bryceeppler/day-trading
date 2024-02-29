@@ -288,7 +288,7 @@ def step_9_get_stock_portfolio(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(9, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=9, entries=2), f"{generate_results_string(9, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=9, entries=2), generate_results_string(9, "", response)
 
 # 10. POST /placeStockOrder
 """

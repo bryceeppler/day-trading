@@ -51,7 +51,9 @@ jobs:
         python-version: '3.9'  
 
     - name: Run Python Test Script
-      run: ./tests/single_user_test_pr.py  
+      run: |
+        chmod +x ./tests/single_user_test_pr.py
+        ./tests/single_user_test_pr.py  
 
     - name: Tear down Docker Compose
       run: docker-compose down

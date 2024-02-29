@@ -5,14 +5,14 @@ stock_portfolio_keys = ['stock_name', 'quantity_owned']
 stock_prices_keys = ['stock_name', 'current_price']
 
 expected_results = {
-    1: {"success": True},
+    1: {"success": True, "data": None},
     2: {"success": False, "data": {"error": "<errorMessage>"}},
     3: {"success": False, "data": {"error": "<errorMessage>"}},
     4: {"success": True, "data": {"token": "<compToken>"}},
     5: {"success": True, "data": {"stock_id": "<googleStockId>"}},
     6: {"success": True, "data": None},
     7: {"success": True, "data": {"stock_id": "<appleStockId>"}},
-    8: {"success": True, "data": None},
+    8: {"success": True},
     9: {"success": True, "data": [
         {"stock_id": "<googleStockId>", "stock_name": "Google", "quantity_owned": 550},
         {"stock_id": "<appleStockId>", "stock_name": "Apple", "quantity_owned": 369}

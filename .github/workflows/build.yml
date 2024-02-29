@@ -52,6 +52,7 @@ jobs:
 
     - name: Run Python Test Script
       run: |
+        pip install -r tests/requirements.txt
         chmod +x tests/single_user_test_pr.py
         python tests/single_user_test_pr.py  
 

@@ -93,11 +93,31 @@ export default class OrderBook implements IOrderBook {
   /**
    * Send matched, cancelled, expired orders to order execution service
    */
-  public flushOrders() {
-    if (this.isSendingOrders) return;
+  public async flushOrders() {
+    if (this.isSendingOrders) {
+      console.log("Already sending orders, skipping flush...");
+      return;
+    };
     this.isSendingOrders = true;
     try {
-      this.sendOrdersToOrderExecutionService(
+    // Combine orders into one array with a type indicator
+    const allOrders = [
+      ...this.matchedOrders.map(({ timestamp,  buyOrder, sellOrder, ...rest }) => ({
+        ...rest,
+        buyOrder: buyOrder.stock_tx_id, // Assuming 'id' is the property for the order's ID
+        sellOrder: sellOrder.stock_tx_id, // Same here
+        type: 'Matched'
+      })),
+      ...this.cancelledOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Cancelled' })),
+      ...this.expiredOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Expired' })),
+    ];
+
+    if (allOrders.length != 0) {
+      console.table(allOrders);
+    }
+
+
+      await this.sendOrdersToOrderExecutionService(
         this.matchedOrders,
         this.cancelledOrders,
         this.expiredOrders,

@@ -65,7 +65,7 @@ export default (orderBook: OrderBook): Routes => {
         if (result) {
           console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
           res.status(200).send("Order cancelled");
-          orderBook.flushOrders();
+          await orderBook.flushOrders();
         } else {
           console.log("Order not found");
           res.status(404).send("Order not found");

@@ -1,0 +1,32 @@
+name: Run Tests with 15 Minute Overnight 
+
+on:
+  schedule:
+    - cron: "0 1 * * *" 
+jobs:
+
+  build:
+    name: docker compose build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Build and Run Docker Compose
+      run: docker-compose up --build -d
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'  
+
+    - name: Run Python Test Script
+      run: |
+        pip install --upgrade pip
+        pip install -r tests/requirements.txt
+        chmod +x tests/single_user_test.py
+        python tests/single_user_test.py  
+
+    - name: Tear down Docker Compose
+      run: docker-compose down

@@ -8,14 +8,14 @@ def executeTests():
 		print(f"{tests[i]['id']}  {tests[i]['title']}...", end="  ")	
 		tests[i]['test']()
 		print('PASSED')
-		time.sleep(.5)
+		time.sleep(1)
 		current = datetime.now()
 
 	for i in range(54, 61):
 		print(f"{tests[i]['id']}  {tests[i]['title']}...", end="  ")	
 		tests[i]['test']()
 		print('PASSED')
-		time.sleep(.5)
+		time.sleep(1)
 		current = datetime.now()
           
 

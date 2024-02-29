@@ -12,7 +12,7 @@ export default class OrderBook implements IOrderBook {
   cancelledOrders: OrderBookOrder[] = [];
   expiredOrders: OrderBookOrder[] = [];
   expiryMinutes: number;
-
+  isSendingOrders: boolean = false;
 
   constructor(stockTransactionModel: typeof StockTransaction) {
     this.stockTransactionModel = stockTransactionModel;
@@ -21,7 +21,8 @@ export default class OrderBook implements IOrderBook {
     this.matchedOrders = [];
     this.cancelledOrders = [];
     this.expiredOrders = [];
-    this.expiryMinutes = 1;
+    this.expiryMinutes = 15;
+    this.isSendingOrders = false;
   }
 
   public async sendTestToExecutionService(): Promise<void> {
@@ -93,11 +94,19 @@ export default class OrderBook implements IOrderBook {
    * Send matched, cancelled, expired orders to order execution service
    */
   public flushOrders() {
-    this.sendOrdersToOrderExecutionService(
-      this.matchedOrders,
-      this.cancelledOrders,
-      this.expiredOrders,
-    );
+    if (this.isSendingOrders) return;
+    this.isSendingOrders = true;
+    try {
+      this.sendOrdersToOrderExecutionService(
+        this.matchedOrders,
+        this.cancelledOrders,
+        this.expiredOrders,
+      );
+    } catch (error) {
+      console.error("Error flushing orders:", error);
+    } finally {
+      this.isSendingOrders = false;
+    }
   }
 
   /**
@@ -105,7 +114,7 @@ export default class OrderBook implements IOrderBook {
    */
   private isExpired(timestamp: Date) {
     const now = new Date();
-    return now.getTime() - timestamp.getTime() > 60 * 15 * 1000;
+    return now.getTime() - timestamp.getTime() > 60 * this.expiryMinutes * 1000;
   }
 
   /**
@@ -369,11 +378,13 @@ export default class OrderBook implements IOrderBook {
         const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
         data.push({
           stock_tx_id: buyStockTxId,
+          matched_stock_tx_id: sellStockTxId,
           action: "COMPLETED",
           quantity: matchedOrder.quantity,
         });
         data.push({
           stock_tx_id: sellStockTxId,
+          matched_stock_tx_id: buyStockTxId,
           action: "COMPLETED",
           quantity: matchedOrder.quantity,
         });

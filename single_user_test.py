@@ -1270,7 +1270,7 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
     assert not response['success'] and "error" in response['data'], "Error in step 60: Expected failure due to invalid token."
 
 def minute_break():
-	remaining_time = 60
+	remaining_time = 900
 	while remaining_time > 0:
 			print(f"############### WAIT {remaining_time // 60} MINUTES {remaining_time % 60} SECONDS")
 			time.sleep(5)  # Notify every 5 seconds
@@ -1366,7 +1366,7 @@ def executeTests():
 		print(f"{test['id']}  {test['title']}...", end="  ")	
 		test['test']()
 		print('PASSED')
-		time.sleep(1)
+		time.sleep(.5)
 		current = datetime.now()
 
 

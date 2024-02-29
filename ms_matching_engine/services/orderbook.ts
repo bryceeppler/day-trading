@@ -369,11 +369,13 @@ export default class OrderBook implements IOrderBook {
         const sellStockTxId = matchedOrder.sellOrder.stock_tx_id;
         data.push({
           stock_tx_id: buyStockTxId,
+          matched_stock_tx_id: sellStockTxId,
           action: "COMPLETED",
           quantity: matchedOrder.quantity,
         });
         data.push({
           stock_tx_id: sellStockTxId,
+          matched_stock_tx_id: buyStockTxId,
           action: "COMPLETED",
           quantity: matchedOrder.quantity,
         });

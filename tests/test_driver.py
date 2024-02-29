@@ -358,7 +358,7 @@ def step_12_get_stock_portfolio(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(12, None, response)
-    assert response == expected_results[12], f"{generate_results_string(12, "", response)}"
+    assert response == expected_results[12], {generate_results_string(12, "", response)
 
 # 13. GET /getStockTransactions
 """
@@ -374,7 +374,7 @@ def step_13_get_stock_transactions(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(13, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=13, entries=2), f"{generate_results_string(13, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=13, entries=2), generate_results_string(13, "", response)
 
 # 14. POST /register
 """
@@ -394,7 +394,7 @@ def step_14_register():
     }
     response = make_post_request(endpoint, data=data)
     print_results(14, data, response)
-    assert response == expected_results[14], f"{generate_results_string(14, data, response)}"
+    assert response == expected_results[14], generate_results_string(14, data, response)
 
 # 15. POST /login
 """
@@ -413,10 +413,10 @@ def step_15_login():
     response = make_post_request(endpoint, data=data)
 
     print_results(15, data, response)
-    assert response['success'] and response['data']['token'], f"{generate_results_string(15, data, response)}"
+    assert response['success'] and response['data']['token'], generate_results_string(15, data, response)
     global user2Token
     user2Token = response['data']['token']
-    assert user2Token is not None, f"{generate_results_string(15, data, response)}"
+    assert user2Token is not None, generate_results_string(15, data, response)
     return response['data']['token']
 
 # 16. GET /getStockPrices
@@ -433,7 +433,7 @@ def step_16_get_stock_prices(user1_token):
     response = make_get_request(endpoint, headers=headers)
   
     print_results(16, "", response)
-    assert check_response_data(response, stock_prices_keys, test_case=16, entries=2), f"{generate_results_string(16, "", response)}"
+    assert check_response_data(response, stock_prices_keys, test_case=16, entries=2), generate_results_string(16, "", response)
 
 # 17. POST /addMoneyToWallet
 """
@@ -450,7 +450,7 @@ def step_17_add_money_to_wallet(user1_token):
     data = {"amount": 10000}
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(17, data, response)
-    assert response == expected_results[17], f"{generate_results_string(17, data, response)}"
+    assert response == expected_results[17], generate_results_string(17, data, response)
 
 # 18. GET /getWalletBalance
 """
@@ -465,7 +465,7 @@ def step_18_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(18, "", response)
-    assert response == expected_results[18], f"{generate_results_string(18, "", response)}"
+    assert response == expected_results[18], generate_results_string(18, "", response)
 
 # 19. POST /placeStockOrder
 """
@@ -491,7 +491,7 @@ def step_19_place_stock_order(user1_token, google_stock_id):
     global totalUser2StockTransactions
     totalUser2StockTransactions += 1
 
-    assert response == expected_results[19], f"{generate_results_string(19, "", response)}"
+    assert response == expected_results[19], generate_results_string(19, "", response)
 
 # 20. GET /getStockTransactions
 """
@@ -506,7 +506,7 @@ def step_20_get_stock_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(20, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=20, entries=1), f"{generate_results_string(20, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=20, entries=1), generate_results_string(20, "", response)
 
 
 # 21. GET /getWalletTransactions
@@ -523,7 +523,7 @@ def step_21_get_wallet_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(21, "", response)
-    assert check_response_data(response, wallet_transactions_keys, test_case=21, entries=1), f"{generate_results_string(21, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=21, entries=1), generate_results_string(21, "", response)
 
 # 22. GET /getWalletBalance
 """
@@ -538,7 +538,7 @@ def step_22_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(22, "", response)
-    assert response == expected_results[22], f"{generate_results_string(22, "", response)}"
+    assert response == expected_results[22], generate_results_string(22, "", response)
 
 # 23. GET /getStockPortfolio
 """
@@ -554,7 +554,7 @@ def step_23_get_stock_portfolio(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(23, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=23, entries=1), f"{generate_results_string(23, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=23, entries=1), generate_results_string(23, "", response)
 
 # 24. GET /getStockTransactions
 """
@@ -574,8 +574,7 @@ def step_24_get_stock_transactions(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(24, "", response)
-    assert len(response['data']) == 3, f"{generate_results_string(24, "", response)}"
-    #assert check_response_data(response, stock_transactions_keys, test_case=24, entries=3), f"{generate_results_string(24, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=24, entries=3), generate_results_string(24, "", response)
 
 # 25. GET /getWalletBalance
 """
@@ -590,7 +589,7 @@ def step_25_get_wallet_balance(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(25, "", response)
-    assert response == expected_results[25], f"{generate_results_string(25, "", response)}"
+    assert response == expected_results[25], generate_results_string(25, "", response)
 
 # 26. GET /getWalletTransactions
 """
@@ -607,7 +606,7 @@ def step_26_get_wallet_transactions(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(26, "", response)
-    assert check_response_data(response, wallet_transactions_keys, test_case=26, entries=1), f"{generate_results_string(26, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=26, entries=1), generate_results_string(26, "", response)
 
 
 # 27. POST /placeStockOrder
@@ -636,7 +635,7 @@ def step_27_place_stock_order(user1_token, apple_stock_id):
     global totalUser2StockTransactions
     totalUser2StockTransactions += 1
     user2AppleBuyTxExpire = datetime.now() + timedelta(minutes=1)
-    assert response == expected_results[27], f"{generate_results_string(27, data, response)}"
+    assert response == expected_results[27], generate_results_string(27, data, response)
 
 
 # 28. GET /getStockTransactions
@@ -656,7 +655,7 @@ def step_28_get_stock_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(28, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=28, entries=2), f"{generate_results_string(28, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=28, entries=2), generate_results_string(28, "", response)
 
 # 29. GET /getWalletTransactions
 """
@@ -674,11 +673,11 @@ def step_29_get_wallet_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(29, "", response)
-    assert response['success'] and len(response['data']) == 2, f"{generate_results_string(29, "", response)}"
+    assert response['success'] and len(response['data']) == 2, generate_results_string(29, "", response)
     # return appleStockTxId
     global appleStockTxId
     appleStockTxId = response['data'][1]['stock_tx_id']
-    assert appleStockTxId is not None, f"{generate_results_string(29, "", response)}"
+    assert appleStockTxId is not None, generate_results_string(29, "", response)
     return response['data'][1]['stock_tx_id']
 
 # 30. GET /getWalletBalance
@@ -694,7 +693,7 @@ def step_30_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(30, "", response)
-    assert response == expected_results[30], f"{generate_results_string(30, "", response)}"
+    assert response == expected_results[30], generate_results_string(30, "", response)
 
 # 31. GET /getStockPortfolio
 """
@@ -709,7 +708,7 @@ def step_31_get_stock_portfolio(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(31, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=31, entries=1), f"{generate_results_string(31, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=31, entries=1), generate_results_string(31, "", response)
 
 # 32. POST /cancelStockTransaction 
 """
@@ -733,7 +732,7 @@ def step_32_cancel_stock_transaction(user1_token, apple_stock_tx_id):
     user2AppleBuyTxExpire = None
     totalUser2StockTransactions -= 1
     print("  User 2 Apple Buy Canceled")
-    assert response == expected_results[32], f"{generate_results_string(32, data, response)}"
+    assert response == expected_results[32], generate_results_string(32, data, response)
 
 
 # 33. GET /getStockTransactions
@@ -752,7 +751,7 @@ def step_33_get_stock_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(33, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=33, entries=1), f"{generate_results_string(33, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=33, entries=1), generate_results_string(33, "", response)
 
 # 34. GET /getWalletTransactions
 """
@@ -769,7 +768,7 @@ def step_34_get_wallet_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(34, "", response)
-    assert check_response_data(response, wallet_transactions_keys, test_case=34, entries=1), f"{generate_results_string(34, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=34, entries=1), generate_results_string(34, "", response)
 
 # 35. GET /getWalletBalance
 """
@@ -784,7 +783,7 @@ def step_35_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(35, "", response)
-    assert response == expected_results[35], f"{generate_results_string(35, "", response)}"
+    assert response == expected_results[35], generate_results_string(35, "", response)
 
 # 36. GET /getStockPortfolio
 """
@@ -799,7 +798,7 @@ def step_36_get_stock_portfolio(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(36, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=36, entries=1), f"{generate_results_string(36, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=36, entries=1), generate_results_string(36, "", response)
 
 # 37. POST /placeStockOrder
 """
@@ -826,7 +825,7 @@ def step_37_place_stock_order(user1_token, google_stock_id):
     global totalUser2StockTransactions
     totalUser2StockTransactions += 1
     user2GoogleSellTxExpire = datetime.now() + timedelta(minutes=1)
-    assert response == expected_results[37], f"{generate_results_string(37, data, response)}"
+    assert response == expected_results[37], generate_results_string(37, data, response)
 
 # 38. GET /getStockTransactions
 """
@@ -844,7 +843,7 @@ def step_38_get_stock_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(38, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=38, entries=2), f"{generate_results_string(38, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=38, entries=2), generate_results_string(38, "", response)
 
 
 # 39. GET /getWalletTransactions
@@ -862,7 +861,7 @@ def step_39_get_wallet_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(39, "", response)
-    assert check_response_data(response, wallet_transactions_keys, test_case=39, entries=1), f"{generate_results_string(39, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=39, entries=1), generate_results_string(39, "", response)
 
 # 40. GET /getWalletBalance
 """
@@ -877,7 +876,7 @@ def step_40_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(40, "", response)
-    assert response == expected_results[40], f"{generate_results_string(40, "", response)}"
+    assert response == expected_results[40], generate_results_string(40, "", response)
 # 41. GET /getStockPortfolio
 """
 GET /getStockPortfolio
@@ -891,7 +890,7 @@ def step_41_get_stock_portfolio(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(41, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=41, entries=1), f"{generate_results_string(41, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=41, entries=1), generate_results_string(41, "", response)
 
 # 42. GET /getStockPrices
 """
@@ -906,7 +905,7 @@ def step_42_get_stock_prices(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(42, "", response)
-    assert check_response_data(response, stock_prices_keys, test_case=42, entries=2), f"{generate_results_string(42, "", response)}"
+    assert check_response_data(response, stock_prices_keys, test_case=42, entries=2), generate_results_string(42, "", response)
 
 # 43. POST /placeStockOrder
 """
@@ -933,7 +932,7 @@ def step_43_place_stock_order(comp_token, google_stock_id):
     global totalUser1StockTransactions
     totalUser1StockTransactions += 1
     user1BuyGoogleTxExpire = datetime.now() + timedelta(minutes=1)
-    assert response == expected_results[43], f"{generate_results_string(43, data, response)}"
+    assert response == expected_results[43], generate_results_string(43, data, response)
 
 # 44. GET /getStockTransactions
 """
@@ -954,7 +953,7 @@ def step_44_get_stock_transactions(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(44, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=44, entries=4), f"{generate_results_string(44, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=44, entries=4), generate_results_string(44, "", response)
 
 
 ############### WAIT 15 MINUTES
@@ -975,7 +974,7 @@ def step_45_get_wallet_transactions(comp_token):
     response = make_get_request(endpoint, headers=headers)
     print_results(45, "", response)
     # Check if the specific transactions are as expected
-    assert check_response_data(response, wallet_transactions_keys, test_case=45, entries=2), f"{generate_results_string(45, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=45, entries=2), generate_results_string(45, "", response)
 
 # 46. GET /getWalletBalance
 """
@@ -991,7 +990,7 @@ def step_46_get_wallet_balance(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(46, "", response)
-    assert response == expected_results[46], f"{generate_results_string(46, "", response)}"
+    assert response == expected_results[46], generate_results_string(46, "", response)
 
 
 # 47. GET /getStockPrices
@@ -1011,7 +1010,7 @@ def step_47_get_stock_prices(comp_token):
     response = make_get_request(endpoint, headers=headers)
     print_results(47, "", response)
     assert response["success"]
-    assert check_response_data(response, stock_prices_keys, test_case=47, entries=2), f"{generate_results_string(47, "", response)}"
+    assert check_response_data(response, stock_prices_keys, test_case=47, entries=2), generate_results_string(47, "", response)
 
 # 48. GET /getStockTransactions
 """
@@ -1029,7 +1028,7 @@ def step_48_get_stock_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(48, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=48, entries=2), f"{generate_results_string(48, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=48, entries=2), generate_results_string(48, "", response)
 
 # 49. GET /getWalletTransactions
 """
@@ -1047,7 +1046,7 @@ def step_49_get_wallet_transactions(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(49, "", response)
-    assert check_response_data(response, wallet_transactions_keys, test_case=49, entries=2), f"{generate_results_string(49, "", response)}"
+    assert check_response_data(response, wallet_transactions_keys, test_case=49, entries=2), generate_results_string(49, "", response)
 
 # 50. GET /getWalletBalance
 """
@@ -1062,7 +1061,7 @@ def step_50_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(50, "", response)
-    assert response == expected_results[50], f"{generate_results_string(50, "", response)}"
+    assert response == expected_results[50], generate_results_string(50, "", response)
 
 # 51. GET /getStockTransactions
 """
@@ -1082,7 +1081,7 @@ def step_51_get_stock_transactions(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(51, "", response)
-    assert check_response_data(response, stock_transactions_keys, test_case=51, entries=3), f"{generate_results_string(51, "", response)}"
+    assert check_response_data(response, stock_transactions_keys, test_case=51, entries=3), generate_results_string(51, "", response)
 
 # 52. GET /getStockPortfolio
 """
@@ -1099,7 +1098,7 @@ def step_52_get_stock_portfolio(comp_token):
     headers = {"token":comp_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(52, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=52, entries=2), f"{generate_results_string(52, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=52, entries=2), generate_results_string(52, "", response)
 
 # 53. GET /getStockTransactions
 """
@@ -1114,7 +1113,7 @@ def step_53_get_stock_transactions_with_invalid_token(invalid_token):
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(53, "", response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(53, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(53, "", response)
 
 
 # 54. GET /getWalletTransactions
@@ -1131,7 +1130,7 @@ def step_54_get_wallet_transactions_with_invalid_token(invalid_token):
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(54, "", response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(54, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(54, "", response)
 
 # 55. GET /getStockTransactions
 """
@@ -1146,7 +1145,7 @@ def step_55_get_stock_transactions_with_invalid_token(invalid_token):
     headers = {"token": invalid_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(55, "", response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(55, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(55, "", response)
 
 # 56. POST /addMoneyToWallet
 """
@@ -1164,7 +1163,7 @@ def step_56_add_money_to_wallet(user1_token):
     data = {"amount": -10000}
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(56, data, response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(56, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(56, "", response)
 
 # 57. POST /placeStockOrder
 """
@@ -1187,7 +1186,7 @@ def step_57_place_stock_order(user1_token, google_stock_id):
     }
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(57, data, response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(57, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(57, "", response)
 
 # 58. POST /cancelStockTransaction
 """
@@ -1204,7 +1203,7 @@ def step_58_cancel_stock_transaction(user1_token, google_stock_tx_id2):
     data = {"stock_tx_id": google_stock_tx_id2}
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(58, data, response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(58, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(58, "", response)
 
 
 # 59. POST /addMoneyToWallet
@@ -1223,7 +1222,7 @@ def step_59_add_money_to_wallet_with_invalid_token(invalid_token):
     data = {"amount": -100}  # Attempt with negative amount and invalid token
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(59, data, response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(59, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(59, "", response)
 
 # 60. POST /placeStockOrder
 """
@@ -1248,7 +1247,7 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
     }
     response = make_post_request(endpoint, headers=headers, data=data)
     print_results(60, data, response)
-    assert not response['success'] and "error" in response['data'], f"{generate_results_string(60, "", response)}"
+    assert not response['success'] and "error" in response['data'], generate_results_string(60, "", response)
 
 def timed_break(time_to_break):
 	remaining_time = time_to_break

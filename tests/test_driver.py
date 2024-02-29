@@ -74,7 +74,7 @@ def print_results(test_case, request_body, actual):
         file.write(generate_results_string(test_case, request_body, actual))
 
 def generate_results_string(test_case, request_body, actual):
-    title = tests[test_case-1]['title'] if test_case < 45 else tests[test_case]['title']
+    title = tests[test_case-1]['title'] if test_case < 50 else tests[test_case]['title']
     return (
     f"Test Case {test_case}: {title} - {datetime.now().strftime('%H:%M:%S')}\n\n"
     f"Request body:\n{json.dumps(request_body, indent=2)}\n"
@@ -678,7 +678,7 @@ def step_29_get_wallet_transactions(user1_token):
     # return appleStockTxId
     global appleStockTxId
     appleStockTxId = response['data'][1]['stock_tx_id']
-    assert appleStockTdId is not None, f"{generate_results_string(29, "", response)}"
+    assert appleStockTxId is not None, f"{generate_results_string(29, "", response)}"
     return response['data'][1]['stock_tx_id']
 
 # 30. GET /getWalletBalance
@@ -694,7 +694,7 @@ def step_30_get_wallet_balance(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(30, "", response)
-    assert response == expected_resuls[30], f"{generate_results_string(30, "", response)}"
+    assert response == expected_results[30], f"{generate_results_string(30, "", response)}"
 
 # 31. GET /getStockPortfolio
 """
@@ -709,7 +709,7 @@ def step_31_get_stock_portfolio(user1_token):
     headers = {"token": user1_token}
     response = make_get_request(endpoint, headers=headers)
     print_results(31, "", response)
-    assert check_response_data(response, stock_portfolio_keys, test_case=21, entries=1), f"{generate_results_string(31, "", response)}"
+    assert check_response_data(response, stock_portfolio_keys, test_case=31, entries=1), f"{generate_results_string(31, "", response)}"
 
 # 32. POST /cancelStockTransaction 
 """
@@ -1250,8 +1250,8 @@ def step_60_place_stock_order_with_invalid_token(invalid_token, google_stock_id)
     print_results(60, data, response)
     assert not response['success'] and "error" in response['data'], f"{generate_results_string(60, "", response)}"
 
-def timed_break(time):
-	remaining_time = time
+def timed_break(time_to_break):
+	remaining_time = time_to_break
 	while remaining_time > 0:
 			print(f"############### WAIT {remaining_time // 60} MINUTES {remaining_time % 60} SECONDS")
 			time.sleep(5)  # Notify every 5 seconds
@@ -1302,14 +1302,14 @@ tests = [
 		{'id': 42, 'title': "User 1 get stock prices", 'test': lambda: step_42_get_stock_prices(user1token)},
 		{'id': 43, 'title': "User 1 Buy Limit google 4 134", 'test': lambda: step_43_place_stock_order(user1token, googleStockId)},
 		{'id': 44, 'title': "User 1 get stock transactions", 'test': lambda: step_44_get_stock_transactions(user1token)},
-
-		{'id': '', 'title': "Minute Break", 'test': lambda: timed_break(900)}, # 15 minute break
-
 		{'id': 45, 'title': "User 1 get wallet transactions", 'test': lambda: step_45_get_wallet_transactions(user1token)},
 		{'id': 46, 'title': "User 1 get wallet balance", 'test': lambda: step_46_get_wallet_balance(user1token)},
 		{'id': 47, 'title': "User 1 get stock prices", 'test': lambda: step_47_get_stock_prices(user1token)},
 		{'id': 48, 'title': "User 2 get stock transactions", 'test': lambda: step_48_get_stock_transactions(user2Token)},
 		{'id': 49, 'title': "User 2 get wallet transactions", 'test': lambda: step_49_get_wallet_transactions(user2Token)},
+
+        {'id': '', 'title': "Minute Break", 'test': lambda: timed_break(900)}, # 15 minute break
+
 		{'id': 50, 'title': "User 2 get wallet balance", 'test': lambda: step_50_get_wallet_balance(user2Token)},
 		{'id': 51, 'title': "User 1 get stock transactions", 'test': lambda: step_51_get_stock_transactions(user1token)},
 		{'id': 52, 'title': "User 1 get stock portfolio", 'test': lambda: step_52_get_stock_portfolio(user1token)},

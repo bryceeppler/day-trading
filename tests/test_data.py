@@ -1,3 +1,9 @@
+
+stock_transactions_keys = ['order_status', 'is_buy', 'order_type', 'stock_price', 'quantity']
+wallet_transactions_keys = ['is_debit', 'amount']
+stock_portfolio_keys = ['stock_name', 'quantity_owned']
+stock_prices_keys = ['stock_name', 'current_price']
+
 expected_results = {
     1: {"success": True, "data": None},
     2: {"success": False, "data": {"error": "<errorMessage>"}},
@@ -15,8 +21,9 @@ expected_results = {
     11: {"success": True, "data": None},
     12: {"success": True, "data": []},
     13: {"success": True, "data": [
-        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
-        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": "<appleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"}
+        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": "<appleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"}
+        
     ]},
     14: {"success": True, "data": None},
     15: {"success": True, "data": {"token": "<user1Token>"}},
@@ -153,8 +160,8 @@ expected_results = {
     ]},
     43: {"success": True, "data": None},
     44: {"success": True, "data": [
-        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "MARKET", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId3>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId2>", "order_status": "COMPLETED", "is_buy": True, "order_type": "LIMIT", "stock_price": 134, "quantity": 4, "time_stamp": "<timestamp>"}
     ]},

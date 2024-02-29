@@ -52,8 +52,8 @@ jobs:
 
     - name: Run Python Test Script
       run: |
-        chmod +x ./tests/single_user_test_pr.py
-        ./tests/single_user_test_pr.py  
+        chmod +x tests/single_user_test_pr.py
+        python tests/single_user_test_pr.py  
 
     - name: Tear down Docker Compose
       run: docker-compose down

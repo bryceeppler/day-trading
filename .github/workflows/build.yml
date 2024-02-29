@@ -48,7 +48,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9.6'  
+        python-version: '3.9'  
 
     - name: Run Python Test Script
       run: ./tests/single_user_test_pr.py  

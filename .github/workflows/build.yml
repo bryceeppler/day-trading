@@ -13,13 +13,13 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      
     - name: Build and Run Docker Compose
-      run: |
-        docker-compose up --build -d
+      run: docker-compose up --build -d
 
     - name: Delay Check
       run: |
-        sleep 5
+        sleep 2
         docker ps
         
     - name: Check Docker services
@@ -28,9 +28,6 @@ jobs:
         good=true
         for container in $containers; do
             name=$(docker inspect --format '{{.Name}}' "$container")
-            if [[ $name =~ .*shared.* ]]; then
-                  continue  # Skip the shared container
-            fi
             status=$(docker inspect --format '{{.State.Status}}' "$container")
             if [ "$status" == "running" ]; then
                 echo "$name is running"
@@ -48,6 +45,13 @@ jobs:
             exit 1
         fi
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9.6'  
+
+    - name: Run Python Test Script
+      run: ./tests/single_user_test_pr.py  
+
     - name: Tear down Docker Compose
-      run: |
-        docker-compose down
+      run: docker-compose down

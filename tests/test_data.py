@@ -12,7 +12,7 @@ expected_results = {
     5: {"success": True, "data": {"stock_id": "<googleStockId>"}},
     6: {"success": True, "data": None},
     7: {"success": True, "data": {"stock_id": "<appleStockId>"}},
-    8: {"success": True},
+    8: {"success": True, "data": None},
     9: {"success": True, "data": [
         {"stock_id": "<googleStockId>", "stock_name": "Google", "quantity_owned": 550},
         {"stock_id": "<appleStockId>", "stock_name": "Apple", "quantity_owned": 369}

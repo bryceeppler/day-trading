@@ -5,7 +5,7 @@ stock_portfolio_keys = ['stock_name', 'quantity_owned']
 stock_prices_keys = ['stock_name', 'current_price']
 
 expected_results = {
-    1: {"success": True, "data": None},
+    1: {"success": True},
     2: {"success": False, "data": {"error": "<errorMessage>"}},
     3: {"success": False, "data": {"error": "<errorMessage>"}},
     4: {"success": True, "data": {"token": "<compToken>"}},

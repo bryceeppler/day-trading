@@ -5,7 +5,7 @@ import { UserApi } from 'api';
 
 interface UseUsersInfo {
   cancelStockOrder: (stockTxId: string) => Promise<boolean>;
-  placeStockOrder: (data: PlaceStockOrderParams) => Promise<boolean>;
+  placeStockOrder: (data: PlaceStockOrderParams) => Promise<string | undefined>;
   addMoney: (amount: number) => Promise<boolean>;
   fetchWalletTransactions: () => Promise<void>;
   fetchStockPortfolios: () => Promise<void>;
@@ -72,13 +72,12 @@ function useUsers(): UseUsersInfo {
     }
   };
 
-  const placeStockOrder = async (data: PlaceStockOrderParams): Promise<boolean> => {
+  const placeStockOrder = async (data: PlaceStockOrderParams): Promise<string | undefined> => {
     try {
-      await UserApi.placeStockOrder(data);
-      return true;
+      const response = await UserApi.placeStockOrder(data);
+      return response.data.error;
     } catch (error) {
-      handleApiError(error);
-      return false;
+      return handleApiError(error);
     }
   };
 

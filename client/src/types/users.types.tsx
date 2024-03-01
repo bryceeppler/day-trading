@@ -32,7 +32,7 @@ export type StockPortfolio = {
 };
 
 export type Stock = {
-  stock_id: string;
+  _id: string;
   stock_name: string;
   current_price: number;
   starting_price: number;

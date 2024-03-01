@@ -1,6 +1,6 @@
-# ENCOMPASS
+# DayTrader
 
-REACT for Encompass
+REACT for Day trader
 
 ## Steps to run for the first time
 

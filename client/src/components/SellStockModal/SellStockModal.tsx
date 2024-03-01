@@ -63,7 +63,7 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
       setOrderType(ORDER_TYPES.MARKET);
       setStock(undefined);
       setVerify(false);
-			setErrorMessage(undefined)
+      setErrorMessage(undefined);
     }
     fetchStockPortfolios();
   }, [open]);
@@ -130,7 +130,7 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />
               <Button className={styles.submitButton} label={'Sell'} onClick={onLocalSave} />
             </div>
-						{errorMessage && <div className={styles.error}>{errorMessage}</div>}
+            {errorMessage && <div className={styles.error}>{errorMessage}</div>}
           </div>
         </div>
       )}

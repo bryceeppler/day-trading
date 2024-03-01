@@ -178,9 +178,14 @@ exports.sellOrder = async (data, token) =>
     );
     if (reverseError)
     {
-      throw reverseError;
+      return reverseError;
     }
-    throw error.details ? error.details.response.data.error : createError("Error Selling Order");
+
+		if (error.details)
+    {
+      return error.details.response.data.error;
+    }
+    throw createError("Error Selling Order");
   }
 };
 

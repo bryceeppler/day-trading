@@ -63,6 +63,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
       setOrderType(ORDER_TYPES.MARKET);
       setStock(undefined);
       setVerify(false);
+			setErrorMessage(undefined)
     }
     fetchStocks();
   }, [open]);

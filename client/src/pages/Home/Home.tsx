@@ -74,20 +74,26 @@ function Home(): ReactElement {
         open={openPlaceOrder}
         onClose={() => setOpenPlaceOrder(false)}
         onSave={() => {
-          setOpenPlaceOrder(false);
-          fetchBalance();
-          fetchStockPortfolios();
-          fetchStocks();
+					setTimeout(() => {
+						setOpenPlaceOrder(false);
+						fetchBalance();
+						fetchStockPortfolios();
+						fetchStocks();
+					}, 500)
+
         }}
       />
       <SellStockModal
         open={openSellStock}
         onClose={() => setOpenSellStock(false)}
         onSave={() => {
-          setOpenSellStock(false);
-          fetchBalance();
-          fetchStockPortfolios();
-          fetchStocks();
+          
+					setTimeout(() => {
+						setOpenSellStock(false);
+						fetchBalance();
+						fetchStockPortfolios();
+						fetchStocks();
+					}, 500)
         }}
       />
     </Layout>

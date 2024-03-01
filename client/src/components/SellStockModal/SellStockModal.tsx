@@ -25,6 +25,7 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
   const [orderType, setOrderType] = useState<ORDER_TYPES>(ORDER_TYPES.MARKET);
   const [stock, setStock] = useState<StockPortfolio>();
   const [verify, setVerify] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
 
   const { placeStockOrder, fetchStockPortfolios, stockPortfolios } = useUsers();
   const verified = () => {
@@ -47,10 +48,12 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
       price: price!,
     };
 
-    const success = await placeStockOrder(data);
-    if (success) {
-      onSave();
+    const error = await placeStockOrder(data);
+    if (error) {
+      setErrorMessage(error);
+      return;
     }
+    onSave();
   };
 
   useEffect(() => {
@@ -60,6 +63,7 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
       setOrderType(ORDER_TYPES.MARKET);
       setStock(undefined);
       setVerify(false);
+			setErrorMessage(undefined)
     }
     fetchStockPortfolios();
   }, [open]);
@@ -126,6 +130,7 @@ function SellStockModal({ open, onClose, onSave }: SellStockModalProps): ReactEl
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />
               <Button className={styles.submitButton} label={'Sell'} onClick={onLocalSave} />
             </div>
+						{errorMessage && <div className={styles.error}>{errorMessage}</div>}
           </div>
         </div>
       )}

@@ -16,6 +16,7 @@ Once all containers are running via `docker-compose`, each service is exposed on
 
 | Port  | Service  |
 |-------|---------------|
+| 3000  | user interface |
 | 8001  | ms_user |
 | 8002  | ms_order_execution |
 | 8003  | ms_order_creation |
@@ -30,5 +31,11 @@ Running a service manually
 2. Build the image `docker build -t ms_your_service .`
 3. Run the image `docker run -p 8000:3000 ms_your_service`
 4. Send a GET request to http://localhost:8000/ to verify your service is working and port forwarding
+
+Accessing the user interface
+---
+1. Wait about 1 minute after starting the all dockers.
+2. Go to a browser and go to http://localhost:3000/
+3. Login or create a user
 
 

@@ -55,7 +55,7 @@ services:
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
       NODE_ENV: production
-    command: ["npm", "start"]
+    command: ["npm", "run", "nodemon"]
 
   # Matching Engine Microservice
   ms_matching_engine:

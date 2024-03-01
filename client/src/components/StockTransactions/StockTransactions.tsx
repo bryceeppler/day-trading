@@ -39,7 +39,7 @@ function StockTransactions({ stockTransactions, cancelTransaction }: Readonly<St
                 <div className={styles.name}>{'Status'}</div>
                 <div className={styles.value}>{item.order_status}</div>
               </div>
-              {(['IN_PROGRESS', 'PARTIAL_FULFILLED'].includes(item.order_status) && item.order_type === 'LIMIT')&&(
+              {['IN_PROGRESS', 'PARTIAL_FULFILLED'].includes(item.order_status) && item.order_type === 'LIMIT' && (
                 <div className={styles.company}>
                   <Button
                     label="Cancel"

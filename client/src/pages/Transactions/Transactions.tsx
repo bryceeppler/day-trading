@@ -10,12 +10,12 @@ function Transactions(): ReactElement {
 
   const localCancelTransaction = async (stockTxId: string) => {
     const success = await cancelStockOrder(stockTxId);
-		console.log(success)
+    console.log(success);
     if (success) {
-			setTimeout(() => {
-				fetchStockTransactions();
-				fetchWalletTransactions();
-			}, 500)
+      setTimeout(() => {
+        fetchStockTransactions();
+        fetchWalletTransactions();
+      }, 500);
     }
   };
 

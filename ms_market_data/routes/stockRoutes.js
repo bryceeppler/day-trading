@@ -111,5 +111,7 @@ router.route('/createstock').post([authenticateToken(acccessToken), validation.c
  */
 router.route('/updatestockprice/:stock_id').put([validation.updateStockPriceValidation], stockController.updateStockPrice);
 
+router.route('/getstockname').get([validation.stockNameValidation], stockController.getStockName);
+
 module.exports = router;
 

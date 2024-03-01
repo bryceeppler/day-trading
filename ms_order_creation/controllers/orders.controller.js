@@ -30,7 +30,7 @@ exports.placeStockOrder = async (req, res, next) => {
     }
     successReturn(res);
   } catch (error) {
-    handleError(error, res, next);
+    return handleError(error, res, next);
   }
 };
 
@@ -44,6 +44,6 @@ exports.cancelStockTransaction = async (req, res, next) => {
 
     successReturn(res);
   } catch (error) {
-    handleError(error, res, next);
+    return handleError(error, res, next);
   }
 };

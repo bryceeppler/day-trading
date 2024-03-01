@@ -101,7 +101,7 @@ exports.placeOrder = async (data, token) =>
     }
     if (error.details)
     {
-      return error.details.message;
+      return error.details.response.data.error;
     }
     throw createError("Error Placing Order");
   }
@@ -180,7 +180,7 @@ exports.sellOrder = async (data, token) =>
     {
       throw reverseError;
     }
-    throw error.details ? error : createError("Error Selling Order");
+    throw error.details ? error.details.response.data.error : createError("Error Selling Order");
   }
 };
 

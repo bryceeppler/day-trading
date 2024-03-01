@@ -13,7 +13,7 @@ function AvailableStocks({ stocks }: Readonly<AvailableStocksProps>): ReactEleme
     <InfoCard title="Available Stocks" className={styles.info}>
       <div>
         {stocks.map((item) => (
-          <Item key={item.stock_id}>
+          <Item key={item._id}>
             <div className={styles.data}>
               <div className={styles.date}>
                 <div className={styles.name}>{'Stock'}</div>

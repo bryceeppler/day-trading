@@ -25,6 +25,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
   const [orderType, setOrderType] = useState<ORDER_TYPES>(ORDER_TYPES.MARKET);
   const [stock, setStock] = useState<Stock>();
   const [verify, setVerify] = useState<boolean>(false);
+	const [errorMessage, setErrorMessage] = useState<string>();
 
   const { placeStockOrder, fetchStocks, stocks } = useUsers();
   const verified = () => {
@@ -41,16 +42,18 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
 
     const data: PlaceStockOrderParams = {
       is_buy: true,
-      stock_id: stock!.stock_id,
+      stock_id: stock!._id,
       order_type: orderType,
       quantity: quantity!,
       price: price!,
     };
 
-    const success = await placeStockOrder(data);
-    if (success) {
-      onSave();
+    const error = await placeStockOrder(data);
+    if (error) {
+			setErrorMessage(error)
+		 return;
     }
+		onSave();
   };
 
   useEffect(() => {
@@ -126,6 +129,7 @@ function PlaceOrderModal({ open, onClose, onSave }: PlaceOrderModalProps): React
               <Button className={styles.submitButton} label={'Cancel'} onClick={onClose} style={BUTTON_TYPE.OUTLINED} />
               <Button className={styles.submitButton} label={'Buy'} onClick={onLocalSave} />
             </div>
+						{errorMessage && <div className={styles.error}>{errorMessage}</div>}
           </div>
         </div>
       )}

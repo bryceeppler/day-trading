@@ -16,7 +16,7 @@ exports.createStock = async (req, res, next) =>
 
     if (existingStock) return errorReturn(res, "stock already exists");
 
-    const newStock = await Stock.createStock({stock_name});
+    const newStock = await Stock.createStock({ stock_name });
 
     return successReturn(res, { stock_id: newStock._id }, STATUS_CODE.CREATED);
   } catch (error)
@@ -67,13 +67,32 @@ exports.updateStockPrice = async (req, res, next) =>
     const { new_price } = req.body;
 
     // Check if the stock exists
-    const existingStock = await Stock.findStockById(stockId);
+    const existingStock = await Stock.fetchStock(stockId);
 
     if (!existingStock) return errorReturn(res, "Stock not found");
 
     stockModel.updateStockPrice(stockId, new_price);
 
     return successReturn(res, existingStock);
+  } catch (error)
+  {
+    return handleError(error, res, next);
+  }
+};
+
+// /getStockName
+exports.getStockName = async (req, res, next) =>
+{
+  try
+  {
+    const stockId = req.body.stock_id;
+
+    // Check if the stock exists
+    const existingStock = await Stock.fetchStock(stockId);
+
+    if (!existingStock) return errorReturn(res, "Stock not found");
+
+    return successReturn(res, { stock_name: existingStock.stock_name });
   } catch (error)
   {
     return handleError(error, res, next);

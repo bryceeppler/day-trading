@@ -90,7 +90,7 @@ async function addStockToUser(req, res, next)
 
 
     // check if the user already has some of the stock
-    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id === stock_id);
+    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id == stock_id);
 
     // if it's already there, update the quantity
     if (stock)

@@ -1,6 +1,14 @@
 import { handleApiError } from 'lib/errors';
 import { useState } from 'react';
-import { PlaceStockOrderParams, Stock, StockPortfolio, StockTransaction, WalletTransaction } from 'types/users.types';
+import {
+  AddToUserParams,
+  CreateStockParams,
+  PlaceStockOrderParams,
+  Stock,
+  StockPortfolio,
+  StockTransaction,
+  WalletTransaction,
+} from 'types/users.types';
 import { UserApi } from 'api';
 
 interface UseUsersInfo {
@@ -17,6 +25,8 @@ interface UseUsersInfo {
   balance?: number;
   stocks: Array<Stock>;
   fetchStocks: () => void;
+  createStock: (params: CreateStockParams) => Promise<string | undefined>;
+  addStockToUser: (params: AddToUserParams) => Promise<string | undefined>;
 }
 
 function useUsers(): UseUsersInfo {
@@ -57,6 +67,24 @@ function useUsers(): UseUsersInfo {
     try {
       const response = await UserApi.fetchStocks();
       setStocks(response.data);
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  const createStock = async (data: CreateStockParams): Promise<string | undefined> => {
+    try {
+      const response = await UserApi.createStock(data);
+      return response.data.error;
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  const addStockToUser = async (data: AddToUserParams): Promise<string | undefined> => {
+    try {
+      const response = await UserApi.addStockToUser(data);
+      return response.data.error;
     } catch (error) {
       handleApiError(error);
     }
@@ -108,7 +136,9 @@ function useUsers(): UseUsersInfo {
     fetchStockPortfolios,
     placeStockOrder,
     fetchStocks,
+    createStock,
     fetchStockTransactions,
+    addStockToUser,
     stockTransactions,
     stocks,
     stockPortfolios,

@@ -47,6 +47,22 @@
       }
     }
 
+    .setup {
+      margin-left: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      color: white;
+      cursor: pointer;
+
+      .icon {
+        height: 25px;
+        color: $color-secondary;
+      }
+    }
+
     .search {
       width: 300px;
       height: 35px;

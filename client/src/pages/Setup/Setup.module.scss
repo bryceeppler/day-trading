@@ -1,0 +1,56 @@
+@import 'scss/base/colors';
+.container {
+  padding: 20px;
+  height: calc(100% - 40px);
+
+  .warning {
+    color: red;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 20px;
+  }
+  .content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-top: 20px;
+    height: calc(100% - 40px);
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+  .create {
+    background-color: $color-main-light;
+    width: 200px;
+    padding: 20px;
+    height: 200px;
+    border-radius: 10px;
+
+    .title {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 40px;
+    }
+
+    .text {
+      width: 180px;
+      height: 60px;
+    }
+
+    .dropdown {
+      height: 60px;
+    }
+
+    .submitButton {
+      margin-top: 0px;
+      height: 32px;
+    }
+  }
+}
+
+.error {
+  font-size: 12px;
+  color: red;
+}

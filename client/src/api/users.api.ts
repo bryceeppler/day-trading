@@ -1,7 +1,9 @@
 import { BaseApi } from 'api';
 import {
   ADD_MONEY,
+  ADD_STOCK_TO_USER,
   CANCEL_STOCK_ORDER,
+  CREATE_STOCK,
   FETCH_BALANCE,
   FETCH_STOCKS,
   FETCH_STOCK_PORTFOLIO,
@@ -9,7 +11,7 @@ import {
   FETCH_WALLET_TXS,
   PLACE_STOCK_ORDER,
 } from 'lib/routes';
-import { PlaceStockOrderParams } from 'types/users.types';
+import { AddToUserParams, CreateStockParams, PlaceStockOrderParams } from 'types/users.types';
 import { SuccessApiResponse } from 'types/utils.types';
 
 export const fetchBalance = async (): Promise<SuccessApiResponse> => {
@@ -42,4 +44,12 @@ export const placeStockOrder = async (data: PlaceStockOrderParams): Promise<Succ
 
 export const cancelStockOrder = async (stock_tx_id: string): Promise<SuccessApiResponse> => {
   return await BaseApi.post(`${CANCEL_STOCK_ORDER}`, { stock_tx_id });
+};
+
+export const createStock = async (data: CreateStockParams): Promise<SuccessApiResponse> => {
+  return await BaseApi.post(`${CREATE_STOCK}`, data);
+};
+
+export const addStockToUser = async (data: AddToUserParams): Promise<SuccessApiResponse> => {
+  return await BaseApi.post(`${ADD_STOCK_TO_USER}`, data);
 };

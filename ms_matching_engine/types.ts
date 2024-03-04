@@ -8,6 +8,12 @@ export enum OrderType {
   MARKET = "MARKET",
 }
 
+export enum MessageQueue {
+  PLACE_ORDER = 'PLACE_ORDER',
+  CANCEL_ORDER = 'CANCEL_ORDER',
+  EXECUTE_ORDER = 'EXECUTE_ORDER'
+}
+
 export enum OrderStatus {
   IN_PROGRESS = "IN_PROGRESS",
   CANCELED = "CANCELED",
@@ -72,6 +78,10 @@ export interface MatchedOrder {
   matchPrice: number;
   executed: boolean;
   timestamp: Date;
+}
+
+export interface CancelOrderRequest {
+  stock_tx_id: string;
 }
 
 export interface StockTransactionModel

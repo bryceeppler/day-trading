@@ -13,7 +13,25 @@ services:
       - ms_matching_engine
       - ms_market_data
       - ms_transaction_manager
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
+
+  # RabbitMQ Service
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - "5672:5672" # RabbitMQ connection
+      - "15672:15672" # RabbitMQ management UI
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq" # persistance 
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # User & Auth Microservice
   ms_user:
@@ -33,10 +51,14 @@ services:
   ms_order_execution:
     container_name: order_execution
     build: ./ms_order_execution
-    ports:
-      - "8002:3000"
+    # ports:
+    #   - "8002:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672/
     volumes:
       - ./ms_shared:/app/shared
 
@@ -48,14 +70,18 @@ services:
       - "3000"
     ports:
       - "8003:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./ms_shared:/app/shared
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672/
       NODE_ENV: production
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -63,10 +89,14 @@ services:
     build: ./ms_matching_engine
     ports:
       - "8004:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
-    command: ["npm", "start"]
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672/
+    command: [ "npm", "start" ]
     volumes:
       - ./ms_shared:/app/shared
 
@@ -107,3 +137,4 @@ services:
 
 volumes:
   db_data:
+  rabbitmq_data:

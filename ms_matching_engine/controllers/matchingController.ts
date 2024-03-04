@@ -6,8 +6,8 @@ import { Order, MatchedOrder, OrderBookOrder } from "../types";
 
 interface Routes {
   healthCheck: (req: Request, res: Response) => Promise<void>;
-  receiveOrder: (req: Request, res: Response) => Promise<void>;
-  cancelOrder: (req: Request, res: Response) => Promise<void>;
+  //receiveOrder: (req: Request, res: Response) => Promise<void>;
+  //cancelOrder: (req: Request, res: Response) => Promise<void>;
   checkOrders: (req: Request, res: Response) => Promise<void>;
   sendTestToExecutionService: (req: Request, res: Response) => Promise<void>;
 }
@@ -35,46 +35,46 @@ export default (orderBook: OrderBook): Routes => {
       }
     },
 
-    receiveOrder: async (req: Request, res: Response): Promise<void> => {
-      try {
-        const order: Order = req.body;
-        res.status(200).send("Order received");
+    // receiveOrder: async (req: Request, res: Response): Promise<void> => {
+    //   try {
+    //     const order: Order = req.body;
+    //     res.status(200).send("Order received");
 
-        const orderBookOrder: OrderBookOrder = {
-          ...order,
-          timestamp: new Date(),
-          executed: false,
-        };
+    //     const orderBookOrder: OrderBookOrder = {
+    //       ...order,
+    //       timestamp: new Date(),
+    //       executed: false,
+    //     };
 
-        const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
-          orderBook.matchOrder(orderBookOrder);
-        console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
-        orderBook.flushOrders();
-      } catch (error) {
-        // TODO: better err handling
-        console.error("Error processing order:", error);
-        res.status(500).send("Error processing order");
-      }
-    },
+    //     const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
+    //       orderBook.matchOrder(orderBookOrder);
+    //     console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
+    //     orderBook.flushOrders();
+    //   } catch (error) {
+    //     // TODO: better err handling
+    //     console.error("Error processing order:", error);
+    //     res.status(500).send("Error processing order");
+    //   }
+    // },
 
-    cancelOrder: async (req: Request, res: Response): Promise<void> => {
-      try {
-        const orderToCancel: CancelOrderRequest = req.body;
-        // console.log("Current orders in order book:", orderBook.getOrderBookState());
-        const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
-        if (result) {
-          console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
-          res.status(200).send("Order cancelled");
-          await orderBook.flushOrders();
-        } else {
-          console.log("Order not found");
-          res.status(404).send("Order not found");
-        }
-      } catch (error) {
-        console.error("Error cancelling order:", error);
-        res.status(500).send("Error cancelling order");
-      }
-    },
+    // cancelOrder: async (req: Request, res: Response): Promise<void> => {
+    //   try {
+    //     const orderToCancel: CancelOrderRequest = req.body;
+    //     // console.log("Current orders in order book:", orderBook.getOrderBookState());
+    //     const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
+    //     if (result) {
+    //       console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
+    //       res.status(200).send("Order cancelled");
+    //       await orderBook.flushOrders();
+    //     } else {
+    //       console.log("Order not found");
+    //       res.status(404).send("Order not found");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error cancelling order:", error);
+    //     res.status(500).send("Error cancelling order");
+    //   }
+    // },
 
     checkOrders: async (req: Request, res: Response): Promise<void> => {
       // report the current state of the order book

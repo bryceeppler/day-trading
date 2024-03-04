@@ -1,6 +1,8 @@
-import { Order, MatchedOrder, IOrderBook, OrderBookOrder } from "../types";
+import { Order, MatchedOrder, IOrderBook, OrderBookOrder, MessageQueue } from "../types";
 
 import { StockTransaction } from "../models/stockTransactionModel";
+
+import { publishToQueue } from "./rabbitmq";
 
 const axios = require("axios");
 
@@ -100,21 +102,21 @@ export default class OrderBook implements IOrderBook {
     };
     this.isSendingOrders = true;
     try {
-    // Combine orders into one array with a type indicator
-    const allOrders = [
-      ...this.matchedOrders.map(({ timestamp,  buyOrder, sellOrder, ...rest }) => ({
-        ...rest,
-        buyOrder: buyOrder.stock_tx_id, // Assuming 'id' is the property for the order's ID
-        sellOrder: sellOrder.stock_tx_id, // Same here
-        type: 'Matched'
-      })),
-      ...this.cancelledOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Cancelled' })),
-      ...this.expiredOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Expired' })),
-    ];
+      // Combine orders into one array with a type indicator
+      const allOrders = [
+        ...this.matchedOrders.map(({ timestamp,  buyOrder, sellOrder, ...rest }) => ({
+          ...rest,
+          buyOrder: buyOrder.stock_tx_id, // Assuming 'id' is the property for the order's ID
+          sellOrder: sellOrder.stock_tx_id, // Same here
+          type: 'Matched'
+        })),
+        ...this.cancelledOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Cancelled' })),
+        ...this.expiredOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Expired' })),
+      ];
 
-    if (allOrders.length != 0) {
-      console.table(allOrders);
-    }
+      if (allOrders.length != 0) {
+        console.table(allOrders);
+      }
 
 
       await this.sendOrdersToOrderExecutionService(
@@ -387,7 +389,7 @@ export default class OrderBook implements IOrderBook {
     cancelledOrders: OrderBookOrder[],
     expiredOrders: OrderBookOrder[],
   ) {
-    const executionServiceUrl = "http://ms_order_execution:3000/executeOrder";
+    //const executionServiceUrl = "http://ms_order_execution:3000/executeOrder";
 
     const data = [];
 
@@ -447,14 +449,16 @@ export default class OrderBook implements IOrderBook {
       //
       // second implementation to send them one at a time.
       for (const order of data) {
-        const res = await axios.post(executionServiceUrl, {
-          order,
-        });
-        if (res.status === 200) {
+        const ok = await publishToQueue(MessageQueue.EXECUTE_ORDER, order);
+        // const res = await axios.post(executionServiceUrl, {
+        //   order,
+        // });
+        //if (ok) {
+          //console.log("Message Published.")
           this.executeOrder(order);
-        } else {
-          console.log("Could not execute order: ", order);
-        }
+        //} else {
+          //console.log("Could not execute order: ", order);
+        //}
       }
     } catch (error) {
       console.error("Error sending orders to order execution service:", error);

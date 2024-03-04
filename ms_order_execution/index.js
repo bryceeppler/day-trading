@@ -8,7 +8,8 @@ const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
 const Portfolio = require("./shared/models/portfolioModel");
 const User = require("./shared/models/userModel");
-const { ORDER_STATUS } = require("./shared/lib/enums");
+const { ORDER_STATUS, MESSAGE_QUEUE } = require("./shared/lib/enums");
+const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
 
 const app = express();
 app.use((req, res, next) =>
@@ -34,17 +35,39 @@ app.get("/", (req, res) =>
   res.send("This is the order execution microservice.");
 });
 
-app.post("/executeOrder", async (req, res) =>
+
+const rabbitmqUri = process.env.RABBITMQ_URI;
+connectToRabbitMQ(rabbitmqUri)
+  .then((rabbitChannel) =>
+  {
+    rabbitChannel.assertQueue(MESSAGE_QUEUE.EXECUTE_ORDER, { durable: true });
+    rabbitChannel.consume(
+      MESSAGE_QUEUE.EXECUTE_ORDER,
+      async (data) =>
+      {
+        if (data)
+        {
+          const message = JSON.parse(data.content.toString());
+          console.log("Recieved Execute Order Message: ", messeage);
+          executeOrder(message);
+        }
+      },
+      { noAck: true }
+    );
+  })
+  .catch(error =>
+  {
+    console.error('Error connecting to RabbitMQ:', error);
+  });
+
+
+const executeOrder = async (message) =>
 {
 
-  const order = req.body.order;
-  const stockTxId = order.stock_tx_id;
-  const matchedStockTxId = order.matched_stock_tx_id;
-  const action = order.action;
-  const quantityStockInTransit = order.quantity;
-
-  console.log("This is the request:");
-  console.log(req.body);
+  const stockTxId = message.stock_tx_id;
+  const matchedStockTxId = message.matched_stock_tx_id;
+  const action = message.action;
+  const quantityStockInTransit = message.quantity;
 
   try
   {
@@ -560,7 +583,7 @@ app.post("/executeOrder", async (req, res) =>
     console.error("Error fetching stock transaction", error);
     return res.status(500).json({ message: `Internal Server Error: ${error}` });
   }
-});
+};
 
 // Start the server
 app.listen(port, () =>

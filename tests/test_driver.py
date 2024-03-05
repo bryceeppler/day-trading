@@ -18,18 +18,18 @@ BASE_URL = "http://localhost" #:8000/
 # | 8005  | ms_market_data |
 # | 8006  | ms_transaction_manager |
 ENDPOINTS = {
-    "register": ":8001/register",
-    "login": ":8001/login",
-    'createStock': ":8005/createStock",
-    'addStockToUser': ":8001/addStockToUser",
-    'getStockPortfolio': ":8001/getStockPortfolio",
-    'placeStockOrder': ":8003/placeStockOrder",
-    'getStockPrices': ":8005/getStockPrices",
-    'addMoneyToWallet': ":8001/addMoneyToWallet",
-    'getWalletBalance': ":8001/getWalletBalance",
-    'getWalletTransactions': ":8006/getWalletTransactions",
-    'getStockTransactions': ":8006/getStockTransactions",
-    'cancelStockTransaction': ":8003/cancelStockTransaction"
+    "register": ":8000/register",
+    "login": ":8000/login",
+    'createStock': ":8000/createStock",
+    'addStockToUser': ":8000/addStockToUser",
+    'getStockPortfolio': ":8000/getStockPortfolio",
+    'placeStockOrder': ":8000/placeStockOrder",
+    'getStockPrices': ":8000/getStockPrices",
+    'addMoneyToWallet': ":8000/addMoneyToWallet",
+    'getWalletBalance': ":8000/getWalletBalance",
+    'getWalletTransactions': ":8000/getWalletTransactions",
+    'getStockTransactions': ":8000/getStockTransactions",
+    'cancelStockTransaction': ":8000/cancelStockTransaction"
 }
 
 

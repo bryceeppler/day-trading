@@ -1,11 +1,33 @@
 version: "3.9"
 
 services:
+
+
+
+  load-balancer-internal:
+    image: nginx:latest
+    volumes: 
+      - "./nginx-internal.conf:/etc/nginx/nginx.conf"
+    expose:
+      - "6000"
+    ports:
+      - 6000:6000
+
+  load-balancer-external:
+    image: nginx:latest
+    volumes: 
+      - "./nginx-external.conf:/etc/nginx/nginx.conf"
+    ports:
+     - 8000:8000
+
+
   # React Frontend
   react:
     build: ./client
     ports:
       - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
     depends_on:
       - ms_user
       - ms_order_execution
@@ -20,8 +42,6 @@ services:
     container_name: user
     build: ./ms_user
     image: ms_user
-    ports:
-      - "8001:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
@@ -33,8 +53,7 @@ services:
   ms_order_execution:
     container_name: order_execution
     build: ./ms_order_execution
-    ports:
-      - "8002:3000"
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
     volumes:
@@ -46,8 +65,7 @@ services:
     build: ./ms_order_creation
     expose:
       - "3000"
-    ports:
-      - "8003:3000"
+
     volumes:
       - ./ms_shared:/app/shared
     environment:
@@ -61,8 +79,7 @@ services:
   ms_matching_engine:
     container_name: matching_engine
     build: ./ms_matching_engine
-    ports:
-      - "8004:3000"
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
@@ -74,8 +91,7 @@ services:
   ms_market_data:
     container_name: market_data
     build: ./ms_market_data
-    ports:
-      - "8005:3000"
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
@@ -86,8 +102,6 @@ services:
   ms_transaction_manager:
     container_name: transaction_manager
     build: ./ms_transaction_manager
-    ports:
-      - "8006:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=

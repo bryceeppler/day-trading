@@ -387,7 +387,7 @@ export default class OrderBook implements IOrderBook {
     cancelledOrders: OrderBookOrder[],
     expiredOrders: OrderBookOrder[],
   ) {
-    const executionServiceUrl = "http://ms_order_execution:3000/executeOrder";
+    const executionServiceUrl = "http://load-balancer-internal:6000/executeOrder";
 
     const data = [];
 

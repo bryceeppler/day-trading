@@ -29,7 +29,7 @@ describe("OrderBook FIFO Priority Tests", () => {
 
     const marketOrder: OrderBookOrder = {
       stock_tx_id: "1",
-      user_id: "1",
+      user_id: "2",
       stock_id: "1",
       quantity: 15,
       price: 10,

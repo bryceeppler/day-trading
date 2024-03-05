@@ -9,13 +9,38 @@ describe("OrderBook Market Order Tests", () => {
     orderbook = new OrderBook(StockTransaction);
   });
 
-  // Preconditions:
 
-  // User 1 has 500 quantity of Stock A
-
-  // User 2 has sufficient funds in their account.
-
-  // Steps to Reproduce:
+  it("does not match orders from the same user", () => {
+    // user 1 sell limit order of stock a quantity 100
+    const order1: OrderBookOrder = {
+      user_id: "1",
+      stock_tx_id: "1",
+      stock_id: "1",
+      quantity: 100,
+      is_buy: false,
+      order_type: OrderType.LIMIT,
+      timestamp: new Date(),
+      executed: false,
+      price: 10,
+    };
+    orderbook.matchOrder(order1);
+    // user 1 buy market order of stock a quantity 5
+    const order2: OrderBookOrder = {
+      user_id: "1",
+      stock_tx_id: "1",
+      stock_id: "1",
+      quantity: 5,
+      is_buy: true,
+      order_type: OrderType.MARKET,
+      timestamp: new Date(),
+      executed: false,
+      price: 10,
+    };
+    const [matched, remainingQuantity] = orderbook.matchOrder(order2);
+    expect(matched.length).toBe(0);
+    expect(remainingQuantity).toBe(5);
+    
+  });
 
   it("executes with correct price", () => {
     // This tests a scenario described by Freya where the incorrect order is matched.
@@ -94,7 +119,7 @@ describe("OrderBook Market Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -107,7 +132,7 @@ describe("OrderBook Market Order Tests", () => {
       },
     ];
     const marketOrder: OrderBookOrder = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       stock_id: "1",
@@ -162,7 +187,7 @@ describe("OrderBook Market Order Tests", () => {
       },
     ];
     const marketOrder: OrderBookOrder = {
-      user_id: "1",
+      user_id: "2",
       stock_tx_id: "1",
 
       stock_id: "1",
@@ -195,7 +220,7 @@ describe("OrderBook Market Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -208,7 +233,7 @@ describe("OrderBook Market Order Tests", () => {
       },
     ];
     const marketOrder: OrderBookOrder = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       stock_id: "1",

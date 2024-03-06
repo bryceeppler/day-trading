@@ -407,7 +407,7 @@ RESPONSE
 def step_15_login():
     endpoint = ENDPOINTS['login']
     data = {
-        "user_name": "FinanceGuru",
+        "user_name": " FinanceGuru",
         "password": "Fguru@2024"
     }
     response = make_post_request(endpoint, data=data)

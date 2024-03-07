@@ -407,7 +407,7 @@ RESPONSE
 def step_15_login():
     endpoint = ENDPOINTS['login']
     data = {
-        "user_name": "FinanceGuru",
+        "user_name": " FinanceGuru",
         "password": "Fguru@2024"
     }
     response = make_post_request(endpoint, data=data)
@@ -1266,8 +1266,8 @@ tests = [
     {'id': 7, 'title': "Create apple stock", 'test': lambda: step_7_create_stock(user1token)},
     {'id': 8, 'title': "Add stock to first user", 'test': lambda: step_8_add_stock_to_user(user1token, appleStockId)},
     {'id': 9, 'title': "Get User 1 stock portfolio", 'test': lambda: step_9_get_stock_portfolio(user1token)},
-    {'id': 10, 'title': "User 1 Sell limit apple q: 369 p: 140", 'test': lambda: step_10_place_stock_order(user1token, appleStockId)},
-    {'id': 11, 'title': "User 1 Sell limit google q: 550 p: 135", 'test': lambda: step_11_place_stock_order(user1token, googleStockId)},
+    {'id': 10, 'title': "User 1 Sell limit google q: 550 p: 135", 'test': lambda: step_11_place_stock_order(user1token, googleStockId)},
+    {'id': 11, 'title': "User 1 Sell limit apple q: 369 p: 140", 'test': lambda: step_10_place_stock_order(user1token, appleStockId)},
     {'id': 12, 'title': "User 1 get stock portfolio", 'test': lambda: step_12_get_stock_portfolio(user1token)},
     {'id': 13, 'title': "User 1 get stock transactions", 'test': lambda: step_13_get_stock_transactions(user1token)},
 		{'id': 14, 'title': "Valid register User 2", 'test': lambda: step_14_register()},

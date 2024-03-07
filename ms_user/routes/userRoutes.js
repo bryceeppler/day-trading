@@ -26,9 +26,10 @@ async function getStockPortfolio(req, res, next)
     // Fetch stock portfolio for the user
     const portfolio = await StockPortfolio.find({ user_id: user._id, quantity_owned: { $gt: 0 } });
 
-    // create a list to hold the stock portfolio data
+    // create a list to hold the stock portfolio data. 
+    // since Promise.all is asyncronous, it could return data in a different order than portfolio, use index to ensure same order.
     const data = []
-    await Promise.all(portfolio.map(async portfolioItem =>
+    await Promise.all(portfolio.map(async (portfolioItem, index) =>
     {
       const stock = await Stock.findById(portfolioItem.stock_id);
       if (!stock)
@@ -36,11 +37,11 @@ async function getStockPortfolio(req, res, next)
         throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
       }
       if (portfolioItem.quantity_owned) {
-      data.push({
+      data[index] = {
         stock_id: portfolioItem.stock_id,
         stock_name: stock.stock_name,
         quantity_owned: portfolioItem.quantity_owned
-      });
+      };
     }
     }));
     return successReturn(res, data);

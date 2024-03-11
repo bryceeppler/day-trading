@@ -82,7 +82,7 @@ async function addStockToUser(req, res, next)
     // Validate request body parameters
     if (!stock_id || !quantity)
     {
-      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+      throw createError('Missing required parameters', STATUS_CODE.OK);
     }
 
 

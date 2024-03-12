@@ -153,9 +153,9 @@ async function addMoneyToWallet(req, res, next)
 }
 
 // Define the routes and use the authenticateToken middleware
-router.get('/getStockPortfolio', authenticateToken, getStockPortfolio);
-router.get('/getWalletBalance', authenticateToken, getWalletBalance);
-router.post('/addStockToUser', authenticateToken, addStockToUser);
-router.post('/addMoneyToWallet', authenticateToken, addMoneyToWallet);
+router.get('/getStockPortfolio', authenticateToken, cleanReq, getStockPortfolio);
+router.get('/getWalletBalance', authenticateToken, cleanReq, getWalletBalance);
+router.post('/addStockToUser', authenticateToken, cleanReq, addStockToUser);
+router.post('/addMoneyToWallet', authenticateToken, cleanReq, addMoneyToWallet);
 
 module.exports = router;

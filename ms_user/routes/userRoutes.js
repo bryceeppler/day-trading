@@ -128,7 +128,7 @@ async function addMoneyToWallet(req, res, next)
     // Validate request body parameters
     if (!amount || amount < 0)
     {
-      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+      throw createError('Missing required parameters', STATUS_CODE.OK);
     }
     // Retrieve user's wallet transaction
     const user = await User.findOne({ _id: req.user.userId });

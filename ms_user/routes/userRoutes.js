@@ -1,10 +1,9 @@
 const User = require('../shared/models/userModel');
-const StockTransaction = require('../models/stockTransactionModel');
-const WalletTransaction = require('../models/walletTransactionModel');
 const Stock = require('../models/stockModel');
 const StockPortfolio = require('../models/portfolioModel');
 const { STATUS_CODE } = require('../lib/enums');
 const { handleError, successReturn, createError } = require('../lib/apiHandling');
+const { cleanReq }  = require('../shared/middleware/formatting')
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 

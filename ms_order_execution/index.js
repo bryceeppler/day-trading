@@ -278,7 +278,7 @@ app.post("/executeOrder", async (req, res) =>
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
-            stock_tx_id: existingStockTx.stock_tx_id,
+            stock_tx_id: existingStockTx._id,
             is_debit: false,
             amount: profit,
             is_deleted: false

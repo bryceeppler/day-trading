@@ -336,7 +336,7 @@ app.post("/executeOrder", async (req, res) =>
           //existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
 
           // find matched order stock transaction
-          const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
+          //const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
 
           // new stockTx for partially fulfilled order
           const newStockTransaction = new StockTransaction({
@@ -346,7 +346,7 @@ app.post("/executeOrder", async (req, res) =>
             portfolio_id: existingStockTx.portfolio_id,
             order_status: 'COMPLETED',
             is_buy: false,
-            order_type: matchedTransaction.order_type,
+            order_type: existingStockTx.order_type,
             stock_price: existingStockTx.stock_price,
             quantity: quantityStockInTransit,
             is_deleted: false

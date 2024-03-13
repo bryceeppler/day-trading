@@ -3,7 +3,7 @@ const Stock = require('../models/stockModel');
 const StockPortfolio = require('../models/portfolioModel');
 const { STATUS_CODE } = require('../lib/enums');
 const { handleError, successReturn, createError } = require('../lib/apiHandling');
-const { cleanReq }  = require('../shared/middleware/formatting')
+const { cleanReq }  = require('../middleware/formatting')
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 

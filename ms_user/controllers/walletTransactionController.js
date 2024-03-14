@@ -1,27 +1,28 @@
-const WalletTransaction = require('../models/walletTransactionModel');
+const WalletTransaction = require('../shared/models/walletTransactionModel');
+const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
+const { STATUS_CODE } = require('../shared/lib/enums');
 
 // /createWalletTransaction
-async function createWalletTx(req, res)
+exports.createWalletTx = async (req, res, next) =>
 {
     try
     {
-        const { is_debit, amount } = req.body;
+        const { user_id, is_debit, amount } = req.body;
 
-        const walletTx = new WalletTransaction({ is_debit, amount })
+        const walletTx = new WalletTransaction({ user_id, is_debit, amount })
         walletTx.save();
 
-        return res.status(201).json(walletTx);
+        return successReturn(res, walletTx, STATUS_CODE.CREATED);
 
 
     } catch (error)
     {
-        console.error('Error creating wallet transaciton:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        return handleError(error, res, next);
     }
 }
 
 // /updateStockTxId/:walletTxId
-async function updateStockTxId(req, res)
+exports.updateStockTxId = async (req, res, next) =>
 {
     try
     {
@@ -33,23 +34,22 @@ async function updateStockTxId(req, res)
 
         if (!existingWalletTx)
         {
-            return res.status(404).json({ message: 'Wallet Transaction not found' });
+            return errorReturn(res, 'Wallet transaction not found');
         }
 
         existingWalletTx.stock_tx_id = stock_tx_id;
         await existingWalletTx.save();
 
-        return res.status(200).json(existingWalletTx);
+        return successReturn(res, existingWalletTx);
     }
     catch (error)
     {
-        console.error('Error updating wallet transaction:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        return handleError(error, res, next);
     }
 }
 
 // /deleteWalletTx/:walletTxId
-async function deleteWalletTx(req, res)
+exports.deleteWalletTx = async (req, res, next) =>
 {
     try
     {
@@ -60,23 +60,22 @@ async function deleteWalletTx(req, res)
 
         if (!existingWalletTx)
         {
-            return res.status(404).json({ message: 'Wallet Transaction not found' });
+            return errorReturn(res, 'Wallet transaction not found');
         }
         // update 
         existingWalletTx.is_deleted = true;
         await existingWalletTx.save();
 
-        return res.status(200).json(existingWalletTx);
+        return successReturn(res, existingWalletTx);
     }
     catch (error)
     {
-        console.error('Error updating wallet transaction:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        return handleError(error, res, next);
     }
 }
 
 // /getWalletTransactions
-async function getWalletTransactions(req, res)
+exports.getWalletTransactions = async (req, res, next) =>
 {
 
     try 
@@ -93,34 +92,24 @@ async function getWalletTransactions(req, res)
             time_stamp: tx.time_stamp,
         }));
 
-        return res.status(200).json(transformedWalletTx);
+        return successReturn(res, transformedWalletTx);
     }
     catch (error) 
     {
-        console.error('Error getting wallet trasactions:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        return handleError(error, res, next);
     }
 }
 
 // /geAlltWalletTransactions
-async function getAllWalletTransactions(req, res)
+exports.getAllWalletTransactions = async (req, res, next) =>
 {
     try 
     {
         const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};;
-        return res.status(200).json(walletTx);
+        return successReturn(res, walletTx);
     }
     catch (error) 
     {
-        console.error('Error getting wallet transactions:', error);
-        return res.status(500).json({ message: `Internal Server Error: ${error}` });
+        return handleError(error, res, next);
     }
 }
-
-module.exports = {
-    createWalletTx,
-    updateStockTxId,
-    deleteWalletTx,
-    getWalletTransactions,
-    getAllWalletTransactions
-};

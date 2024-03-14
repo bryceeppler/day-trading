@@ -1,10 +1,9 @@
 const User = require('../shared/models/userModel');
-const StockTransaction = require('../models/stockTransactionModel');
-const WalletTransaction = require('../models/walletTransactionModel');
-const Stock = require('../models/stockModel');
-const StockPortfolio = require('../models/portfolioModel');
+const Stock = require('../shared/models/stockModel');
+const StockPortfolio = require('../shared/models/portfolioModel');
 const { STATUS_CODE } = require('../lib/enums');
 const { handleError, successReturn, createError } = require('../lib/apiHandling');
+const { cleanReq }  = require('../middleware/formatting')
 
 const { authenticateToken } = require('../middleware/authenticateToken');
 
@@ -152,9 +151,9 @@ async function addMoneyToWallet(req, res, next)
 }
 
 // Define the routes and use the authenticateToken middleware
-router.get('/getStockPortfolio', authenticateToken, getStockPortfolio);
-router.get('/getWalletBalance', authenticateToken, getWalletBalance);
-router.post('/addStockToUser', authenticateToken, addStockToUser);
-router.post('/addMoneyToWallet', authenticateToken, addMoneyToWallet);
+router.get('/getStockPortfolio', authenticateToken, cleanReq, getStockPortfolio);
+router.get('/getWalletBalance', authenticateToken, cleanReq, getWalletBalance);
+router.post('/addStockToUser', authenticateToken, cleanReq, addStockToUser);
+router.post('/addMoneyToWallet', authenticateToken, cleanReq, addMoneyToWallet);
 
 module.exports = router;

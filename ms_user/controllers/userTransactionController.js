@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET;
-const User = require('../models/User');
+const User = require('../shared/models/userModel');
 
 async function getWalletBalance(req, res) {
     try {

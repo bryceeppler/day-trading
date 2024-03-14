@@ -11,17 +11,19 @@ Starting all services via `docker-compose`
 3. If you want to force a rebuild of the containers, run `docker-compose up --build`
 
 
-Once all containers are running via `docker-compose`, each service is exposed on a specified port. You can test these each service by sending `[GET] http://localhost:<PORT>/`.
+Once all containers are running via `docker-compose`, each service is exposed on 8000. You can test these each service by sending `http://localhost:8000/`.
 
 
 | Port  | Service  |
 |-------|---------------|
-| 8001  | ms_user |
-| 8002  | ms_order_execution |
-| 8003  | ms_order_creation |
-| 8004  | ms_matching_engine |
-| 8005  | ms_market_data |
-| 8006  | ms_transaction_manager |
+| 3000  | user interface |
+| 8000  | ms_user |
+| 6000  | ms_order_execution (not externally open)|
+| 8000  | ms_order_creation |
+| 8000  | ms_matching_engine |
+| 8000  | ms_market_data |
+| 8000  | ms_transaction_manager |
+
 
 
 Running a service manually
@@ -30,5 +32,11 @@ Running a service manually
 2. Build the image `docker build -t ms_your_service .`
 3. Run the image `docker run -p 8000:3000 ms_your_service`
 4. Send a GET request to http://localhost:8000/ to verify your service is working and port forwarding
+
+Accessing the user interface
+---
+1. Wait about 1 minute after starting the all dockers.
+2. Go to a browser and go to http://localhost:3000/
+3. Login or create a user
 
 

@@ -1,4 +1,4 @@
-const WalletTransaction = require('../shared/models/walletTransactionModel');
+const WalletTransaction = require('../models/walletTx.model');
 const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const { STATUS_CODE } = require('../shared/lib/enums');
 
@@ -9,12 +9,9 @@ exports.createWalletTx = async (req, res, next) =>
     {
         const { user_id, is_debit, amount } = req.body;
 
-        const walletTx = new WalletTransaction({ user_id, is_debit, amount })
-        walletTx.save();
+        const walletTx = await WalletTransaction.createTransaction({ user_id, is_debit, amount });
 
         return successReturn(res, walletTx, STATUS_CODE.CREATED);
-
-
     } catch (error)
     {
         return handleError(error, res, next);
@@ -30,15 +27,14 @@ exports.updateStockTxId = async (req, res, next) =>
         const { stock_tx_id } = req.body;
 
         // Check if the stock exists
-        const existingWalletTx = await WalletTransaction.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.fetchTransaction(walletTxId);
 
         if (!existingWalletTx)
         {
             return errorReturn(res, 'Wallet transaction not found');
         }
 
-        existingWalletTx.stock_tx_id = stock_tx_id;
-        await existingWalletTx.save();
+        await WalletTransaction.updateStockTxId(walletTxId, stock_tx_id);
 
         return successReturn(res, existingWalletTx);
     }
@@ -56,15 +52,14 @@ exports.deleteWalletTx = async (req, res, next) =>
         const walletTxId = req.params.wallet_tx_id;
 
         // Check if the transaction exists
-        const existingWalletTx = await WalletTransaction.findById(walletTxId);
+        const existingWalletTx = await WalletTransaction.fetchTransaction(walletTxId);
 
         if (!existingWalletTx)
         {
             return errorReturn(res, 'Wallet transaction not found');
         }
-        // update 
-        existingWalletTx.is_deleted = true;
-        await existingWalletTx.save();
+
+        WalletTransaction.softDeleteTransaction(walletTxId);
 
         return successReturn(res, existingWalletTx);
     }
@@ -81,7 +76,10 @@ exports.getWalletTransactions = async (req, res, next) =>
     try 
     {
         // get all wallet transaction that are not deleted. Sort by time_stamp. 1 for ascending order. 
-        const walletTx = await WalletTransaction.find({ is_deleted: false }).sort({ time_stamp: 1 }) || {};
+        const walletTx = await WalletTransaction.fetchAllTransactions(
+            { user_id: req.user?.userId, is_deleted: false }, // Filter criteria
+            { time_stamp: 1 } // sort options
+            ) || {};
 
         // Map the documents and rename _id to wallet_tx_id
         const transformedWalletTx = walletTx.map(tx => ({
@@ -105,7 +103,7 @@ exports.getAllWalletTransactions = async (req, res, next) =>
 {
     try 
     {
-        const walletTx = await WalletTransaction.find({}).sort({ time_stamp: 1 }) || {};;
+        const walletTx = await WalletTransaction.fetchAllTransactions({}, { time_stamp: 1 }) || {};;
         return successReturn(res, walletTx);
     }
     catch (error) 

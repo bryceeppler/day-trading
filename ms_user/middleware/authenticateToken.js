@@ -4,7 +4,6 @@ const { STATUS_CODE } = require('../lib/enums');
 
 module.exports.authenticateToken = (req, res, next) => {
   const token = req.headers['token'];
-  console.log(token);
 
   if (!token) {
     // Directly use your custom error handling

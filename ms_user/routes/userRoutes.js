@@ -23,11 +23,12 @@ async function getStockPortfolio(req, res, next)
     }
 
     // Fetch stock portfolio for the user
-    const portfolio = await StockPortfolio.find({ user_id: user._id });
+    const portfolio = await StockPortfolio.find({ user_id: user._id, quantity_owned: { $gt: 0 } });
 
-    // create a list to hold the stock portfolio data
+    // create a list to hold the stock portfolio data. 
+    // since Promise.all is asyncronous, it could return data in a different order than portfolio, use index to ensure same order.
     const data = []
-    await Promise.all(portfolio.map(async portfolioItem =>
+    await Promise.all(portfolio.map(async (portfolioItem, index) =>
     {
       const stock = await Stock.findById(portfolioItem.stock_id);
       if (!stock)
@@ -35,11 +36,11 @@ async function getStockPortfolio(req, res, next)
         throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
       }
       if (portfolioItem.quantity_owned) {
-      data.push({
+      data[index] = {
         stock_id: portfolioItem.stock_id,
         stock_name: stock.stock_name,
         quantity_owned: portfolioItem.quantity_owned
-      });
+      };
     }
     }));
     return successReturn(res, data);
@@ -76,22 +77,20 @@ async function addStockToUser(req, res, next)
   {
     const { stock_id, quantity } = req.body;
     const userId = req.user.userId;
-    console.log('userId', userId);
 
     // Validate request body parameters
     if (!stock_id || !quantity)
     {
-      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+      throw createError('Missing required parameters', STATUS_CODE.OK);
     }
 
 
     // get the user portfolio
     const portfolio = await StockPortfolio.find({ user_id: userId });
 
-    console.log('portfolio', portfolio)
 
     // check if the user already has some of the stock
-    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id === stock_id);
+    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id == stock_id);
 
     // if it's already there, update the quantity
     if (stock)
@@ -100,7 +99,6 @@ async function addStockToUser(req, res, next)
       await stock.save();
       return successReturn(res);
     }
-    console.log("No stock found")
     // if it's not there, create a new portfolio item
     const newStock = new StockPortfolio({
       user_id: userId,
@@ -129,7 +127,7 @@ async function addMoneyToWallet(req, res, next)
     // Validate request body parameters
     if (!amount || amount < 0)
     {
-      throw createError('Missing required parameters', STATUS_CODE.BAD_REQUEST);
+      throw createError('Missing required parameters', STATUS_CODE.OK);
     }
     // Retrieve user's wallet transaction
     const user = await User.findOne({ _id: req.user.userId });

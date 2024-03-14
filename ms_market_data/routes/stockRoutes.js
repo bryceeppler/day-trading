@@ -2,7 +2,7 @@ const express = require('express');
 const stockController = require('../controllers/stockController');
 const validation = require('./validations/stockValidation')
 const router = express.Router();
-
+const { cleanReq }  = require('../shared/middleware/formatting')
 const { authenticateToken } = require('../shared/middleware/authentication');
 
 const acccessToken = process.env.JWT_SECRET;
@@ -82,7 +82,7 @@ router.route('/getallstocks').get(stockController.getAllStocks);
  *             required:
  *               - stock_name
  */
-router.route('/createstock').post([authenticateToken(acccessToken), validation.createStockValidation], stockController.createStock);
+router.route('/createstock').post([authenticateToken(acccessToken), cleanReq, validation.createStockValidation], stockController.createStock);
 
 /**
  * @swagger
@@ -110,6 +110,8 @@ router.route('/createstock').post([authenticateToken(acccessToken), validation.c
  *               - new_price
  */
 router.route('/updatestockprice/:stock_id').put([validation.updateStockPriceValidation], stockController.updateStockPrice);
+
+router.route('/getstockname').get([validation.stockNameValidation], stockController.getStockName);
 
 module.exports = router;
 

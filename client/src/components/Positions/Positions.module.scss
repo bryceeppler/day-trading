@@ -1,0 +1,33 @@
+.company {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 3px;
+  flex: 1;
+
+  .stock {
+    font-weight: 600;
+  }
+
+  .name {
+    color: grey;
+  }
+}
+
+.data {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 3px;
+  margin-right: 5px;
+
+  .price {
+    font-weight: 600;
+  }
+
+  .name {
+    color: grey;
+  }
+}

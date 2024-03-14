@@ -1,0 +1,22 @@
+@import 'scss/base/colors';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+  height: calc(100% - 40px);
+
+  .balance {
+    span {
+      font-weight: 600;
+    }
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    width: 100px;
+    height: 30px;
+  }
+}

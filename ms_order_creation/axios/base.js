@@ -18,7 +18,7 @@ exports.GET = (url, params) => {
 exports.POST = (url, data, token) => {
   return axios.post(url, data, {
 			headers: {
-			'Authorization': `Bearer ${token}`,
+			'token': `${token}`,
 			'Content-Type': 'application/json',
 		}
 	});

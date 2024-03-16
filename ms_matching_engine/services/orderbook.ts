@@ -451,7 +451,7 @@ export default class OrderBook implements IOrderBook {
       for (const order of data) {
         const ok = await publishToQueue(MessageQueue.EXECUTE_ORDER, order);
         if (ok) {
-          console.log("Message Published.")
+          console.log("Message Published: ", order)
           this.executeOrder(order);
         } else {
           console.log("Could not execute order: ", order);

@@ -1,6 +1,5 @@
 
 import * as amqp from "amqplib/callback_api";
-import { Order } from "../types";
 
 let rabbitChannel: amqp.Channel | null = null;
 

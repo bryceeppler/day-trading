@@ -11,8 +11,8 @@ export default function (orderBook: OrderBook): Router {
   });
 
   router.get("/healthcheck", orderController.healthCheck);
-  router.post("/receiveOrder", orderController.receiveOrder);
-  router.post("/cancelOrder", orderController.cancelOrder);
+  //router.post("/receiveOrder", orderController.receiveOrder);
+  //router.post("/cancelOrder", orderController.cancelOrder);
   router.get("/checkOrders", orderController.checkOrders);
   router.get(
     "/sendTestToExecution",

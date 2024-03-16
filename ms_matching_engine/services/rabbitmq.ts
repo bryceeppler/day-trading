@@ -30,15 +30,17 @@ const connectToRabbitMQ = async (rabbitmqURI?: string): Promise<{ connection: am
 };
 
 // Function to publish message to RabbitMQ queue
-const publishToQueue = async (queueName: string, orderMessage: any): Promise<void> => {
+const publishToQueue = async (queueName: string, orderMessage: any): Promise<Boolean> => {
     try {
         if (!rabbitChannel) {
             throw new Error('RabbitMQ channel is null');
         }
         await rabbitChannel.assertQueue(queueName, { durable: true });
         rabbitChannel.sendToQueue(queueName, Buffer.from(JSON.stringify(orderMessage)), { persistent: true });
+        return true;
     } catch (error) {
         console.error('Error publishing message to queue: ', error);
+        return false;
     }
 };
 

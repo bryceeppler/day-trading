@@ -450,15 +450,12 @@ export default class OrderBook implements IOrderBook {
       // second implementation to send them one at a time.
       for (const order of data) {
         const ok = await publishToQueue(MessageQueue.EXECUTE_ORDER, order);
-        // const res = await axios.post(executionServiceUrl, {
-        //   order,
-        // });
-        //if (ok) {
-          //console.log("Message Published.")
+        if (ok) {
+          console.log("Message Published.")
           this.executeOrder(order);
-        //} else {
-          //console.log("Could not execute order: ", order);
-        //}
+        } else {
+          console.log("Could not execute order: ", order);
+        }
       }
     } catch (error) {
       console.error("Error sending orders to order execution service:", error);

@@ -5,7 +5,7 @@ const Portfolio = require("./shared/models/portfolioModel");
 const User = require("./shared/models/userModel");
 const { ORDER_STATUS } = require("./shared/lib/enums");
 
-exports.executeOrder = async (message) =>
+exports.executeOrder2 = async (message) =>
 {
 
   const stockTxId = message.stock_tx_id;

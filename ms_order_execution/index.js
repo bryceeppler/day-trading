@@ -3,6 +3,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { MESSAGE_QUEUE } = require("./shared/lib/enums");
 const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
+const Stock = require("./shared/models/stockModel");
+const StockTransaction = require("./shared/models/stockTransactionModel");
+const WalletTransaction = require("./shared/models/walletTransactionModel");
+const Portfolio = require("./shared/models/portfolioModel");
+const User = require("./shared/models/userModel");
+const { ORDER_STATUS } = require("./shared/lib/enums");
+const { executeOrder2 } = require("./service");
 
 const app = express();
 app.use((req, res, next) =>
@@ -23,18 +30,12 @@ db.once("open", function ()
   console.log("Connected successfully");
 });
 
-app.get("/", (req, res) =>
-{
-  res.send("This is the order execution microservice.");
-});
-
-const rabbitmqUri = process.env.RABBITMQ_URI;
 
 const RabbitSetup = async () =>
 {
   try
   {
-    const { connection, channel } = await connectToRabbitMQ(rabbitmqUri);
+    const { connection, channel } = await connectToRabbitMQ(process.env.RABBITMQ_URI);
     await channel.assertQueue(MESSAGE_QUEUE.EXECUTE_ORDER, { durable: true });
     await channel.consume(
       MESSAGE_QUEUE.EXECUTE_ORDER,
@@ -62,16 +63,17 @@ const executeOrder = async (message) =>
   const matchedStockTxId = message.matched_stock_tx_id;
   const action = message.action;
   const quantityStockInTransit = message.quantity;
-
   try
   {
+    console.log("error here 5");
 
     console.log("checking existingStockTx");
     const existingStockTx = await StockTransaction.findOne({ _id: stockTxId });
 
     if (!existingStockTx)
     {
-      throw new Error({ message: 'Stock Transaction not found' });
+      console.log('Stock Transaction not found');
+      //throw new Error({ message: 'Stock Transaction not found' });
 
     } else
     {
@@ -176,7 +178,6 @@ const executeOrder = async (message) =>
             console.log("NEW user.balance:", newBalance);
             user.balance = newBalance;
             console.log("User balance updated.");
-
             // create new walletTx for partially fulfilled order  
             const newWalletTransaction = new WalletTransaction({
               user_id: existingStockTx.user_id,
@@ -258,7 +259,7 @@ const executeOrder = async (message) =>
         } catch (error)
         {
           console.error('Error returning amount spent to user balance:', error);
-          return new Error('Error returning amount spent to user balance:', error)
+          //return new Error('Error returning amount spent to user balance:', error)
         }
 
       }
@@ -284,8 +285,8 @@ const executeOrder = async (message) =>
           console.log("NEW user.balance:", newBalance);
 
           user.balance = newBalance;
+          console.log("error here 1");
           console.log("User balance updated.");
-
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
@@ -294,13 +295,17 @@ const executeOrder = async (message) =>
             amount: profit,
             is_deleted: false
           });
+          console.log("error here 2");
+
           await newWalletTransaction.save();
 
           existingStockTx.wallet_tx_id = newWalletTransaction._id;
+          console.log("error here 3");
 
           await existingStockTx.save();
           await user.save();
           await stockUpdate.save();
+          console.log("error here 4");
 
           console.log("New Wallet Transaction added. ", {
             existingStockTx: existingStockTx,
@@ -338,7 +343,6 @@ const executeOrder = async (message) =>
 
           user.balance = newBalance;
           console.log("User balance updated.");
-
           // add remaining stock quantity back to portfolio
           //let stocksToAddBack = existingStockTx.quantity - quantityStockInTransit;
           //let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
@@ -355,7 +359,7 @@ const executeOrder = async (message) =>
             portfolio_id: existingStockTx.portfolio_id,
             order_status: 'COMPLETED',
             is_buy: false,
-            order_type: matchedTransaction.order_type,
+            order_type: existingStockTx.order_type,
             stock_price: existingStockTx.stock_price,
             quantity: quantityStockInTransit,
             is_deleted: false

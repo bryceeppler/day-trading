@@ -1,20 +1,18 @@
 version: "3.9"
 
 services:
+  # load-balancer-internal:
+  #   image: nginx:latest
+  #   volumes: 
+  #     - "./nginx-internal.conf:/etc/nginx/nginx.conf"
+  #   expose:
+  #     - "6000"
+  #   ports:
+  #     - 6000:6000
+  #   depends_on:
+  #     - ms_order_execution
 
-
-
-  load-balancer-internal:
-    image: nginx:latest
-    volumes: 
-      - "./nginx-internal.conf:/etc/nginx/nginx.conf"
-    expose:
-      - "6000"
-    ports:
-      - 6000:6000
-    depends_on:
-      - ms_order_execution
-
+  # Nginx Reverse Proxy
   load-balancer-external:
     image: nginx:latest
     volumes: 
@@ -27,7 +25,6 @@ services:
     - ms_matching_engine
     - ms_market_data
     - ms_transaction_manager
-
 
   # React Frontend
   react:
@@ -113,6 +110,8 @@ services:
   ms_matching_engine:
     container_name: matching_engine
     build: ./ms_matching_engine
+    ports:
+      - "8004:3000"
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -128,6 +127,7 @@ services:
   ms_market_data:
     container_name: market_data
     build: ./ms_market_data
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=

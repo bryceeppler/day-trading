@@ -63,15 +63,10 @@ exports.executeOrder = async (message) =>
             console.log("Transaction updated: ",  
             { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
             return;
-            return res.status(200).json({
-              existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-              existingStockTx: existingStockTx
-            });
           }
           catch (error)
           {
             throw new Error('Error updating portfolio document:', error);
-            return res.status(500).json({ message: `Internal Server Error: ${error}` });
           }
         }
       }
@@ -139,8 +134,6 @@ exports.executeOrder = async (message) =>
               amount: amountSpent,
               is_deleted: false
             });
-            //await newStockTransaction.save();
-            //await newWalletTransaction.save();
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
             newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -158,12 +151,6 @@ exports.executeOrder = async (message) =>
               existingStockTx: existingStockTx
             });
             return;
-            return res.status(200).json({
-              existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-              newStockTransaction: newStockTransaction,
-              newWalletTransaction: newWalletTransaction,
-              existingStockTx: existingStockTx
-            });
           }
           catch (error)
           {
@@ -182,16 +169,13 @@ exports.executeOrder = async (message) =>
           {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
-
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              //await existingStockTx.save();
             } else
             {
               existingStockTx.order_status = 'EXPIRED';
-              //await existingStockTx.save();
             };
           }
 
@@ -221,16 +205,10 @@ exports.executeOrder = async (message) =>
             user: user
           });
           return;
-          return res.status(200).json({
-            existingStockTx: existingStockTx,
-            existingWalletTx: existingWalletTx,
-            user: user
-          });
         } catch (error)
         {
-          return new Error('Error returning amount spent to user balance:', error)
           console.error('Error returning amount spent to user balance:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          return new Error('Error returning amount spent to user balance:', error)
         }
 
       }
@@ -261,7 +239,7 @@ exports.executeOrder = async (message) =>
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
-            stock_tx_id: existingStockTx.stock_tx_id,
+            stock_tx_id: existingStockTx._id,
             is_debit: false,
             amount: profit,
             is_deleted: false
@@ -281,17 +259,9 @@ exports.executeOrder = async (message) =>
           });
           return;
 
-
-          return res.status(200).json({
-            existingStockTx: existingStockTx,
-            newWalletTransaction: newWalletTransaction,
-            user: user
-          });
-
         } catch (error)
         {
           throw new Error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
       }
 
@@ -325,7 +295,7 @@ exports.executeOrder = async (message) =>
           //existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
 
           // find matched order stock transaction
-          const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
+          //const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
 
           // new stockTx for partially fulfilled order
           const newStockTransaction = new StockTransaction({
@@ -348,8 +318,6 @@ exports.executeOrder = async (message) =>
             amount: profit,
             is_deleted: false
           });
-          //await newStockTransaction.save();
-          //await newWalletTransaction.save();
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
           newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -366,17 +334,10 @@ exports.executeOrder = async (message) =>
           console.log("New Stock Transaction added.")
           console.log("New Wallet Transaction added.")
           return;
-          return res.status(200).json({
-            newStockTransaction: newStockTransaction,
-            newWalletTransaction: newWalletTransaction,
-            existingStockTx: existingStockTx,
-            user: user
-          });
 
         } catch (error)
         {
           throw new Error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
       }
 
@@ -433,24 +394,17 @@ exports.executeOrder = async (message) =>
             existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
           });
           return;
-          return res.status(200).json({
-            existingStockTx: existingStockTx,
-            existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-          });
 
         } catch (error)
         {
           throw new Error('Error making changes to Portfolio:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
       }
       console.log("Execution Complete: ", existingStockTx);
       return;
-      return res.status(200).json(existingStockTx);
     }
   } catch (error)
   {
     throw new Error("Error fetching stock transaction", error);
-    return res.status(500).json({ message: `Internal Server Error: ${error}` });
   }
 };

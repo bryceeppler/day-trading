@@ -2,8 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { MESSAGE_QUEUE } = require("./shared/lib/enums");
-const { connectToRabbitMQ, consumeFromQueue } = require("./shared/config/rabbitmq");
-const { executeOrder } = require("./service")
+const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
 
 const app = express();
 app.use((req, res, next) =>
@@ -31,32 +30,38 @@ app.get("/", (req, res) =>
 
 const rabbitmqUri = process.env.RABBITMQ_URI;
 
-const RabbitSetup = async () => {
-  try {
-      const { connection, channel } = await connectToRabbitMQ(rabbitmqUri);
-      await channel.assertQueue(MESSAGE_QUEUE.EXECUTE_ORDER, { durable: true });
-      await channel.consume(
-          MESSAGE_QUEUE.EXECUTE_ORDER,
-          async (data) => {
-              if (data) {
-                  const message = JSON.parse(data.content.toString());
-                  console.log("Recieved Execute Order Message: ", message);
-                  executeOrder(message);
-              }
-          },
-          { noAck: true }
-      );
-  } catch (error) {
-      console.error('Error connecting to RabbitMQ:', error);
+const RabbitSetup = async () =>
+{
+  try
+  {
+    const { connection, channel } = await connectToRabbitMQ(rabbitmqUri);
+    await channel.assertQueue(MESSAGE_QUEUE.EXECUTE_ORDER, { durable: true });
+    await channel.consume(
+      MESSAGE_QUEUE.EXECUTE_ORDER,
+      async (data) =>
+      {
+        if (data)
+        {
+          const message = JSON.parse(data.content.toString());
+          console.log("Recieved Execute Order Message: ", message);
+          executeOrder(message);
+        }
+      },
+      { noAck: true }
+    );
+  } catch (error)
+  {
+    console.error('Error connecting to RabbitMQ:', error);
+  }
+}
 
-  const order = req.body.order;
-  const stockTxId = order.stock_tx_id;
-  const matchedStockTxId = order.matched_stock_tx_id;
-  const action = order.action;
-  const quantityStockInTransit = order.quantity;
+const executeOrder = async (message) =>
+{
 
-  console.log("This is the request:");
-  console.log(req.body);
+  const stockTxId = message.stock_tx_id;
+  const matchedStockTxId = message.matched_stock_tx_id;
+  const action = message.action;
+  const quantityStockInTransit = message.quantity;
 
   try
   {
@@ -66,8 +71,7 @@ const RabbitSetup = async () => {
 
     if (!existingStockTx)
     {
-
-      return res.status(404).json({ message: 'Stock Transaction not found' });
+      throw new Error({ message: 'Stock Transaction not found' });
 
     } else
     {
@@ -106,15 +110,13 @@ const RabbitSetup = async () => {
             await existingStockTx.save();
             await stockUpdate.save();
 
-            return res.status(200).json({
-              existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-              existingStockTx: existingStockTx
-            });
+            console.log("Transaction updated: ",
+              { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
+            return;
           }
           catch (error)
           {
-            console.error('Error updating portfolio document:', error);
-            return res.status(500).json({ message: `Internal Server Error: ${error}` });
+            throw new Error('Error updating portfolio document:', error);
           }
         }
       }
@@ -182,8 +184,6 @@ const RabbitSetup = async () => {
               amount: amountSpent,
               is_deleted: false
             });
-            //await newStockTransaction.save();
-            //await newWalletTransaction.save();
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
             newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -194,17 +194,17 @@ const RabbitSetup = async () => {
             await existingStockTx.save();
             await stockUpdate.save();
 
-            return res.status(200).json({
+            console.log("Transaction Complete: ", {
               existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
               newStockTransaction: newStockTransaction,
               newWalletTransaction: newWalletTransaction,
               existingStockTx: existingStockTx
             });
+            return;
           }
           catch (error)
           {
-            console.error('Error updating portfolio document:', error);
-            return res.status(500).json({ message: `Internal Server Error: ${error}` });
+            return new Error({ message: `Internal Server Error: ${error}` });
           }
         }
       }
@@ -219,16 +219,13 @@ const RabbitSetup = async () => {
           {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
-
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              //await existingStockTx.save();
             } else
             {
               existingStockTx.order_status = 'EXPIRED';
-              //await existingStockTx.save();
             };
           }
 
@@ -251,15 +248,17 @@ const RabbitSetup = async () => {
           await existingWalletTx.save();
           await user.save();
 
-          return res.status(200).json({
+
+          console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
             existingWalletTx: existingWalletTx,
             user: user
           });
+          return;
         } catch (error)
         {
           console.error('Error returning amount spent to user balance:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          return new Error('Error returning amount spent to user balance:', error)
         }
 
       }
@@ -303,18 +302,16 @@ const RabbitSetup = async () => {
           await user.save();
           await stockUpdate.save();
 
-          console.log("New Wallet Transaction added.")
-
-          return res.status(200).json({
+          console.log("New Wallet Transaction added. ", {
             existingStockTx: existingStockTx,
             newWalletTransaction: newWalletTransaction,
             user: user
           });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes:', error);
         }
       }
 
@@ -358,7 +355,7 @@ const RabbitSetup = async () => {
             portfolio_id: existingStockTx.portfolio_id,
             order_status: 'COMPLETED',
             is_buy: false,
-            order_type: existingStockTx.order_type,
+            order_type: matchedTransaction.order_type,
             stock_price: existingStockTx.stock_price,
             quantity: quantityStockInTransit,
             is_deleted: false
@@ -371,8 +368,6 @@ const RabbitSetup = async () => {
             amount: profit,
             is_deleted: false
           });
-          //await newStockTransaction.save();
-          //await newWalletTransaction.save();
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
           newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -388,18 +383,11 @@ const RabbitSetup = async () => {
 
           console.log("New Stock Transaction added.")
           console.log("New Wallet Transaction added.")
-
-          return res.status(200).json({
-            newStockTransaction: newStockTransaction,
-            newWalletTransaction: newWalletTransaction,
-            existingStockTx: existingStockTx,
-            user: user
-          });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes:', error);
         }
       }
 
@@ -447,27 +435,27 @@ const RabbitSetup = async () => {
           {
             existingStockTx.is_deleted = true;
           }
+          // existingStockTx.is_deleted = true;
 
           await existingPortfolioDocumentAndStockId.save();
           await existingStockTx.save();
-
-          return res.status(200).json({
+          console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
             existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
           });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes to Portfolio:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes to Portfolio:', error);
         }
       }
-      return res.status(200).json(existingStockTx);
+      console.log("Execution Complete: ", existingStockTx);
+      return;
     }
   } catch (error)
   {
-    console.error("Error fetching stock transaction", error);
-    return res.status(500).json({ message: `Internal Server Error: ${error}` });
+    throw new Error("Error fetching stock transaction", error);
   }
 };
 

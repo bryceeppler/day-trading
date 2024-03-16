@@ -2,7 +2,7 @@ name: Docker Compose Build
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "staging" ]
 
 jobs:
 
@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }} # Checkout current branch
       
     - name: Build and Run Docker Compose
       run: docker-compose up --build -d

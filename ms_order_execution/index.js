@@ -9,7 +9,6 @@ const WalletTransaction = require("./shared/models/walletTransactionModel");
 const Portfolio = require("./shared/models/portfolioModel");
 const User = require("./shared/models/userModel");
 const { ORDER_STATUS } = require("./shared/lib/enums");
-const { executeOrder2 } = require("./service");
 
 const app = express();
 app.use((req, res, next) =>

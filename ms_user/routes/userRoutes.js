@@ -38,7 +38,7 @@ async function getStockPortfolio(req, res, next)
       if (portfolioItem.quantity_owned) {
       data[index] = {
         stock_id: portfolioItem.stock_id,
-        //stock_name: stock.stock_name,
+        stock_name: stock.stock_name,
         quantity_owned: portfolioItem.quantity_owned
       };
     }

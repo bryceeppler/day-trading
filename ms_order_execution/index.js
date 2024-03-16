@@ -64,7 +64,6 @@ const executeOrder = async (message) =>
   const quantityStockInTransit = message.quantity;
   try
   {
-    console.log("error here 5");
 
     console.log("checking existingStockTx");
     const existingStockTx = await StockTransaction.findOne({ _id: stockTxId });
@@ -72,7 +71,6 @@ const executeOrder = async (message) =>
     if (!existingStockTx)
     {
       console.log('Stock Transaction not found');
-      //throw new Error({ message: 'Stock Transaction not found' });
 
     } else
     {
@@ -257,8 +255,7 @@ const executeOrder = async (message) =>
           return;
         } catch (error)
         {
-          console.error('Error returning amount spent to user balance:', error);
-          //return new Error('Error returning amount spent to user balance:', error)
+          return new Error('Error returning amount spent to user balance:', error)
         }
 
       }
@@ -284,7 +281,6 @@ const executeOrder = async (message) =>
           console.log("NEW user.balance:", newBalance);
 
           user.balance = newBalance;
-          console.log("error here 1");
           console.log("User balance updated.");
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
@@ -294,17 +290,14 @@ const executeOrder = async (message) =>
             amount: profit,
             is_deleted: false
           });
-          console.log("error here 2");
 
           await newWalletTransaction.save();
 
           existingStockTx.wallet_tx_id = newWalletTransaction._id;
-          console.log("error here 3");
 
           await existingStockTx.save();
           await user.save();
           await stockUpdate.save();
-          console.log("error here 4");
 
           console.log("New Wallet Transaction added. ", {
             existingStockTx: existingStockTx,
@@ -406,11 +399,9 @@ const executeOrder = async (message) =>
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              //await existingStockTx.save();
             } else
             {
               existingStockTx.order_status = 'EXPIRED';
-              //await existingStockTx.save();
             };
           }
 
@@ -438,7 +429,6 @@ const executeOrder = async (message) =>
           {
             existingStockTx.is_deleted = true;
           }
-          // existingStockTx.is_deleted = true;
 
           await existingPortfolioDocumentAndStockId.save();
           await existingStockTx.save();

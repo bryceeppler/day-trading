@@ -45,3 +45,12 @@ export type PlaceStockOrderParams = {
   quantity: number;
   price: number;
 };
+
+export type CreateStockParams = {
+  stock_name: string;
+};
+
+export type AddToUserParams = {
+  quantity: number;
+  stock_id: string;
+};

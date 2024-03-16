@@ -207,8 +207,8 @@ exports.cancelStockTransaction = async (data, token) =>
   } catch (error)
   {
     console.error(error);
-
-    throw error.details ? error : createError("Error Selling Order");
+		const status = error.response.status === 404 ? 200 : 500
+    throw error.details ? error : createError("Error Selling Order", status);
   }
 };
 

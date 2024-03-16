@@ -18,18 +18,18 @@ BASE_URL = "http://localhost" #:8000/
 # | 8005  | ms_market_data |
 # | 8006  | ms_transaction_manager |
 ENDPOINTS = {
-    "register": ":8001/register",
-    "login": ":8001/login",
-    'createStock': ":8005/createStock",
-    'addStockToUser': ":8001/addStockToUser",
-    'getStockPortfolio': ":8001/getStockPortfolio",
-    'placeStockOrder': ":8003/placeStockOrder",
-    'getStockPrices': ":8005/getStockPrices",
-    'addMoneyToWallet': ":8001/addMoneyToWallet",
-    'getWalletBalance': ":8001/getWalletBalance",
-    'getWalletTransactions': ":8006/getWalletTransactions",
-    'getStockTransactions': ":8006/getStockTransactions",
-    'cancelStockTransaction': ":8003/cancelStockTransaction"
+    "register": ":8000/register",
+    "login": ":8000/login",
+    'createStock': ":8000/createStock",
+    'addStockToUser': ":8000/addStockToUser",
+    'getStockPortfolio': ":8000/getStockPortfolio",
+    'placeStockOrder': ":8000/placeStockOrder",
+    'getStockPrices': ":8000/getStockPrices",
+    'addMoneyToWallet': ":8000/addMoneyToWallet",
+    'getWalletBalance': ":8000/getWalletBalance",
+    'getWalletTransactions': ":8000/getWalletTransactions",
+    'getStockTransactions': ":8000/getStockTransactions",
+    'cancelStockTransaction': ":8000/cancelStockTransaction"
 }
 
 
@@ -407,7 +407,7 @@ RESPONSE
 def step_15_login():
     endpoint = ENDPOINTS['login']
     data = {
-        "user_name": "FinanceGuru",
+        "user_name": " FinanceGuru",
         "password": "Fguru@2024"
     }
     response = make_post_request(endpoint, data=data)
@@ -1266,8 +1266,8 @@ tests = [
     {'id': 7, 'title': "Create apple stock", 'test': lambda: step_7_create_stock(user1token)},
     {'id': 8, 'title': "Add stock to first user", 'test': lambda: step_8_add_stock_to_user(user1token, appleStockId)},
     {'id': 9, 'title': "Get User 1 stock portfolio", 'test': lambda: step_9_get_stock_portfolio(user1token)},
-    {'id': 10, 'title': "User 1 Sell limit apple q: 369 p: 140", 'test': lambda: step_10_place_stock_order(user1token, appleStockId)},
-    {'id': 11, 'title': "User 1 Sell limit google q: 550 p: 135", 'test': lambda: step_11_place_stock_order(user1token, googleStockId)},
+    {'id': 10, 'title': "User 1 Sell limit google q: 550 p: 135", 'test': lambda: step_11_place_stock_order(user1token, googleStockId)},
+    {'id': 11, 'title': "User 1 Sell limit apple q: 369 p: 140", 'test': lambda: step_10_place_stock_order(user1token, appleStockId)},
     {'id': 12, 'title': "User 1 get stock portfolio", 'test': lambda: step_12_get_stock_portfolio(user1token)},
     {'id': 13, 'title': "User 1 get stock transactions", 'test': lambda: step_13_get_stock_transactions(user1token)},
 		{'id': 14, 'title': "Valid register User 2", 'test': lambda: step_14_register()},

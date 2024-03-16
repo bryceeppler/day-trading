@@ -25,7 +25,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order: OrderBookOrder = {
-      user_id: "1",
+      user_id: "2",
       stock_tx_id: "1",
 
       is_buy: true,
@@ -63,7 +63,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "2",
       stock_tx_id: "1",
 
       is_buy: true,
@@ -97,7 +97,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "2",
       stock_tx_id: "1",
 
       is_buy: false,
@@ -130,7 +130,7 @@ describe("OrderBook Limit Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -143,7 +143,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       is_buy: true,
@@ -176,7 +176,7 @@ describe("OrderBook Limit Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -189,7 +189,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       is_buy: false,
@@ -223,7 +223,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         stock_id: "1",
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         price: 15,
@@ -235,7 +235,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       is_buy: false,
@@ -269,7 +269,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         stock_id: "1",
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         price: 8,
@@ -281,7 +281,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const order = {
-      user_id: "1",
+      user_id: "3",
       stock_tx_id: "1",
 
       is_buy: true,
@@ -315,7 +315,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         stock_id: "1",
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         price: 20,
@@ -329,7 +329,7 @@ describe("OrderBook Limit Order Tests", () => {
     orderbook.buyOrders = [
       {
         stock_id: "1",
-        user_id: "1",
+        user_id: "3",
         stock_tx_id: "1",
 
         price: 20,
@@ -341,7 +341,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
       {
         stock_id: "1",
-        user_id: "1",
+        user_id: "5",
         stock_tx_id: "1",
 
         price: 20,
@@ -353,7 +353,7 @@ describe("OrderBook Limit Order Tests", () => {
       },
     ];
     const sellOrder = {
-      user_id: "1",
+      user_id: "4",
       stock_tx_id: "1",
 
       is_buy: false,
@@ -365,7 +365,7 @@ describe("OrderBook Limit Order Tests", () => {
       executed: false,
     };
     const buyOrder = {
-      user_id: "1",
+      user_id: "6",
       stock_tx_id: "1",
 
       is_buy: true,
@@ -399,7 +399,7 @@ describe("OrderBook Limit Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "2",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -414,7 +414,7 @@ describe("OrderBook Limit Order Tests", () => {
 
     orderbook.buyOrders = [
       {
-        user_id: "1",
+        user_id: "3",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -426,7 +426,7 @@ describe("OrderBook Limit Order Tests", () => {
         executed: false,
       },
       {
-        user_id: "1",
+        user_id: "4",
         stock_tx_id: "1",
 
         stock_id: "1",
@@ -440,7 +440,7 @@ describe("OrderBook Limit Order Tests", () => {
     ] as OrderBookOrder[];
 
     const sellOrder: OrderBookOrder = {
-      user_id: "1",
+      user_id: "5",
       stock_tx_id: "1",
 
       is_buy: false,
@@ -453,7 +453,7 @@ describe("OrderBook Limit Order Tests", () => {
     };
 
     const buyOrder: OrderBookOrder = {
-      user_id: "1",
+      user_id: "6",
       stock_tx_id: "1",
 
       is_buy: true,

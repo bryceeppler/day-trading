@@ -7,6 +7,7 @@ interface UseReactOperationsProps {
   navigateToRegistrationPage: () => void;
   navigateToHomePage: () => void;
   navigateToWalletPage: () => void;
+  navigateToSetupPage: () => void;
   navigateToPortfolioPage: () => void;
 
   replaceState: () => void;
@@ -60,6 +61,10 @@ function useReactOperations(): UseReactOperationsProps {
     localNavigate(PATHS.TRANSACTIONS);
   };
 
+  const navigateToSetupPage = () => {
+    localNavigate(PATHS.SETUP);
+  };
+
   const navigateToRegistrationPage = () => {
     localNavigate(PATHS.REGISTER);
   };
@@ -87,6 +92,7 @@ function useReactOperations(): UseReactOperationsProps {
     navigateToLoginPage,
     navigateToHomePage,
     navigateToRegistrationPage,
+    navigateToSetupPage,
     replaceState,
     navigateToWalletPage,
     navigateToPortfolioPage,

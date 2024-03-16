@@ -32,7 +32,8 @@ router.post('/login', async (req, res) =>
   try
   {
     const { user_name, password } = req.body;
-    let user = await User.findOne({ user_name });
+    const userName = user_name.trim();
+    let user = await User.findOne({  user_name: userName });
     if (!user) {
       return res.status(200).json({ success: false, data: {error: 'User does not exist'}});
     }

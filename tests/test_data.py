@@ -21,8 +21,8 @@ expected_results = {
     11: {"success": True, "data": None},
     12: {"success": True, "data": []},
     13: {"success": True, "data": [
-        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": "<appleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
-        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"}
+        {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": "<appleCompWalletTxId>", "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"}
         
     ]},
     14: {"success": True, "data": None},
@@ -60,9 +60,9 @@ expected_results = {
         {"stock_id": "<googleStockId>", "stock_name": "Google", "quantity_owned": 10}
     ]},
     24: {"success": True, "data": [
-        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
-        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "MARKET", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"}
+        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"}
     ]},
     25: {"success": True, "data": {"balance": 1350}},
     26: {"success": True, "data": [
@@ -160,9 +160,9 @@ expected_results = {
     ]},
     43: {"success": True, "data": None},
     44: {"success": True, "data": [
-        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
-        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "MARKET", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<appleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<appleStockId>", "wallet_tx_id": None, "order_status": "IN_PROGRESS", "is_buy": False, "order_type": "LIMIT", "stock_price": 140, "quantity": 369, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId3>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId2>", "order_status": "COMPLETED", "is_buy": True, "order_type": "LIMIT", "stock_price": 134, "quantity": 4, "time_stamp": "<timestamp>"}
     ]},
     45: {"success": True, "data": [
@@ -185,7 +185,7 @@ expected_results = {
     50: {"success": True, "data": {"balance": 9186}},
     51: {"success": True, "data": [
         {"stock_tx_id": "<googleCompStockTxId>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": None, "order_status": "PARTIAL_FULFILLED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 550, "time_stamp": "<timestamp>"},
-        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "MARKET", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"},
+        {"stock_tx_id": "<googleCompStockTxId2>", "parent_stock_tx_id": "<googleCompStockTxId>", "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId>", "order_status": "COMPLETED", "is_buy": False, "order_type": "LIMIT", "stock_price": 135, "quantity": 10, "time_stamp": "<timestamp>"},
         {"stock_tx_id": "<googleCompStockTxId3>", "parent_stock_tx_id": None, "stock_id": "<googleStockId>", "wallet_tx_id": "<googleCompWalletTxId2>", "order_status": "COMPLETED", "is_buy": True, "order_type": "LIMIT", "stock_price": 134, "quantity": 4, "time_stamp": "<timestamp>"}
     ]},
     52: {"success": True, "data": [

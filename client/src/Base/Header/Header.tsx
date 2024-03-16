@@ -6,12 +6,13 @@ import { UserContext } from 'context/userProfile';
 import DownIcon from 'images/downChevron.svg';
 import useReactOperations from 'hooks/useReactOperations.hook';
 import useLogin from 'action/useLogin';
+import StorageIcon from '@mui/icons-material/Storage';
 
 const Header = () => {
   const [accountOpen, setAccountOpen] = useState<boolean>(false);
 
   const { user } = useContext(UserContext);
-  const { navigateToLoginPage, navigateToWalletPage, navigateToHomePage } = useReactOperations();
+  const { navigateToLoginPage, navigateToWalletPage, navigateToHomePage, navigateToSetupPage } = useReactOperations();
   const { logout } = useLogin();
   const onLogout = () => {
     logout();
@@ -32,21 +33,30 @@ const Header = () => {
             <img src={TransactionIcon} alt="" />
             <div>Transactions</div>
           </div>
-        </div>
-      )}
-      {!!user && (
-        <div className={styles.account}>
-          <div>{user.name}</div>
-          <img src={DownIcon} alt="" onClick={() => setAccountOpen((prev) => !prev)} />
-          {accountOpen && (
-            <div className={styles.dropdownMenu}>
-              <ul>
-                <li onClick={onLogout}>Logout</li>
-              </ul>
+          {!!user && (
+            <div className={styles.setup} onClick={navigateToSetupPage}>
+              <StorageIcon className={styles.icon} />
+              <div>Database Setup</div>
             </div>
           )}
         </div>
       )}
+
+      <div>
+        {!!user && (
+          <div className={styles.account}>
+            <div>{user.name}</div>
+            <img src={DownIcon} alt="" onClick={() => setAccountOpen((prev) => !prev)} />
+            {accountOpen && (
+              <div className={styles.dropdownMenu}>
+                <ul>
+                  <li onClick={onLogout}>Logout</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </header>
   );
 };

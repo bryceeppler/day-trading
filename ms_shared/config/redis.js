@@ -30,6 +30,7 @@ exports.setJson = async (key, value) => {
 		console.log("Setting JSON -----------------")
 		console.log(key)
 		console.log(value)
+		if (!value) return
 		if (!redisCLient) {
 			throw new Error('REdis Connection Not Established');
 		}

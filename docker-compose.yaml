@@ -2,40 +2,56 @@ version: "3.9"
 
 services:
 
-
-
-  load-balancer-internal:
-    image: nginx:latest
-    volumes: 
-      - "./nginx-internal.conf:/etc/nginx/nginx.conf"
-    expose:
-      - "6000"
-    ports:
-      - 6000:6000
-    depends_on:
-      - ms_order_execution
-
+  # Nginx Reverse Proxy
   load-balancer-external:
     image: nginx:latest
-    volumes: 
+    volumes:
       - "./nginx-external.conf:/etc/nginx/nginx.conf"
     ports:
-     - 8000:8000
+      - 8000:8000
     depends_on:
-    - ms_user
-    - ms_order_creation
-    - ms_matching_engine
-    - ms_market_data
-    - ms_transaction_manager
+      - ms_user
+      - ms_order_creation
+      - ms_matching_engine
+      - ms_market_data
+      - ms_transaction_manager
+      - ms_authentication
 
+  # RabbitMQ Service
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - "5672:5672" # RabbitMQ connection
+      - "15672:15672" # RabbitMQ management UI
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq" # persistance 
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Database Instance
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    volumes:
+      - db_data:/data/db
 
   # React Frontend
   react:
     build: ./client
     ports:
       - "3000:3000"
-    environment:
-      REACT_APP_API_URL: http://localhost:8000
+    env_file:
+      - .env
     depends_on:
       - ms_user
       - ms_order_execution
@@ -43,17 +59,23 @@ services:
       - ms_matching_engine
       - ms_market_data
       - ms_transaction_manager
-    command: ["npm", "start"]
+      - ms_authentication
+    command: [ "npm", "start" ]
 
   # User & Auth Microservice
   ms_user:
     container_name: user
     build: ./ms_user
-    image: ms_user
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-      BCRYPT_SALT_ROUNDS: 12
+    env_file:
+      - .env
+    volumes:
+      - ./ms_shared:/app/shared
+
+  ms_authentication:
+    container_name: authentication
+    build: ./ms_authentication
+    env_file:
+      - .env
     volumes:
       - ./ms_shared:/app/shared
 
@@ -61,9 +83,11 @@ services:
   ms_order_execution:
     container_name: order_execution
     build: ./ms_order_execution
-
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
     volumes:
       - ./ms_shared:/app/shared
 
@@ -71,27 +95,25 @@ services:
   ms_order_creation:
     container_name: order_creation
     build: ./ms_order_creation
-    expose:
-      - "3000"
-
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./ms_shared:/app/shared
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-      MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
-      NODE_ENV: production
-    command: ["npm", "start"]
+    env_file:
+      - .env
+    command: [ "npm", "start" ]
 
   # Matching Engine Microservice
   ms_matching_engine:
     container_name: matching_engine
     build: ./ms_matching_engine
-
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      NODE_ENV: production
-    command: ["npm", "start"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+    command: [ "npm", "start" ]
     volumes:
       - ./ms_shared:/app/shared
 
@@ -99,10 +121,8 @@ services:
   ms_market_data:
     container_name: market_data
     build: ./ms_market_data
-
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+    env_file:
+      - .env
     volumes:
       - ./ms_shared:/app/shared
 
@@ -110,22 +130,11 @@ services:
   ms_transaction_manager:
     container_name: transaction_manager
     build: ./ms_transaction_manager
-    environment:
-      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
-      JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
+    env_file:
+      - .env
     volumes:
       - ./ms_shared:/app/shared
 
-  mongo:
-    container_name: mongo
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongodb
-      MONGO_INITDB_ROOT_PASSWORD: mongodb
-    volumes:
-      - db_data:/data/db
-
 volumes:
   db_data:
+  rabbitmq_data:

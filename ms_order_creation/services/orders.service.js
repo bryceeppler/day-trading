@@ -3,6 +3,11 @@ const ordersModel = require("../models/orders.model");
 const usersModel = require("../models/users.model");
 const axios = require("../axios/base");
 const config = require("../config/config");
+const rabbitManager = require("../shared/config/rabbitmq");
+const { MESSAGE_QUEUE } = require("../shared/lib/enums");
+
+
+rabbitManager.connectToRabbitMQ(config.rabbitMQUrl);
 
 exports.placeOrder = async (data, token) =>
 {
@@ -80,11 +85,13 @@ exports.placeOrder = async (data, token) =>
       stock_tx_id,
     };
 
-    await axios.POST(
-      `${config.mathingEngineUrl}/receiveOrder`,
-      matchingEngineData,
-      token,
-    );
+    await rabbitManager.publishToQueue(MESSAGE_QUEUE.PLACE_ORDER, matchingEngineData);
+
+    // await axios.POST(
+    //   `${config.mathingEngineUrl}/receiveOrder`,
+    //   matchingEngineData,
+    //   token,
+    // );
   } catch (error)
   {
     console.error(error);
@@ -162,12 +169,14 @@ exports.sellOrder = async (data, token) =>
       stock_tx_id,
     };
 
-    // Send data to matching engine
-    await axios.POST(
-      `${config.mathingEngineUrl}/receiveOrder`,
-      matchingEngineData,
-      token,
-    );
+    await rabbitManager.publishToQueue(MESSAGE_QUEUE.PLACE_ORDER, matchingEngineData);
+
+    // // Send data to matching engine
+    // await axios.POST(
+    //   `${config.mathingEngineUrl}/receiveOrder`,
+    //   matchingEngineData,
+    //   token,
+    // );
   } catch (error)
   {
     console.error(error);
@@ -181,7 +190,7 @@ exports.sellOrder = async (data, token) =>
       return reverseError;
     }
 
-		if (error.details)
+    if (error.details)
     {
       return error.details.response.data.error;
     }
@@ -193,7 +202,8 @@ exports.cancelStockTransaction = async (data, token) =>
 {
   try
   {
-    await axios.POST(`${config.mathingEngineUrl}/cancelOrder`, data, token);
+    await rabbitManager.publishToQueue(MESSAGE_QUEUE.CANCEL_ORDER, data);
+    //await axios.POST(`${config.mathingEngineUrl}/cancelOrder`, data, token);
   } catch (error)
   {
     console.error(error);

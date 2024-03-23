@@ -68,12 +68,13 @@ exports.updateStockPrice = async (req, res, next) =>
 
     // Check if the stock exists
     const existingStock = await Stock.fetchStock(stockId);
+		const updatedStock = {...existingStock, starting_price: new_price, current_price: new_price}
 
     if (!existingStock) return errorReturn(res, "Stock not found");
 
-    stockModel.updateStockPrice(stockId, new_price);
+    stockModel.updateStockPrice(updatedStock);
 
-    return successReturn(res, existingStock);
+    return successReturn(res, updatedStock);
   } catch (error)
   {
     return handleError(error, res, next);

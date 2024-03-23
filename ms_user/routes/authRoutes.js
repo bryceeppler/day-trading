@@ -5,27 +5,6 @@ const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
-// Username and password validation functions
-const validateUsername = (username) =>
-{
-  // Check if username has more than 8 characters and doesn't contain special characters
-  const usernameRegex = /^[a-zA-Z0-9_. ]+$/;
-  return username.length > 8 && usernameRegex.test(username);
-};
-
-const validatePassword = (password) =>
-{
-  // Check if password doesn't contain spaces and length is at least 6
-  return !password.includes(' ') && password.length >= 6;
-};
-
-const validateName = (name) =>
-{
-  // Check if name is provided and contains only letters and spaces
-  const nameRegex = /^[a-zA-Z0-9_. !@-]+$/; 
-  return name.trim().length > 0 && nameRegex.test(name);
-};
-
 // Login route
 router.post('/login', async (req, res) =>
 {

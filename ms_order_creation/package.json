@@ -11,6 +11,7 @@
   "author": "Matthew Buie",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.3",
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
@@ -20,6 +21,6 @@
     "moment": "^2.30.1",
     "mongoose": "^8.1.1",
     "nodemon": "^3.0.3",
-    "amqplib": "^0.10.3"
+    "redis": "^3.0.2"
   }
 }

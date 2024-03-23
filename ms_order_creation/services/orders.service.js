@@ -18,7 +18,8 @@ exports.placeOrder = async (data, token) =>
 
   try
   {
-    // Fetch User
+   
+		// Fetch User
     const userData = await usersModel.fetchBalance(data.user_id);
     if (userData === null) throw handleError("Cannot find user", 400);
     // Check balance
@@ -53,11 +54,18 @@ exports.placeOrder = async (data, token) =>
       is_debit: true,
       amount,
     };
+		console.log("Wallet Transadasdlfkas asdf asdf ")
+		console.log(walletTransactionData)
+
     const createdWalletTx = await ordersModel.createWalletTransaction(
       walletTransactionData,
     );
     wallet_tx_id = createdWalletTx._id;
-
+		console.log(wallet_tx_id)
+		console.log("Printing data ----------")
+		console.log(data)
+		console.log("Printing stock ----------")
+		console.log(stock)
     // Create a stock transaction
     const stockTxData = {
       user_id: data.user_id,
@@ -73,6 +81,8 @@ exports.placeOrder = async (data, token) =>
     const createdStockTx =
       await ordersModel.createStockTransaction(stockTxData);
     stock_tx_id = createdStockTx._id;
+		console.log("Stokck Transtion is ---------------")
+		console.log(stock_tx_id)
 
     // Update stock tx id in wallet transaction.
     await ordersModel.updateStockTxId(createdWalletTx._id, stock_tx_id);
@@ -92,8 +102,10 @@ exports.placeOrder = async (data, token) =>
     //   matchingEngineData,
     //   token,
     // );
+
   } catch (error)
   {
+		console.log("---------- HEre ---2------------")
     console.error(error);
     const reverseError = await reversePlaceOrder(
       data.user_id,
@@ -135,6 +147,7 @@ exports.sellOrder = async (data, token) =>
     await usersModel.updatePortfolioStockQuantity(
       portfolio._id,
       portfolio.quantity_owned - data.quantity,
+		//	data.user_id
     );
     portfolio_id = portfolio._id;
     previousQuantityOwned = portfolio.quantity_owned;
@@ -184,6 +197,7 @@ exports.sellOrder = async (data, token) =>
       portfolio_id,
       previousQuantityOwned,
       stock_tx_id,
+		//	data.user_id
     );
     if (reverseError)
     {
@@ -253,6 +267,7 @@ const reverseSellOrder = async (
   previousQuantityOwned,
   previousStockPrice,
   stock_tx_id,
+	//user_id,
 ) =>
 {
   try
@@ -262,6 +277,7 @@ const reverseSellOrder = async (
       await usersModel.updatePortfolioStockQuantity(
         portfolioId,
         previousQuantityOwned,
+				//user_id
       );
     }
 

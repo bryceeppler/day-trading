@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy dependencies to workdir
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --no-cache
 
 COPY . .
 
@@ -14,12 +14,12 @@ COPY . .
 # RUN npm run build
 
 # serve with nginx
-FROM nginx:alpine
+#FROM nginx:alpine
 
 # copy build files to nginx
 # COPY --from=build /app/build /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 3000
 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+

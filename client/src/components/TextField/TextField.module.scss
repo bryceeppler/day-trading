@@ -1,0 +1,43 @@
+@import 'scss/base/colors';
+
+.container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  label {
+    font-weight: 400;
+    font-size: 12px;
+    margin-top: 2px;
+    color: $color-text-grey;
+  }
+  span {
+    color: $color-text-grey;
+  }
+  .required {
+    color: $color-required;
+    font-size: 14px;
+  }
+
+  input {
+    margin-top: 3px;
+    width: 100%;
+    padding: 3px;
+    padding-left: 10px;
+    border: 2px solid $color-border-light;
+    border-radius: 3px;
+    height: 18px;
+    color: $color-text-dark-grey;
+
+    &::placeholder {
+      color: $color-text-grey;
+      font-size: 12px;
+    }
+    &:focus {
+      outline: none;
+    }
+    &.error {
+      border-color: $color-error;
+    }
+  }
+}

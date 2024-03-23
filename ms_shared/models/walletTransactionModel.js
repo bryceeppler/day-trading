@@ -12,6 +12,9 @@ const walletTxSchema = new mongoose.Schema({
     is_deleted: { type: Boolean, required: true, default: false },
 });
 
+walletTxSchema.index({user_id: 1}); // for transaction service
+walletTxSchema.index({stock_tx_id: 1}); // for execution service
+
 const WalletTransaction = mongoose.model(base.COLLECTIONS.WALLET_TRANSACTION, walletTxSchema);
 
 module.exports = WalletTransaction;

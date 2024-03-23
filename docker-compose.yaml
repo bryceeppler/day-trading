@@ -1,109 +1,126 @@
-version: '3.9'
+version: "3.9"
 
 services:
+
+
+
+  load-balancer-internal:
+    image: nginx:latest
+    volumes: 
+      - "./nginx-internal.conf:/etc/nginx/nginx.conf"
+    expose:
+      - "6000"
+    ports:
+      - 6000:6000
+    depends_on:
+      - ms_order_execution
+
+  load-balancer-external:
+    image: nginx:latest
+    volumes: 
+      - "./nginx-external.conf:/etc/nginx/nginx.conf"
+    ports:
+     - 8000:8000
+    depends_on:
+    - ms_user
+    - ms_order_creation
+    - ms_matching_engine
+    - ms_market_data
+    - ms_transaction_manager
+
+
   # React Frontend
-  #react:
-  #  build: ./client
-  #  ports:
-  #    - "3000:80"
-  #  depends_on:
-  #    - ms_user
-  #    - ms_order_execution
-  #    - ms_order_creation
-  #    - ms_matching_engine
-  #    - ms_market_data
+  react:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+    depends_on:
+      - ms_user
+      - ms_order_execution
+      - ms_order_creation
+      - ms_matching_engine
+      - ms_market_data
+      - ms_transaction_manager
+    command: ["npm", "start"]
 
   # User & Auth Microservice
   ms_user:
+    container_name: user
     build: ./ms_user
     image: ms_user
-    ports:
-      - "8001:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       BCRYPT_SALT_ROUNDS: 12
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Order Execution Microservice
   ms_order_execution:
+    container_name: order_execution
     build: ./ms_order_execution
-    ports:
-      - "8002:3000"
+
     environment:
-      MONGO_URI: mongodb://mongo:27017/db
-    depends_on:
-      - ms_shared
+      MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Order Creation Microservice
   ms_order_creation:
+    container_name: order_creation
     build: ./ms_order_creation
     expose:
-      - '3000'
-    ports:
-      - "8003:3000"
+      - "3000"
+
+    volumes:
+      - ./ms_shared:/app/shared
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
       MATCHING_ENGINE_URL: "http://ms_matching_engine:3000"
       NODE_ENV: production
-    command: [ "npm", "start" ]
+    command: ["npm", "start"]
 
   # Matching Engine Microservice
   ms_matching_engine:
+    container_name: matching_engine
     build: ./ms_matching_engine
-    ports:
-      - "8004:3000"
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       NODE_ENV: production
-    command: [ "npm", "start" ]
-    depends_on:
-      - ms_shared
+    command: ["npm", "start"]
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Market Data Microservice
   ms_market_data:
+    container_name: market_data
     build: ./ms_market_data
-    ports:
-      - "8005:3000"
+
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   # Audit Manager Microservice
   ms_transaction_manager:
+    container_name: transaction_manager
     build: ./ms_transaction_manager
-    ports:
-      - "8006:3000"
     environment:
       MONGO_URI: mongodb://mongodb:mongodb@mongo:27017/db
       JWT_SECRET: pHilAeFUQvOssCWnfzobwewx27HGVgXJOO1r4kTYJGw=
-    depends_on:
-      - ms_shared
     volumes:
-      - shared_volume:/app/shared
-
-  # Shared Code Microservice
-  ms_shared:
-    build: ./ms_shared
-    volumes:
-      - shared_volume:/app/shared
+      - ./ms_shared:/app/shared
 
   mongo:
+    container_name: mongo
     image: mongo:latest
     ports:
-      - "27017"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongodb
       MONGO_INITDB_ROOT_PASSWORD: mongodb
@@ -112,4 +129,3 @@ services:
 
 volumes:
   db_data:
-  shared_volume:

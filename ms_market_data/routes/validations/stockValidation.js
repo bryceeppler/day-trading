@@ -19,3 +19,8 @@ exports.updateStockPriceValidation = validate([
     .isNumeric().withMessage('New price must be a number')
     .custom(isPositive).withMessage('New price must be positive'),
 ]);
+
+exports.stockNameValidation = validate([
+  body('stock_id').notEmpty().withMessage('Stock ID is required')
+    .isMongoId().withMessage('Invalid stock ID format'),
+]);

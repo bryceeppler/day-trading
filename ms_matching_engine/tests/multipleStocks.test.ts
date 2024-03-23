@@ -1,10 +1,6 @@
 import { StockTransaction } from "../models/stockTransactionModel";
 import OrderBook from "../services/orderbook";
-import {
-  OrderBookOrder,
-  OrderType,
-  IOrderBook,
-} from "../types";
+import { OrderBookOrder, OrderType, IOrderBook } from "../types";
 
 describe("OrderBook Market Order Tests", () => {
   let orderbook: IOrderBook;
@@ -19,24 +15,25 @@ describe("OrderBook Market Order Tests", () => {
     orderbook.buyOrders.push({
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
+
       stock_id: "1",
       price: 100,
       quantity: 10,
       is_buy: true,
       order_type: OrderType.LIMIT,
       timestamp: new Date(),
+      executed: false,
     });
 
     const marketOrder: OrderBookOrder = {
       user_id: "1",
       stock_tx_id: "1",
-      wallet_tx_id: "1",
       stock_id: "2",
       quantity: 10,
       is_buy: false,
       order_type: OrderType.MARKET,
       timestamp: new Date(),
+      executed: false,
       price: 5,
     };
 

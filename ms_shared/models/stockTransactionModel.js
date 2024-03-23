@@ -5,6 +5,7 @@ const { ORDER_STATUS, ORDER_TYPE } = require('../lib/enums');
 const ObjectId = mongoose.Types.ObjectId;
 
 const stockTxSchema = new mongoose.Schema({
+    user_id: { type: ObjectId, required: true, unqiue: false },
     stock_id: { type: ObjectId, required: true, unqiue: false },
     parent_stock_tx_id: { type: ObjectId, required: false, unqiue: false, default: null },
     wallet_tx_id: { type: ObjectId, required: false, unique: false, default: null },
@@ -17,6 +18,9 @@ const stockTxSchema = new mongoose.Schema({
     time_stamp: { type: Date, required: true, default: Date.now },
     is_deleted: { type: Boolean, required: true, default: false },
 });
+
+stockTxSchema.index({user_id: 1}); // for transaction service
+stockTxSchema.index({parent_stock_id: 1}); // for execution service
 
 const StockTransaction = mongoose.model(base.COLLECTIONS.STOCK_TRANSACTION, stockTxSchema);
 

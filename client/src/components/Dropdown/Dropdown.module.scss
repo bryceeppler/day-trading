@@ -1,0 +1,84 @@
+@import 'scss/base/colors.scss';
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+
+  label {
+    font-weight: 400;
+    font-size: 12px;
+  }
+  span {
+    color: $color-text-grey;
+  }
+  .required {
+    color: $color-required;
+    font-size: 14px;
+  }
+
+  .dropdownButton {
+    margin-top: 2px;
+    padding: 3px;
+    padding-left: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    border: 2px solid $color-text-grey;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    color: $color-text-grey;
+    height: 18px;
+
+    .selected {
+      color: $color-text-dark-grey;
+    }
+
+    &.error {
+      border-color: $color-error;
+    }
+  }
+
+  .disabled {
+    background-color: $color-disabled-dark;
+    pointer-events: none;
+  }
+
+  .dropdownMenu {
+    position: absolute;
+    left: 0;
+    z-index: 999;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid $color-main-background;
+        white-space: nowrap;
+        color: $color-text-dark-grey;
+
+        &:hover {
+          background-color: $color-main-light;
+        }
+      }
+    }
+  }
+}
+
+.gone {
+  display: none;
+}

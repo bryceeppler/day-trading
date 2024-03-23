@@ -1,0 +1,29 @@
+@import 'scss/base/colors.scss';
+
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: none;
+  margin: 0 10px;
+}
+
+.spinner {
+  width: 25px;
+  height: 25px;
+  border: 4px solid transparent;
+  border-top: 4px solid $color-main;
+  border-right: 4px solid $color-main;
+  border-left: 4px solid $color-main;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

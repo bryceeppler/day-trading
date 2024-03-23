@@ -15,6 +15,7 @@ services:
       - ms_matching_engine
       - ms_market_data
       - ms_transaction_manager
+      - ms_authentication
 
   # RabbitMQ Service
   rabbitmq:
@@ -58,12 +59,21 @@ services:
       - ms_matching_engine
       - ms_market_data
       - ms_transaction_manager
+      - ms_authentication
     command: [ "npm", "start" ]
 
   # User & Auth Microservice
   ms_user:
     container_name: user
     build: ./ms_user
+    env_file:
+      - .env
+    volumes:
+      - ./ms_shared:/app/shared
+
+  ms_authentication:
+    container_name: authentication
+    build: ./ms_authentication
     env_file:
       - .env
     volumes:

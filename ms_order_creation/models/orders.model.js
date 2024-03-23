@@ -17,6 +17,7 @@ exports.fetchWalletTransaction = async (id) => {
 
 exports.createWalletTransaction = async (data) => {
 	const id = await base.createOne(COLLECTIONS.WALLET_TRANSACTION, [data])
+	data._id = id
 	await redisCache.setJson(redisCache.getWalletTranstionRedisKey(id), data)
 	return id
 }
@@ -41,6 +42,7 @@ exports.createStockTransaction = async (data) => {
 	console.log("Create stock transaction -------")
 	console.log(data)
 	const id = await base.createOne(COLLECTIONS.STOCK_TRANSACTION, [data])
+	data._id = id
 	await redisCache.setJson(redisCache.getStockTranstionRedisKey(id), data)
 	return id
 }

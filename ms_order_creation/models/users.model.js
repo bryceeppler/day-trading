@@ -12,13 +12,14 @@ exports.fetchPortfolio = async ({userId, stockId}) => {
 exports.fetchPortfolio = async ({userId, stockId}) => {
 	console.log("FEtching portfolio -----------")
 	console.log(userId, stockId)
-	const cachedData = await redisCache.getJson(redisCache.getUserPortfolioRedisKey(userId, stockId))
+	const key = redisCache.getUserPortfolioRedisKey(userId, stockId)
+	const cachedData = await redisCache.getJson(key)
 	console.log(cachedData)
 	if (cachedData) return cachedData
 
 	const portfolio = await base.findOne(COLLECTIONS.PORTFOLIO, {user_id: userId, stock_id: stockId})
 	console.log(portfolio)
-	redisCache.setJson(redisCache.getUserPortfolioRedisKey(userId), portfolio)
+	await redisCache.setJson(key, portfolio)
 
 	return portfolio
 }

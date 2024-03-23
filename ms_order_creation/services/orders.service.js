@@ -4,7 +4,7 @@ const usersModel = require("../models/users.model");
 const axios = require("../axios/base");
 const config = require("../config/config");
 const rabbitManager = require("../shared/config/rabbitmq");
-const { MESSAGE_QUEUE } = require("../shared/lib/enums");
+const { MESSAGE_QUEUE, ORDER_STATUS } = require("../shared/lib/enums");
 
 
 rabbitManager.connectToRabbitMQ(config.rabbitMQUrl);
@@ -43,8 +43,7 @@ exports.placeOrder = async (data, token) =>
         stock_id: data.stock_id,
         quantity_owned: 0,
       };
-      const newInsert = await usersModel.createPortfolio(newPortfolio);
-      portfolio_id = newInsert._id;
+      portfolio_id = await usersModel.createPortfolio(newPortfolio);
     }
 
     previousBalance = balance;
@@ -54,38 +53,28 @@ exports.placeOrder = async (data, token) =>
       is_debit: true,
       amount,
     };
-		console.log("Wallet Transadasdlfkas asdf asdf ")
-		console.log(walletTransactionData)
 
-    const createdWalletTx = await ordersModel.createWalletTransaction(
+    const wallet_tx_id = await ordersModel.createWalletTransaction(
       walletTransactionData,
     );
-    wallet_tx_id = createdWalletTx._id;
-		console.log(wallet_tx_id)
-		console.log("Printing data ----------")
-		console.log(data)
-		console.log("Printing stock ----------")
-		console.log(stock)
     // Create a stock transaction
     const stockTxData = {
       user_id: data.user_id,
       wallet_tx_id: wallet_tx_id,
       stock_id: data.stock_id,
       is_buy: data.is_buy,
+			order_status: ORDER_STATUS.IN_PROGRESS,
       order_type: data.order_type,
       stock_price: data.price ? data.price : stock.current_price,
       quantity: data.quantity,
-      portfolio_id: portfolio_id ? portfolio_id : portfolio.id,
+      portfolio_id: portfolio_id ? portfolio_id : portfolio._id,
     };
 
-    const createdStockTx =
+    const stock_tx_id =
       await ordersModel.createStockTransaction(stockTxData);
-    stock_tx_id = createdStockTx._id;
-		console.log("Stokck Transtion is ---------------")
-		console.log(stock_tx_id)
 
     // Update stock tx id in wallet transaction.
-    await ordersModel.updateStockTxId(createdWalletTx._id, stock_tx_id);
+    await ordersModel.updateStockTxId(wallet_tx_id, stock_tx_id);
 
     // Send data to matching engine
     const matchingEngineData = {
@@ -105,7 +94,6 @@ exports.placeOrder = async (data, token) =>
 
   } catch (error)
   {
-		console.log("---------- HEre ---2------------")
     console.error(error);
     const reverseError = await reversePlaceOrder(
       data.user_id,
@@ -166,6 +154,7 @@ exports.sellOrder = async (data, token) =>
       user_id: data.user_id,
       stock_id: data.stock_id,
       is_buy: data.is_buy,
+			order_status: ORDER_STATUS.IN_PROGRESS,
       portfolio_id,
       order_type: data.order_type,
       stock_price: data.price ? data.price : stock.current_price,

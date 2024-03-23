@@ -33,6 +33,22 @@ services:
       timeout: 5s
       retries: 3
 
+  
+  # Redis Service
+  redis_cache:
+    image: redis:latest
+    container_name: redis_cache
+    restart: always
+    volumes:
+      - redis_volume_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   # Database Instance
   mongo:
     container_name: mongo
@@ -88,11 +104,15 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis_cache:
+        condition:  service_healthy # Add dependency on Redis service
+
     volumes:
       - ./ms_shared:/app/shared
     env_file:
       - .env
-    command: [ "npm", "start" ]
+    command: [ "npm", "run", "nodemon" ]
+
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -128,3 +148,4 @@ services:
 volumes:
   db_data:
   rabbitmq_data:
+  redis_volume_data:

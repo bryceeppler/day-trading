@@ -58,10 +58,10 @@ export default class OrderBook implements IOrderBook {
   public matchOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     this.resortOrders();
     if (newOrder.order_type === "MARKET") {
-      console.log("Matching market order");
+      // console.log("Matching market order");
       return this.matchMarketOrder(newOrder);
     } else {
-      console.log("Matching limit order");
+      // console.log("Matching limit order");
       return this.matchLimitOrder(newOrder);
     }
   }
@@ -95,28 +95,11 @@ export default class OrderBook implements IOrderBook {
    */
   public async flushOrders() {
     if (this.isSendingOrders) {
-      console.log("Already sending orders, skipping flush...");
+      // console.log("Already sending orders, skipping flush...");
       return;
     };
     this.isSendingOrders = true;
     try {
-      // Combine orders into one array with a type indicator
-      const allOrders = [
-        ...this.matchedOrders.map(({ timestamp,  buyOrder, sellOrder, ...rest }) => ({
-          ...rest,
-          buyOrder: buyOrder.stock_tx_id, // Assuming 'id' is the property for the order's ID
-          sellOrder: sellOrder.stock_tx_id, // Same here
-          type: 'Matched'
-        })),
-        ...this.cancelledOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Cancelled' })),
-        ...this.expiredOrders.map(({ timestamp,  ...rest }) => ({ ...rest, type: 'Expired' })),
-      ];
-
-      if (allOrders.length != 0) {
-        console.table(allOrders);
-      }
-
-
       await this.sendOrdersToOrderExecutionService(
         this.matchedOrders,
         this.cancelledOrders,
@@ -151,7 +134,6 @@ export default class OrderBook implements IOrderBook {
         continue;
       }
       if (this.isMatch(newOrder, matchAgainst) === false) {
-        console.log("Not a match");
         continue;
       }
       const matchedQuantity = Math.min(remainingQty, matchAgainst.quantity);
@@ -167,9 +149,9 @@ export default class OrderBook implements IOrderBook {
       }
     }
 
-    if (remainingQty > 0) {
-      // TODO: What do we do with a partially filled market order?
-    }
+    // if (remainingQty > 0) {
+    //   // TODO: handle partially filled market order?
+    // }
 
     return [this.matchedOrders, remainingQty];
   }
@@ -357,12 +339,12 @@ export default class OrderBook implements IOrderBook {
    */
   private matchLimitOrder(newOrder: OrderBookOrder): [MatchedOrder[], number] {
     const [matchedOrders, remainingQty] = this.findMatches(newOrder);
-    if (matchedOrders.length > 0) {
-      console.log("found match");
-    } else {
-      console.log("no match found");
-      console.log("Remaining qty: ", remainingQty);
-    }
+    // if (matchedOrders.length > 0) {
+    //   console.log("found match");
+    // } else {
+    //   console.log("no match found");
+    //   console.log("Remaining qty: ", remainingQty);
+    // }
     this.handlePartialOrder(newOrder, remainingQty);
     this.insertMatchedOrders(matchedOrders);
     return [matchedOrders, remainingQty];
@@ -423,7 +405,7 @@ export default class OrderBook implements IOrderBook {
 
     if (expiredOrders.length > 0) {
       for (const expiredOrder of expiredOrders) {
-        console.log("Expired order: ", expiredOrder);
+        // console.log("Expired order: ", expiredOrder);
         data.push({
           stock_tx_id: expiredOrder.stock_tx_id,
           action: "EXPIRED",
@@ -449,7 +431,7 @@ export default class OrderBook implements IOrderBook {
       for (const order of data) {
         const ok = await publishToQueue(MessageQueue.EXECUTE_ORDER, order);
         if (ok) {
-          console.log("Message Published: ", order)
+          // console.log("Message Published: ", order)
           this.executeOrder(order);
         } else {
           console.log("Could not execute order: ", order);

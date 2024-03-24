@@ -46,7 +46,7 @@ const receiveOrder = async (orderBook: OrderBook, order: Order): Promise<void> =
 
     const [matched_orders, remainingQuantity]: [MatchedOrder[], number] =
       orderBook.matchOrder(orderBookOrder);
-    console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
+    // console.log(`Matched ${matched_orders.length} orders, sending to execution service...`);
     orderBook.flushOrders();
   } catch (error) {
     // TODO: better err handling
@@ -59,7 +59,7 @@ const cancelOrder = async (orderBook: OrderBook, orderToCancel: CancelOrderReque
     // console.log("Current orders in order book:", orderBook.getOrderBookState());
     const result = orderBook.cancelOrder(orderToCancel.stock_tx_id);
     if (result) {
-      console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
+      // console.log(`Order ${orderToCancel.stock_tx_id} cancelled.`)
       await orderBook.flushOrders();
     } else {
       console.log("Order not found");
@@ -93,7 +93,7 @@ async function RouteIncomingMessages() {
         async (data: amqp.Message | null) => {
           if (data) {
             const order: Order = JSON.parse(data.content.toString());
-            console.log("Recieved Place Order Message: ", order);
+            // console.log("Recieved Place Order Message: ", order);
             receiveOrder(orderBook, order);
           }
         },
@@ -106,7 +106,7 @@ async function RouteIncomingMessages() {
         async (data: amqp.Message | null) => {
           if (data) {
             const orderToCancel: CancelOrderRequest = JSON.parse(data.content.toString());
-            console.log("Recieved Cancel Order Message: ", orderToCancel);
+            // console.log("Recieved Cancel Order Message: ", orderToCancel);
             cancelOrder(orderBook, orderToCancel);
           }
         },

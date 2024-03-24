@@ -100,7 +100,7 @@ services:
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 2
+      replicas: 15
 
   # Order Execution Microservice
   ms_order_execution:

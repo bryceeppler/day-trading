@@ -55,20 +55,11 @@ exports.placeOrder = async (data, token) =>
 
     previousBalance = balance;
     // Create a wallet transaction
-    const walletTransactionData = new WalletTransactionModel ({
-      user_id: data.user_id,
-      is_debit: true,
-      amount,
-    });
 
-    await redis.createWalletTransaction(
-      walletTransactionData,
-    );
-		wallet_tx_id = walletTransactionData._id
+
     // Create a stock transaction
     const stockTxData = new StockTransactionModel ({
       user_id: data.user_id,
-      wallet_tx_id: wallet_tx_id,
       stock_id: data.stock_id,
       is_buy: data.is_buy,
 			order_status: ORDER_STATUS.IN_PROGRESS,
@@ -77,15 +68,27 @@ exports.placeOrder = async (data, token) =>
       quantity: data.quantity,
       portfolio_id: portfolio_id ? portfolio_id : portfolio._id,
     });
+		
+		const walletTransactionData = new WalletTransactionModel ({
+      user_id: data.user_id,
+      is_debit: true,
+      amount,
+			stock_tx_id: stockTxData._id
 
+    });
+
+		stockTxData.wallet_tx_id = walletTransactionData._id,
    
-    await redis.createStockTransaction(stockTxData);
+		await Promise.all([
+			redis.createWalletTransaction(walletTransactionData),
+			redis.createStockTransaction(stockTxData)
+		])
+    
+		wallet_tx_id = walletTransactionData._id
 		stock_tx_id = stockTxData._id
 
-		walletTransactionData.stock_tx_id = stock_tx_id
-
     // Update stock tx id in wallet transaction.
-    await redis.updateWalletTransaction(walletTransactionData);
+    //await redis.updateWalletTransaction(walletTransactionData);
 
     // Send data to matching engine
     const matchingEngineData = {
@@ -233,7 +236,7 @@ exports.cancelStockTransaction = async (data, token) =>
 
 		const stockTx = await redis.fetchStockTransaction(data. stock_tx_id);
 		if (stockTx.order_status != ORDER_STATUS.IN_PROGRESS) {
-			return "Cannot Cancel Stock Transaction"
+			return "Cannot Cancel Stock"
 		}
     await rabbitManager.publishToQueue(MESSAGE_QUEUE.CANCEL_ORDER, data);
     //await axios.POST(`${config.mathingEngineUrl}/cancelOrder`, data, token);

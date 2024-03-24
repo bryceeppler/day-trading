@@ -251,7 +251,7 @@ exports.fetchAllWalletTransactionFromParams = async (params, sortBy = {}) => {
 
 exports.updateWalletTransaction = async (data) => {
 	const key = this.getWalletTranstionRedisKey(data._id)
-	await modelOperations.updateOneById(COLLECTIONS.WALLET_TRANSACTION, data._id, data);
+	modelOperations.updateOneById(COLLECTIONS.WALLET_TRANSACTION, data._id, data);
 	await this.setJson(key, data)
 }
 

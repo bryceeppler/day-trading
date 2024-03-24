@@ -194,12 +194,12 @@ const executeOrder = async (message) =>
               user_id: existingStockTx.user_id,
               is_debit: false,
               amount: amountSpent,
-              is_deleted: false
+              is_deleted: false,
+							stock_tx_id: newStockTransaction._id
             });
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
-            newWalletTransaction.stock_tx_id = newStockTransaction._id
-
+         
 						const promises = [
 							redis.updateWalletTransaction(existingWalletTx),
 							redis.createStockTransaction(newStockTransaction),
@@ -391,11 +391,11 @@ const executeOrder = async (message) =>
             user_id: existingStockTx.user_id,
             is_debit: false,
             amount: profit,
-            is_deleted: false
+            is_deleted: false,
+						stock_tx_id: newStockTransaction._id
           });
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
-          newWalletTransaction.stock_tx_id = newStockTransaction._id
 
 
 					const promises = [

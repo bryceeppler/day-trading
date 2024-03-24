@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { MESSAGE_QUEUE } = require("./shared/lib/enums");
 const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
-const Stock = require("./shared/models/stockModel");
 const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
-const Portfolio = require("./shared/models/portfolioModel");
-const User = require("./shared/models/userModel");
 const { ORDER_STATUS } = require("./shared/lib/enums");
+
+const redis = require("./shared/config/redis");
+
+redis.connect()
+
 
 const app = express();
 app.use((req, res, next) =>
@@ -66,7 +68,9 @@ const executeOrder = async (message) =>
   {
 
     console.log("checking existingStockTx");
-    const existingStockTx = await StockTransaction.findOne({ _id: stockTxId });
+
+		const existingStockTx = await redis.fetchStockTransaction(stockTxId)
+
 
     if (!existingStockTx)
     {
@@ -75,9 +79,9 @@ const executeOrder = async (message) =>
     } else
     {
       console.log("StockTx EXISTS!");
+      const existingPortfolioDocumentAndStockId = await redis.fetchPortfolio(existingStockTx.user_id, existingStockTx.stock_id );
 
-      const existingPortfolioDocumentAndStockId = await Portfolio.findOne({ _id: existingStockTx.portfolio_id, stock_id: existingStockTx.stock_id });
-      const stockUpdate = await Stock.findOne({ _id: existingStockTx.stock_id });
+			const stockUpdate = await redis.fetchStock(existingStockTx.stock_id);
 
       //if stock transaction is complete AND a BUY order AND FULFILLED COMPLETELY
       if (action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit === existingStockTx.quantity)
@@ -104,10 +108,17 @@ const executeOrder = async (message) =>
             console.log("New Quantity:", newQuantity);
 
             existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
+						
 
-            await existingPortfolioDocumentAndStockId.save();
-            await existingStockTx.save();
-            await stockUpdate.save();
+						const promises = [
+							redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+							redis.updateStockTransaction(existingStockTx),
+							redis.updateStock(stockUpdate),
+						]
+
+						await Promise.all(promises)
+						
+     
 
             console.log("Transaction updated: ",
               { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
@@ -115,6 +126,7 @@ const executeOrder = async (message) =>
           }
           catch (error)
           {
+						console.log(error)
             throw new Error('Error updating portfolio document:', error);
           }
         }
@@ -146,11 +158,13 @@ const executeOrder = async (message) =>
 
             existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
 
-            const user = await User.findOne({ _id: existingStockTx.user_id });
+          
+						const user = await redis.fetchUser(existingStockTx.user_id)
 
-            const existingWalletTx = await WalletTransaction.findOne({ _id: stockTxId });
+						const existingWalletTx = await redis.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
+       
             existingWalletTx.is_deleted = true;
-            await existingWalletTx.save();
+
 
             // create new stockTx for partially fulfilled order  
             const newStockTransaction = new StockTransaction({
@@ -180,18 +194,24 @@ const executeOrder = async (message) =>
               user_id: existingStockTx.user_id,
               is_debit: false,
               amount: amountSpent,
-              is_deleted: false
+              is_deleted: false,
+							stock_tx_id: newStockTransaction._id
             });
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
-            newWalletTransaction.stock_tx_id = newStockTransaction._id
+         
+						const promises = [
+							redis.updateWalletTransaction(existingWalletTx),
+							redis.createStockTransaction(newStockTransaction),
+							redis.createWalletTransaction(newWalletTransaction),
+							redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+							redis.updateStockTransaction(existingStockTx),
+							redis.updateStock(stockUpdate),
+						]
 
-            await newStockTransaction.save();
-            await newWalletTransaction.save();
-            await existingPortfolioDocumentAndStockId.save();
-            await existingStockTx.save();
-            await stockUpdate.save();
-
+						await Promise.all(promises)
+						
+						
             console.log("Transaction Complete: ", {
               existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
               newStockTransaction: newStockTransaction,
@@ -217,7 +237,7 @@ const executeOrder = async (message) =>
           {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
-            const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
+						const parentStockTx = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
@@ -226,10 +246,9 @@ const executeOrder = async (message) =>
               existingStockTx.order_status = 'EXPIRED';
             };
           }
+					const existingWalletTx = await redis.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
 
-          const existingWalletTx = await WalletTransaction.findOne({ stock_tx_id: stockTxId });
-
-          const user = await User.findOne({ _id: existingWalletTx.user_id });
+					const user = await redis.fetchUser(existingStockTx.user_id)
           let newBalance = existingWalletTx.amount + user.balance;
 
 
@@ -242,10 +261,13 @@ const executeOrder = async (message) =>
           existingStockTx.is_deleted = true;
           existingWalletTx.is_deleted = true;
 
-          await existingStockTx.save();
-          await existingWalletTx.save();
-          await user.save();
+					const promises = [
+						redis.updateWalletTransaction(existingWalletTx),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateUser(user)
+					]
 
+					await Promise.all(promises)
 
           console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
@@ -271,7 +293,8 @@ const executeOrder = async (message) =>
           stockUpdate.current_price = existingStockTx.stock_price;
 
           //add money to user's wallet
-          const user = await User.findById(existingStockTx.user_id);
+
+					const user = await redis.fetchUser(existingStockTx.user_id)
 
           let profit = existingStockTx.quantity * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
@@ -291,13 +314,19 @@ const executeOrder = async (message) =>
             is_deleted: false
           });
 
-          await newWalletTransaction.save();
-
+					
           existingStockTx.wallet_tx_id = newWalletTransaction._id;
 
-          await existingStockTx.save();
-          await user.save();
-          await stockUpdate.save();
+					const promises = [
+						redis.createWalletTransaction(newWalletTransaction),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateStock(stockUpdate),
+						redis.updateUser(user)
+					]
+
+					await Promise.all(promises)
+
+					
 
           console.log("New Wallet Transaction added. ", {
             existingStockTx: existingStockTx,
@@ -308,6 +337,7 @@ const executeOrder = async (message) =>
 
         } catch (error)
         {
+					console.log(error)
           throw new Error('Error making changes:', error);
         }
       }
@@ -324,7 +354,7 @@ const executeOrder = async (message) =>
           stockUpdate.current_price = existingStockTx.stock_price;
 
           //add profit money to user's wallet
-          const user = await User.findOne({ _id: existingStockTx.user_id });
+          const user = await redis.fetchUser(existingStockTx.user_id)
 
           let profit = quantityStockInTransit * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
@@ -341,7 +371,6 @@ const executeOrder = async (message) =>
           //existingPortfolioDocumentAndStockId.quantity_owned = newStockQuantity;
 
           // find matched order stock transaction
-          //const matchedTransaction = await StockTransaction.findById(matchedStockTxId);
 
           // new stockTx for partially fulfilled order
           const newStockTransaction = new StockTransaction({
@@ -362,20 +391,23 @@ const executeOrder = async (message) =>
             user_id: existingStockTx.user_id,
             is_debit: false,
             amount: profit,
-            is_deleted: false
+            is_deleted: false,
+						stock_tx_id: newStockTransaction._id
           });
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
-          newWalletTransaction.stock_tx_id = newStockTransaction._id
 
-          await newStockTransaction.save();
-          await newWalletTransaction.save();
-          await existingStockTx.save();
 
-          await existingPortfolioDocumentAndStockId.save();
-          await existingStockTx.save();
-          await user.save();
-          await stockUpdate.save();
+					const promises = [
+						redis.createStockTransaction(newStockTransaction),
+						redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+						redis.createWalletTransaction(newWalletTransaction),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateStock(stockUpdate),
+						redis.updateUser(user)
+					]
+
+					await Promise.all(promises)
 
           console.log("New Stock Transaction added.")
           console.log("New Wallet Transaction added.")
@@ -383,6 +415,7 @@ const executeOrder = async (message) =>
 
         } catch (error)
         {
+					console.log(error)
           throw new Error('Error making changes:', error);
         }
       }
@@ -395,7 +428,7 @@ const executeOrder = async (message) =>
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
           if (action === "EXPIRED")
           {
-            const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
+            const parentStockTx = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
@@ -405,8 +438,11 @@ const executeOrder = async (message) =>
             };
           }
 
+					console.log("Fetiching Child Transactions--------")
+					console.log(stockTxId)
 
-          const childTransactions = await StockTransaction.find({ parent_stock_tx_id: stockTxId })
+
+					const childTransactions = await redis.fetchAllStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
           let completedQuantity = existingStockTx.quantity;
 
           childTransactions.forEach(tx =>
@@ -430,8 +466,13 @@ const executeOrder = async (message) =>
             existingStockTx.is_deleted = true;
           }
 
-          await existingPortfolioDocumentAndStockId.save();
-          await existingStockTx.save();
+					const promises = [
+						redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+						redis.updateStockTransaction(existingStockTx),
+					]
+
+					await Promise.all(promises)
+					
           console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
             existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
@@ -440,6 +481,7 @@ const executeOrder = async (message) =>
 
         } catch (error)
         {
+					console.log(error)
           throw new Error('Error making changes to Portfolio:', error);
         }
       }
@@ -448,6 +490,7 @@ const executeOrder = async (message) =>
     }
   } catch (error)
   {
+		console.log(error)
     throw new Error("Error fetching stock transaction", error);
   }
 };

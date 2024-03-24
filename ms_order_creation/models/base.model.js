@@ -34,19 +34,22 @@ exports.createOne = async (collection, data) =>
 	let model
 	if (collection === COLLECTIONS.WALLET_TRANSACTION)
 	{
-		model = WalletTransactionModel
+		model = await new WalletTransactionModel(data[0])
 	} else if (collection === COLLECTIONS.STOCK_TRANSACTION)
 	{
-		model = StockTransactionModel
+		model = await new StockTransactionModel(data[0])
 	} else if (collection === COLLECTIONS.PORTFOLIO)
 	{
-		model = PortfolioModel
+		model = await new PortfolioModel(data[0])
+
 	} else
 	{
 		throw createError('Schema not created')
 	}
-	const result = await model.create(data)
-	return result[0]
+
+	model.save()
+	return model._id
+
 
 }
 

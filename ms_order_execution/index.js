@@ -121,7 +121,7 @@ const executeOrder = async (message) =>
      
 
             // console.log("Transaction updated: ",
-              { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
+              // { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
             return;
           }
           catch (error)

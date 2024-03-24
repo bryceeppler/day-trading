@@ -4,8 +4,6 @@ import { StockTransaction } from "../models/stockTransactionModel";
 
 import { publishToQueue } from "./rabbitmq";
 
-const axios = require("axios");
-
 export default class OrderBook implements IOrderBook {
   stockTransactionModel: typeof StockTransaction;
   buyOrders: OrderBookOrder[] = [];

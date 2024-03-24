@@ -1,24 +1,7 @@
 const express = require('express');
-const { createStockTx, updateStockTxStatus, deleteStockTx, getStockTransactions, getAllStockTransactions } = require('../controllers/stockTransactionController');
-const { createWalletTx, updateStockTxId, deleteWalletTx, getWalletTransactions, getAllWalletTransactions } = require('../controllers/walletTransactionController');
-const { getWalletBalance } = require('../controllers/userTransactionController');
-const walletTxValidation = require('./validations/walletTxValidation')
-const stockTxValidation = require('./validations/stockTxValidation')
+const { getStockTransactions, getAllStockTransactions } = require('../controllers/stockTransactionController');
+const { getWalletTransactions, getAllWalletTransactions } = require('../controllers/walletTransactionController');
 const router = express.Router();
-
-/**
- * @swagger
- * /:
- *   get:
- *     summary: Get information about the Transaction Manager Microservice
- *     description: Returns a message indicating that it is the transaction manager microservice.
- */
-router.route('/hello').get((req, res) =>
-{
-    res.send("This is the transaction manager microservice");
-});
-
-
 
 //get(getWalletBalance);
 /**

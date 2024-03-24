@@ -12,6 +12,7 @@ module.exports = {
 	port: 3000,
 	mongodb: getEnvironment('MONGO_URI'),
 	mathingEngineUrl: getEnvironment('MATCHING_ENGINE_URL'),
+	rabbitMQUrl: getEnvironment('RABBITMQ_URI'),
   jwt: {
     accessTokenSecret: getEnvironment('JWT_SECRET'),
   },

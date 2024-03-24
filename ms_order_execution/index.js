@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const port = process.env.PORT || 3000;
-
+const { MESSAGE_QUEUE } = require("./shared/lib/enums");
+const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
 const Stock = require("./shared/models/stockModel");
 const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
@@ -29,23 +29,39 @@ db.once("open", function ()
   console.log("Connected successfully");
 });
 
-app.get("/", (req, res) =>
+
+const RabbitSetup = async () =>
 {
-  res.send("This is the order execution microservice.");
-});
+  try
+  {
+    const { connection, channel } = await connectToRabbitMQ(process.env.RABBITMQ_URI);
+    await channel.assertQueue(MESSAGE_QUEUE.EXECUTE_ORDER, { durable: true });
+    await channel.consume(
+      MESSAGE_QUEUE.EXECUTE_ORDER,
+      async (data) =>
+      {
+        if (data)
+        {
+          const message = JSON.parse(data.content.toString());
+          console.log("Recieved Execute Order Message: ", message);
+          executeOrder(message);
+        }
+      },
+      { noAck: true }
+    );
+  } catch (error)
+  {
+    console.error('Error connecting to RabbitMQ:', error);
+  }
+}
 
-app.post("/executeOrder", async (req, res) =>
+const executeOrder = async (message) =>
 {
 
-  const order = req.body.order;
-  const stockTxId = order.stock_tx_id;
-  const matchedStockTxId = order.matched_stock_tx_id;
-  const action = order.action;
-  const quantityStockInTransit = order.quantity;
-
-  console.log("This is the request:");
-  console.log(req.body);
-
+  const stockTxId = message.stock_tx_id;
+  const matchedStockTxId = message.matched_stock_tx_id;
+  const action = message.action;
+  const quantityStockInTransit = message.quantity;
   try
   {
 
@@ -54,8 +70,7 @@ app.post("/executeOrder", async (req, res) =>
 
     if (!existingStockTx)
     {
-
-      return res.status(404).json({ message: 'Stock Transaction not found' });
+      console.log('Stock Transaction not found');
 
     } else
     {
@@ -94,15 +109,13 @@ app.post("/executeOrder", async (req, res) =>
             await existingStockTx.save();
             await stockUpdate.save();
 
-            return res.status(200).json({
-              existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-              existingStockTx: existingStockTx
-            });
+            console.log("Transaction updated: ",
+              { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
+            return;
           }
           catch (error)
           {
-            console.error('Error updating portfolio document:', error);
-            return res.status(500).json({ message: `Internal Server Error: ${error}` });
+            throw new Error('Error updating portfolio document:', error);
           }
         }
       }
@@ -162,7 +175,6 @@ app.post("/executeOrder", async (req, res) =>
             console.log("NEW user.balance:", newBalance);
             user.balance = newBalance;
             console.log("User balance updated.");
-
             // create new walletTx for partially fulfilled order  
             const newWalletTransaction = new WalletTransaction({
               user_id: existingStockTx.user_id,
@@ -170,8 +182,6 @@ app.post("/executeOrder", async (req, res) =>
               amount: amountSpent,
               is_deleted: false
             });
-            //await newStockTransaction.save();
-            //await newWalletTransaction.save();
 
             newStockTransaction.wallet_tx_id = newWalletTransaction._id
             newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -182,17 +192,17 @@ app.post("/executeOrder", async (req, res) =>
             await existingStockTx.save();
             await stockUpdate.save();
 
-            return res.status(200).json({
+            console.log("Transaction Complete: ", {
               existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
               newStockTransaction: newStockTransaction,
               newWalletTransaction: newWalletTransaction,
               existingStockTx: existingStockTx
             });
+            return;
           }
           catch (error)
           {
-            console.error('Error updating portfolio document:', error);
-            return res.status(500).json({ message: `Internal Server Error: ${error}` });
+            return new Error({ message: `Internal Server Error: ${error}` });
           }
         }
       }
@@ -207,16 +217,13 @@ app.post("/executeOrder", async (req, res) =>
           {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
-
             const parentStockTx = await StockTransaction.findOne({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              //await existingStockTx.save();
             } else
             {
               existingStockTx.order_status = 'EXPIRED';
-              //await existingStockTx.save();
             };
           }
 
@@ -239,15 +246,16 @@ app.post("/executeOrder", async (req, res) =>
           await existingWalletTx.save();
           await user.save();
 
-          return res.status(200).json({
+
+          console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
             existingWalletTx: existingWalletTx,
             user: user
           });
+          return;
         } catch (error)
         {
-          console.error('Error returning amount spent to user balance:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          return new Error('Error returning amount spent to user balance:', error)
         }
 
       }
@@ -274,7 +282,6 @@ app.post("/executeOrder", async (req, res) =>
 
           user.balance = newBalance;
           console.log("User balance updated.");
-
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
@@ -283,6 +290,7 @@ app.post("/executeOrder", async (req, res) =>
             amount: profit,
             is_deleted: false
           });
+
           await newWalletTransaction.save();
 
           existingStockTx.wallet_tx_id = newWalletTransaction._id;
@@ -291,18 +299,16 @@ app.post("/executeOrder", async (req, res) =>
           await user.save();
           await stockUpdate.save();
 
-          console.log("New Wallet Transaction added.")
-
-          return res.status(200).json({
+          console.log("New Wallet Transaction added. ", {
             existingStockTx: existingStockTx,
             newWalletTransaction: newWalletTransaction,
             user: user
           });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes:', error);
         }
       }
 
@@ -329,7 +335,6 @@ app.post("/executeOrder", async (req, res) =>
 
           user.balance = newBalance;
           console.log("User balance updated.");
-
           // add remaining stock quantity back to portfolio
           //let stocksToAddBack = existingStockTx.quantity - quantityStockInTransit;
           //let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
@@ -359,8 +364,6 @@ app.post("/executeOrder", async (req, res) =>
             amount: profit,
             is_deleted: false
           });
-          //await newStockTransaction.save();
-          //await newWalletTransaction.save();
 
           newStockTransaction.wallet_tx_id = newWalletTransaction._id
           newWalletTransaction.stock_tx_id = newStockTransaction._id
@@ -376,18 +379,11 @@ app.post("/executeOrder", async (req, res) =>
 
           console.log("New Stock Transaction added.")
           console.log("New Wallet Transaction added.")
-
-          return res.status(200).json({
-            newStockTransaction: newStockTransaction,
-            newWalletTransaction: newWalletTransaction,
-            existingStockTx: existingStockTx,
-            user: user
-          });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes:', error);
         }
       }
 
@@ -403,11 +399,9 @@ app.post("/executeOrder", async (req, res) =>
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
-              //await existingStockTx.save();
             } else
             {
               existingStockTx.order_status = 'EXPIRED';
-              //await existingStockTx.save();
             };
           }
 
@@ -435,136 +429,28 @@ app.post("/executeOrder", async (req, res) =>
           {
             existingStockTx.is_deleted = true;
           }
-          // existingStockTx.is_deleted = true;
 
           await existingPortfolioDocumentAndStockId.save();
           await existingStockTx.save();
-
-          return res.status(200).json({
+          console.log("Execution Complete: ", {
             existingStockTx: existingStockTx,
             existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
           });
+          return;
 
         } catch (error)
         {
-          console.error('Error making changes to Portfolio:', error);
-          return res.status(500).json({ message: `Internal Server Error: ${error}` });
+          throw new Error('Error making changes to Portfolio:', error);
         }
       }
-      return res.status(200).json(existingStockTx);
-
-      //if stock transaction is complete AND a SELL order
-      if (action === "COMPLETED" && existingStockTx.is_buy === false)
-      {
-        try
-        {
-          //change order status to complete
-          existingStockTx.order_status = "COMPLETED";
-
-          //add money to user's wallet
-          const user = await User.findOne({
-            _id: existingPortfolioDocumentAndStockId.user_id,
-          });
-
-          let profit = existingStockTx.quantity * existingStockTx.stock_price;
-          let newBalance = profit + user.balance;
-
-          console.log("OLD user.balance:", user.balance);
-          console.log("Profit", profit);
-          console.log("NEW user.balance:", newBalance);
-
-          user.balance = newBalance;
-          console.log("User balance updated.");
-
-          //create new wallet transaction
-          const newWalletTransaction = new WalletTransaction({
-            user_id: user._id,
-            stock_tx_id: existingStockTx.stock_tx_id,
-            is_debit: true,
-            amount: profit,
-            is_deleted: false,
-          });
-          await newWalletTransaction.save();
-
-          existingStockTx.wallet_tx_id = newWalletTransaction._id;
-
-          await existingStockTx.save();
-          await user.save();
-          console.log("New Wallet Transaction added.");
-
-          return res.status(200).json({
-            existingStockTx: existingStockTx,
-            newWalletTransaction: newWalletTransaction,
-            user_id: user._id,
-          });
-        } catch (error)
-        {
-          console.error("Error making changes:", error);
-          return res
-            .status(500)
-            .json({ message: `Internal Server Error: ${error}` });
-        }
-      }
-
-      // if stock transaction is cancelled OR it expires AND is a SELL order
-      if (
-        (action === "CANCELED" || action === "EXPIRED") &&
-        existingStockTx.is_buy === false
-      )
-      {
-        try
-        {
-          if (action === "CANCELED")
-          {
-            existingStockTx.order_status = "CANCELED";
-          }
-          if (action === "EXPIRED")
-          {
-            existingStockTx.order_status = "EXPIRED";
-          }
-
-          let newQuantity =
-            existingStockTx.quantity +
-            existingPortfolioDocumentAndStockId.quantity_owned;
-
-          console.log(
-            "OLD qunatity owned",
-            existingPortfolioDocumentAndStockId.quantity_owned,
-          );
-          console.log("Quantity received back", existingStockTx.quantity);
-          console.log("NEW qunatity owned", newQuantity);
-
-          existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
-          existingStockTx.is_deleted = true;
-
-          await existingPortfolioDocumentAndStockId.save();
-          await existingStockTx.save();
-
-          return res.status(200).json({
-            existingStockTx: existingStockTx,
-            existingPortfolioDocumentAndStockId:
-              existingPortfolioDocumentAndStockId,
-          });
-        } catch (error)
-        {
-          console.error("Error making changes to Portfolio:", error);
-          return res
-            .status(500)
-            .json({ message: `Internal Server Error: ${error}` });
-        }
-      }
-      return res.status(200).json(existingStockTx);
+      console.log("Execution Complete: ", existingStockTx);
+      return;
     }
   } catch (error)
   {
-    console.error("Error fetching stock transaction", error);
-    return res.status(500).json({ message: `Internal Server Error: ${error}` });
+    throw new Error("Error fetching stock transaction", error);
   }
-});
+};
 
-// Start the server
-app.listen(port, () =>
-{
-  console.log();
-  console.log(`Order Execution Service running on port ${port}`);
-});
+
+RabbitSetup();

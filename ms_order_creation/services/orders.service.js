@@ -136,10 +136,8 @@ exports.sellOrder = async (data, token) =>
   let stock_tx_id;
   try
   {
-		console.log("-----------1----------------------")
     // Find Portfolio
 		const portfolio = await redis.fetchPortfolio(data.user_id, data.stock_id)
-		console.log("-----------2----------------------")
     if (!portfolio) throw createError("Portfolio not found");
     // Check for portfolio Quantity
     if (portfolio.quantity_owned < data.quantity)
@@ -150,26 +148,21 @@ exports.sellOrder = async (data, token) =>
     // Update the quantity
 		const updatePortfolio = {...portfolio, quantity_owned: portfolio.quantity_owned - data.quantity}
 
-		console.log("-----------3----------------------")
 		redis.updatePortfolio(updatePortfolio)
 
-		console.log("-----------4----------------------")
 
  
 
     // Find stock
     const stock = await redis.fetchStock(data.stock_id);
 
-		console.log("-----------5----------------------")
     //If no price, update price.
     if (!stock.starting_price)
     {
 			const updatedStock = {...stock, starting_price: data.price, current_price: data.price}
 
-		console.log("-----------6----------------------")
       await redis.updateStock(updatedStock);
 
-		console.log("-----------6----------------------")
     }
 
     // Create a stock transaction
@@ -185,10 +178,8 @@ exports.sellOrder = async (data, token) =>
     });
 
   
-		console.log("-----------7---------------------")
     await redis.createStockTransaction(stockTxData);
 
-		console.log("-----------8---------------------")
     stock_tx_id = stockTxData._id;
 
     const matchingEngineData = {

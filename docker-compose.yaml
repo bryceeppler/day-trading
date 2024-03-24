@@ -130,7 +130,7 @@ services:
       - ./ms_shared:/app/shared
     env_file:
       - .env
-    command: [ "npm", "run", "nodemon" ]
+    command: [ "npm", "start"]
 
 
   # Matching Engine Microservice

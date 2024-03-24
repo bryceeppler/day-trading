@@ -45,7 +45,7 @@ const RabbitSetup = async () =>
         if (data)
         {
           const message = JSON.parse(data.content.toString());
-          console.log("Recieved Execute Order Message: ", message);
+          // console.log("Recieved Execute Order Message: ", message);
           executeOrder(message);
         }
       },
@@ -67,7 +67,7 @@ const executeOrder = async (message) =>
   try
   {
 
-    console.log("checking existingStockTx");
+    // console.log("checking existingStockTx");
 
 		const existingStockTx = await redis.fetchStockTransaction(stockTxId)
 
@@ -78,7 +78,7 @@ const executeOrder = async (message) =>
 
     } else
     {
-      console.log("StockTx EXISTS!");
+      // console.log("StockTx EXISTS!");
       const existingPortfolioDocumentAndStockId = await redis.fetchPortfolio(existingStockTx.user_id, existingStockTx.stock_id );
 
 			const stockUpdate = await redis.fetchStock(existingStockTx.stock_id);
@@ -86,12 +86,12 @@ const executeOrder = async (message) =>
       //if stock transaction is complete AND a BUY order AND FULFILLED COMPLETELY
       if (action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit === existingStockTx.quantity)
       {
-        console.log("Checking if Portfolio Document Exists");
+        // console.log("Checking if Portfolio Document Exists");
 
         if (existingPortfolioDocumentAndStockId)
         {
 
-          console.log("Portfolio Document Exists");
+          // console.log("Portfolio Document Exists");
 
           try
           {
@@ -100,12 +100,12 @@ const executeOrder = async (message) =>
             // update stock price in stock collection
             stockUpdate.current_price = existingStockTx.stock_price;
 
-            console.log("Updating Quantity");
+            // console.log("Updating Quantity");
             let newQuantity = existingPortfolioDocumentAndStockId.quantity_owned + existingStockTx.quantity;
 
-            console.log("Old quantity", existingPortfolioDocumentAndStockId.quantity_owned)
-            console.log("Quantity to add:", existingStockTx.quantity)
-            console.log("New Quantity:", newQuantity);
+            // console.log("Old quantity", existingPortfolioDocumentAndStockId.quantity_owned)
+            // console.log("Quantity to add:", existingStockTx.quantity)
+            // console.log("New Quantity:", newQuantity);
 
             existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
 						
@@ -120,7 +120,7 @@ const executeOrder = async (message) =>
 						
      
 
-            console.log("Transaction updated: ",
+            // console.log("Transaction updated: ",
               { existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId, existingStockTx: existingStockTx });
             return;
           }
@@ -135,12 +135,12 @@ const executeOrder = async (message) =>
       //if stock transaction is complete AND a BUY order AND PARTIALLY FULFILLED
       if (action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit !== existingStockTx.quantity)
       {
-        console.log("In Partial order flow - checking if Portfolio Document Exists");
+        // console.log("In Partial order flow - checking if Portfolio Document Exists");
 
         if (existingPortfolioDocumentAndStockId)
         {
 
-          console.log("Portfolio Document Exists");
+          // console.log("Portfolio Document Exists");
 
           try
           {
@@ -149,12 +149,12 @@ const executeOrder = async (message) =>
             // update stock price in stock collection
             stockUpdate.current_price = existingStockTx.stock_price;
 
-            console.log("Updating Quantity");
+            // console.log("Updating Quantity");
             let newQuantity = existingPortfolioDocumentAndStockId.quantity_owned + quantityStockInTransit;
 
-            console.log("Old quantity", existingPortfolioDocumentAndStockId.quantity_owned)
-            console.log("Quantity to add:", quantityStockInTransit)
-            console.log("New Quantity:", newQuantity);
+            // console.log("Old quantity", existingPortfolioDocumentAndStockId.quantity_owned)
+            // console.log("Quantity to add:", quantityStockInTransit)
+            // console.log("New Quantity:", newQuantity);
 
             existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
 
@@ -184,11 +184,11 @@ const executeOrder = async (message) =>
             let refund = existingWalletTx.amount - amountSpent;
             let newBalance = refund + user.balance;
 
-            console.log("OLD user.balance:", user.balance);
-            console.log("Refund", refund);
-            console.log("NEW user.balance:", newBalance);
+            // console.log("OLD user.balance:", user.balance);
+            // console.log("Refund", refund);
+            // console.log("NEW user.balance:", newBalance);
             user.balance = newBalance;
-            console.log("User balance updated.");
+            // console.log("User balance updated.");
             // create new walletTx for partially fulfilled order  
             const newWalletTransaction = new WalletTransaction({
               user_id: existingStockTx.user_id,
@@ -212,12 +212,12 @@ const executeOrder = async (message) =>
 						await Promise.all(promises)
 						
 						
-            console.log("Transaction Complete: ", {
-              existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-              newStockTransaction: newStockTransaction,
-              newWalletTransaction: newWalletTransaction,
-              existingStockTx: existingStockTx
-            });
+            // console.log("Transaction Complete: ", {
+            //   existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
+            //   newStockTransaction: newStockTransaction,
+            //   newWalletTransaction: newWalletTransaction,
+            //   existingStockTx: existingStockTx
+            // });
             return;
           }
           catch (error)
@@ -252,9 +252,9 @@ const executeOrder = async (message) =>
           let newBalance = existingWalletTx.amount + user.balance;
 
 
-          console.log("OLD user.balance:", user.balance)
-          console.log("existingWalletTx.amount:", existingWalletTx.amount)
-          console.log("NEW user.balance:", newBalance)
+          // console.log("OLD user.balance:", user.balance)
+          // console.log("existingWalletTx.amount:", existingWalletTx.amount)
+          // console.log("NEW user.balance:", newBalance)
 
           user.balance = newBalance;
 
@@ -269,11 +269,11 @@ const executeOrder = async (message) =>
 
 					await Promise.all(promises)
 
-          console.log("Execution Complete: ", {
-            existingStockTx: existingStockTx,
-            existingWalletTx: existingWalletTx,
-            user: user
-          });
+          // console.log("Execution Complete: ", {
+          //   existingStockTx: existingStockTx,
+          //   existingWalletTx: existingWalletTx,
+          //   user: user
+          // });
           return;
         } catch (error)
         {
@@ -299,12 +299,12 @@ const executeOrder = async (message) =>
           let profit = existingStockTx.quantity * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
 
-          console.log("OLD user.balance:", user.balance);
-          console.log("Profit", profit);
-          console.log("NEW user.balance:", newBalance);
+          // console.log("OLD user.balance:", user.balance);
+          // console.log("Profit", profit);
+          // console.log("NEW user.balance:", newBalance);
 
           user.balance = newBalance;
-          console.log("User balance updated.");
+          // console.log("User balance updated.");
           //create new wallet transaction - in stockTransaction wallet_tx_id field will be empty
           const newWalletTransaction = new WalletTransaction({
             user_id: existingStockTx.user_id,
@@ -328,11 +328,11 @@ const executeOrder = async (message) =>
 
 					
 
-          console.log("New Wallet Transaction added. ", {
-            existingStockTx: existingStockTx,
-            newWalletTransaction: newWalletTransaction,
-            user: user
-          });
+          // console.log("New Wallet Transaction added. ", {
+          //   existingStockTx: existingStockTx,
+          //   newWalletTransaction: newWalletTransaction,
+          //   user: user
+          // });
           return;
 
         } catch (error)
@@ -359,12 +359,12 @@ const executeOrder = async (message) =>
           let profit = quantityStockInTransit * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
 
-          console.log("OLD user.balance:", user.balance);
-          console.log("Profit", profit);
-          console.log("NEW user.balance:", newBalance);
+          // console.log("OLD user.balance:", user.balance);
+          // console.log("Profit", profit);
+          // console.log("NEW user.balance:", newBalance);
 
           user.balance = newBalance;
-          console.log("User balance updated.");
+          // console.log("User balance updated.");
           // add remaining stock quantity back to portfolio
           //let stocksToAddBack = existingStockTx.quantity - quantityStockInTransit;
           //let newStockQuantity = existingPortfolioDocumentAndStockId.quantity_owned + stocksToAddBack;
@@ -409,8 +409,8 @@ const executeOrder = async (message) =>
 
 					await Promise.all(promises)
 
-          console.log("New Stock Transaction added.")
-          console.log("New Wallet Transaction added.")
+          // console.log("New Stock Transaction added.")
+          // console.log("New Wallet Transaction added.")
           return;
 
         } catch (error)
@@ -438,8 +438,8 @@ const executeOrder = async (message) =>
             };
           }
 
-					console.log("Fetiching Child Transactions--------")
-					console.log(stockTxId)
+					// console.log("Fetiching Child Transactions--------")
+					// console.log(stockTxId)
 
 
 					const childTransactions = await redis.fetchAllStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
@@ -455,9 +455,9 @@ const executeOrder = async (message) =>
           // check if portfolio entry exists first and if not, make a new one \\ for the next submission
           let newQuantity = completedQuantity + existingPortfolioDocumentAndStockId.quantity_owned;
 
-          console.log("OLD qunatity owned", existingPortfolioDocumentAndStockId.quantity_owned);
-          console.log("Quantity received back", existingStockTx.quantity);
-          console.log("NEW qunatity owned", newQuantity);
+          // console.log("OLD qunatity owned", existingPortfolioDocumentAndStockId.quantity_owned);
+          // console.log("Quantity received back", existingStockTx.quantity);
+          // console.log("NEW qunatity owned", newQuantity);
 
           existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
           // if the status is not PARTIAL_FULFILLED, then the stockTx is deleted
@@ -473,11 +473,11 @@ const executeOrder = async (message) =>
 
 					await Promise.all(promises)
 					
-          console.log("Execution Complete: ", {
-            existingStockTx: existingStockTx,
-            existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
-          });
-          return;
+          // console.log("Execution Complete: ", {
+          //   existingStockTx: existingStockTx,
+          //   existingPortfolioDocumentAndStockId: existingPortfolioDocumentAndStockId,
+          // });
+          // return;
 
         } catch (error)
         {
@@ -485,7 +485,7 @@ const executeOrder = async (message) =>
           throw new Error('Error making changes to Portfolio:', error);
         }
       }
-      console.log("Execution Complete: ", existingStockTx);
+      // console.log("Execution Complete: ", existingStockTx);
       return;
     }
   } catch (error)

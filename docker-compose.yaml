@@ -72,12 +72,13 @@ services:
       - ./ms_shared:/app/shared
 
   ms_authentication:
-    container_name: authentication
     build: ./ms_authentication
     env_file:
       - .env
     volumes:
       - ./ms_shared:/app/shared
+    deploy:
+      replicas: 2
 
   # Order Execution Microservice
   ms_order_execution:

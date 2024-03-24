@@ -5,6 +5,11 @@ const { STATUS_CODE } = require('../lib/enums');
 const { handleError, successReturn, createError } = require('../lib/apiHandling');
 const { cleanReq }  = require('../middleware/formatting')
 
+const redis = require("../shared/config/redis");
+
+redis.connect()
+
+
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const express = require('express');
@@ -16,21 +21,21 @@ async function getStockPortfolio(req, res, next)
   try
   {
     // Assuming req.user is populated by the authenticateToken middleware
-    const user = await User.findById(req.user.userId);
+		const user = await redis.fetchUser(req.user.userId)
     if (!user)
     {
       return createError('User not found', STATUS_CODE.NOT_FOUND);
     }
 
     // Fetch stock portfolio for the user
-    const portfolio = await StockPortfolio.find({ user_id: user._id, quantity_owned: { $gt: 0 } });
+    const portfolio = await redis.fetchAllPortfoliosFromParams({ user_id: user._id, quantity_owned: { $gt: 0 } });
 
     // create a list to hold the stock portfolio data. 
     // since Promise.all is asyncronous, it could return data in a different order than portfolio, use index to ensure same order.
     const data = []
     await Promise.all(portfolio.map(async (portfolioItem, index) =>
     {
-      const stock = await Stock.findById(portfolioItem.stock_id);
+      const stock = await redis.fetchStock(portfolioItem.stock_id);
       if (!stock)
       {
         throw createError('Stock not found', STATUS_CODE.NOT_FOUND);
@@ -56,7 +61,8 @@ async function getWalletBalance(req, res, next)
   try
   {
     // Assuming req.user is populated by the authenticateToken middleware
-    const user = await User.findById(req.user.userId);
+    //const user = await User.findById(req.user.userId);
+		const user = await redis.fetchUser(req.user.userId)
     if (!user)
     {
       throw createError('User not found', STATUS_CODE.NOT_FOUND);
@@ -86,17 +92,19 @@ async function addStockToUser(req, res, next)
 
 
     // get the user portfolio
-    const portfolio = await StockPortfolio.find({ user_id: userId });
+    //const portfolio = await StockPortfolio.find({ user_id: userId });
+		const stock = await redis.fetchPortfolio(userId, stock_id)
 
 
     // check if the user already has some of the stock
-    const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id == stock_id);
+    //const stock = portfolio.find((portfolioItem) => portfolioItem.stock_id == stock_id);
 
     // if it's already there, update the quantity
     if (stock)
     {
       stock.quantity_owned += quantity;
-      await stock.save();
+			await redis.updatePortfolio(stock)
+      //await stock.save();
       return successReturn(res);
     }
     // if it's not there, create a new portfolio item
@@ -107,7 +115,8 @@ async function addStockToUser(req, res, next)
     });
 
     // save the new portfolio item
-    await newStock.save();
+    //await newStock.save();
+		await redis.createPortfolio(newStock)
 
     // optionally create a record of this transaction
 
@@ -130,7 +139,7 @@ async function addMoneyToWallet(req, res, next)
       throw createError('Missing required parameters', STATUS_CODE.OK);
     }
     // Retrieve user's wallet transaction
-    const user = await User.findOne({ _id: req.user.userId });
+		const user = await redis.fetchUser(req.user.userId)
 
     if (!user) {
       console.log("No User")
@@ -141,7 +150,8 @@ async function addMoneyToWallet(req, res, next)
     user.balance += amount;
 
     // Save the updated wallet transaction to the database
-    await user.save();
+		await redis.updateUser(user)
+    //await user.save();
 
     return successReturn(res);
   } catch (error) {

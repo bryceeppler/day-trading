@@ -40,9 +40,15 @@ exports.cancelStockTransaction = async (req, res, next) => {
       stock_tx_id: req.body.stock_tx_id,
     };
 
-    await orderService.cancelStockTransaction(params, req.token);
+    const error = await orderService.cancelStockTransaction(params, req.token);
 
-    successReturn(res);
+		if (error) {
+			return errorReturn(res, error)
+		}
+		successReturn(res);
+		
+
+    
   } catch (error) {
     return handleError(error, res, next);
   }

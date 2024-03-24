@@ -2,6 +2,9 @@ const express = require('express');
 const User = require('../shared/models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const redis = require("../shared/config/redis");
+
+redis.connect()
 
 const router = express.Router();
 
@@ -33,7 +36,7 @@ router.post('/login', async (req, res) =>
   {
     const { user_name, password } = req.body;
     const userName = user_name.trim();
-    let user = await User.findOne({  user_name: userName });
+    let user = await redis.fetchUserFromParams({  user_name: userName });
     if (!user) {
       return res.status(200).json({ success: false, data: {error: 'User does not exist'}});
     }

@@ -442,7 +442,7 @@ const executeOrder = async (message) =>
 					console.log(stockTxId)
 
 
-					const childTransactions = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
+					const childTransactions = await redis.fetchAllStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
           let completedQuantity = existingStockTx.quantity;
 
           childTransactions.forEach(tx =>

@@ -2,6 +2,8 @@ const express = require('express');
 const User = require('../shared/models/userModel');
 // const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const redis = require('../shared/config/redis')
+redis.connect()
 
 const router = express.Router();
 
@@ -56,7 +58,9 @@ router.post('/register', async (req, res) =>
 {
   try
   {
+		console.log("Registering ---------------------------------")
     const { user_name, password, name } = req.body;
+		console.log({ user_name, password, name })
      // Validate username
     if (!validateUsername(user_name)) {
       return res.status(200).json({ success: false, data: {error: 'Username must have more than 8 characters and only contain letters, numbers, or underscores' }});
@@ -72,15 +76,20 @@ router.post('/register', async (req, res) =>
       return res.status(200).json({ success: false, data: {error: 'Name is required and should only contain letters' }});
     }
 
-    const existingUser = await User.findOne({ user_name });
+		const existingUser = await redis.fetchUserFromParams({user_name})
+		console.log(existingUser)
+    //const existingUser = await User.findOne({ user_name });
     if (existingUser) {
       return res.status(200).json({success: false, data: {error: 'User already exists'}});
     }
 
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
     let hashedPassword = await bcrypt.hash(password, saltRounds);
+	
     const newUser = new User({ user_name, password: hashedPassword, name, balance:0 });
-    await newUser.save();
+		await redis.createUser(newUser)
+
+
 
     // Respond with success true and data containing user details
     res.status(200).json({ success: true, data: null });

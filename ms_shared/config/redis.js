@@ -95,15 +95,20 @@ exports.fetchPortfolio = async (user_id, stock_id) => {
 	await this.setJson(key, data)
 	return data
 }
+
+exports.fetchAllPortfoliosFromParams = async (params, sortBy = {}) => {
+	return await modelOperations.findAll(COLLECTIONS.PORTFOLIO, params, sortBy)
+}
+
 exports.updatePortfolio = async (data) => {
 	const key = this.getUserPortfolioRedisKey(data.user_id, data.stock_id)
-	await modelOperations.updateOneById(COLLECTIONS.PORTFOLIO, data._id, data);
+	modelOperations.updateOneById(COLLECTIONS.PORTFOLIO, data._id, data);
 	await this.setJson(key, data)
 }
 
 exports.createPortfolio = async (data) => {
 	const key = this.getUserPortfolioRedisKey(data.user_id, data.stock_id);
-	await modelOperations.createOne(COLLECTIONS.PORTFOLIO, data);
+	modelOperations.createOne(COLLECTIONS.PORTFOLIO, data);
 	await this.setJson(key, data)
 }
 
@@ -113,7 +118,7 @@ exports.fetchUserFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.USER, params)
 	if (data) {
 		const key = this.getUserBalanceRedisKey(data._id)
-		await this.setJson(key, data)
+		this.setJson(key, data)
 	}
 	return data
 }
@@ -124,20 +129,20 @@ exports.fetchUser = async (user_id) => {
 	if (data) return data
 
 	data = await modelOperations.findById(COLLECTIONS.USER, user_id)
-	await this.setJson(key, data)
+	this.setJson(key, data)
 	return data
 }
 
 exports.updateUser = async (data) => {
 	const key = this.getUserBalanceRedisKey(data._id)
-	await modelOperations.updateOneById(COLLECTIONS.USER, data._id, data);
+	modelOperations.updateOneById(COLLECTIONS.USER, data._id, data);
 	await this.setJson(key, data)
 }
 
 
 exports.createUser = async (data) => {
 	const key = this.getUserBalanceRedisKey(data._id);
-	await modelOperations.createOne(COLLECTIONS.USER, data);
+	modelOperations.createOne(COLLECTIONS.USER, data);
 	await this.setJson(key, data)
 }
 
@@ -150,7 +155,7 @@ exports.fetchStock = async (stock_id) => {
 	if (data) return data
 
 	data = await modelOperations.findById(COLLECTIONS.STOCK, stock_id)
-	await this.setJson(key, data)
+	this.setJson(key, data)
 	return data
 }
 
@@ -162,7 +167,7 @@ exports.fetchStockFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.STOCK, params)
 	if (data) {
 		const key = this.getStockRedisKey(data._id)
-		await this.setJson(key, data)
+		this.setJson(key, data)
 	}
 	return data
 }
@@ -170,13 +175,13 @@ exports.fetchStockFromParams = async (params) => {
 
 exports.createStock = async (data) => {
 	const key = this.getStockRedisKey(data._id);
-	await modelOperations.createOne(COLLECTIONS.STOCK, data);
+	modelOperations.createOne(COLLECTIONS.STOCK, data);
 	await this.setJson(key, data)
 }
 
 exports.updateStock = async (data) => {
 	const key = this.getStockRedisKey(data._id)
-	await modelOperations.updateOneById(COLLECTIONS.STOCK, data._id, data);
+	modelOperations.updateOneById(COLLECTIONS.STOCK, data._id, data);
 	await this.setJson(key, data)
 }
 
@@ -188,7 +193,7 @@ exports.fetchStockTransaction = async (stockTxId) => {
 	if (data) return data
 
 	data = await modelOperations.findById(COLLECTIONS.STOCK_TRANSACTION, stockTxId)
-	await this.setJson(key, data)
+	this.setJson(key, data)
 	return data
 }
 
@@ -200,22 +205,24 @@ exports.fetchStockTransactionFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.STOCK_TRANSACTION, params)
 	if (data) {
 		const key = this.getStockTranstionRedisKey(data._id)
-		await this.setJson(key, data)
+		this.setJson(key, data)
 	}
 	return data
 }
 
 exports.updateStockTransaction = async (data) => {
 	const key = this.getStockTranstionRedisKey(data._id)
-	await modelOperations.updateOneById(COLLECTIONS.STOCK_TRANSACTION, data._id, data);
+	modelOperations.updateOneById(COLLECTIONS.STOCK_TRANSACTION, data._id, data);
 	await this.setJson(key, data)
 }
 
 exports.createStockTransaction = async (data) => {
 	const key = this.getStockTranstionRedisKey(data._id)
-	await modelOperations.createOne(COLLECTIONS.STOCK_TRANSACTION, data);
+	modelOperations.createOne(COLLECTIONS.STOCK_TRANSACTION, data);
 	await this.setJson(key, data)
 }
+
+
 
 
 exports.fetchWalletTransaction = async (walletTxId) => {
@@ -224,7 +231,7 @@ exports.fetchWalletTransaction = async (walletTxId) => {
 	if (data) return data
 
 	data = await modelOperations.findById(COLLECTIONS.WALLET_TRANSACTION, walletTxId)
-	await this.setJson(key, data)
+	this.setJson(key, data)
 	return data
 }
 
@@ -232,7 +239,7 @@ exports.fetchWalletTransactionFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.WALLET_TRANSACTION, params)
 	if (data) {
 		const key = this.getWalletTranstionRedisKey(data._id)
-		await this.setJson(key, data)
+		this.setJson(key, data)
 	}
 	return data
 }
@@ -250,7 +257,7 @@ exports.updateWalletTransaction = async (data) => {
 
 exports.createWalletTransaction = async (data) => {
 	const key = this.getWalletTranstionRedisKey(data._id);
-	await modelOperations.createOne(COLLECTIONS.WALLET_TRANSACTION, data);
+	modelOperations.createOne(COLLECTIONS.WALLET_TRANSACTION, data);
 	await this.setJson(key, data)
 }
 
@@ -258,7 +265,7 @@ exports.deleteWalletTransaction = async (walletTxId) => {
 	if (this.fetchWalletTransaction(walletTxId)) {
 		this.redisDelete(key)
 	}
-	modelOperations.softDeleteTransaction(walletTxId)
+	modelOperations.deleteById(walletTxId)
 
 }
 

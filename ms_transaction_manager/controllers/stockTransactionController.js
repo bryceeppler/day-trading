@@ -73,6 +73,7 @@ exports.deleteStockTx = async (req, res, next) =>
         const stockTxId = req.params.stock_tx_id;
 
         // Check if the transaction exists
+			
         const existingStockTx = await redis.fetchStockTransaction(stockTxId);
 
         if (!existingStockTx)
@@ -99,13 +100,15 @@ exports.getStockTransactions = async (req, res, next) =>
 {
 
     try 
+	
     {
         // get all stock transaction that are not deleted. Sort by time stamp, 1 for ascending.  
+				console.log({ user_id: req.user?.userId, is_deleted: false })
         const stockTx = await redis.fetchAllStockTransactionFromParams(
             { user_id: req.user?.userId, is_deleted: false }, // Filter criteria
             { time_stamp: 1 } // Sort function
         ) || {};
-
+					console.log(stockTx)
         // Map the documents and rename _id to stock_tx_id
         const transformedStockTx = stockTx.map(tx => ({
             stock_tx_id: tx._id,

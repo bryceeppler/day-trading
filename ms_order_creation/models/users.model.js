@@ -24,13 +24,23 @@ exports.fetchPortfolio = async ({userId, stockId}) => {
 	return portfolio
 }
 
-exports.fetchBalance = (user_id) => {
+exports.fetchBalance = async (user_id) => {
 
-	return base.findById(COLLECTIONS.USER, user_id)
+	const key = redisCache.getUserBalanceRedisKey(user_id)
+	let data = await redisCache.getJson(key);
+	if (data) return data
+
+	data = await base.findById(COLLECTIONS.USER, user_id)
+	await redisCache.setJson(key, data)
+	return data
 }
 
-exports.updateBalance = (user_id, balance) => {
-	return base.updateOneById(COLLECTIONS.USER, user_id, {balance})
+exports.updateBalance = async (user) => {
+	console.log("UPdating user -----------")
+	console.log(user)
+	const key = redisCache.getUserBalanceRedisKey(user._id)
+	await base.updateOneById(COLLECTIONS.USER, user._id, user);
+	await redisCache.setJson(key, user)
 }
 
 exports.updatePortfolioStockQuantity = (id, quantity_owned) => {

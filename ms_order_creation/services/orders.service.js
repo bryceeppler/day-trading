@@ -230,6 +230,11 @@ exports.cancelStockTransaction = async (data, token) =>
 {
   try
   {
+
+		const stockTx = await redis.fetchStockTransaction(data. stock_tx_id);
+		if (stockTx.order_status != ORDER_STATUS.IN_PROGRESS) {
+			return "Cannot Cancel Stock Transaction"
+		}
     await rabbitManager.publishToQueue(MESSAGE_QUEUE.CANCEL_ORDER, data);
     //await axios.POST(`${config.mathingEngineUrl}/cancelOrder`, data, token);
   } catch (error)

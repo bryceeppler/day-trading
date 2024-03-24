@@ -2,6 +2,10 @@ const { STATUS_CODE } = require('../shared/lib/enums');
 const { handleError, successReturn, errorReturn } = require('../shared/lib/apiHandling');
 const StockTransaction = require('../models/stockTx.model');
 
+const redis = require("../shared/config/redis");
+
+redis.connect()
+
 // /createWalletTransaction
 exports.createStockTx = async (req, res, next) =>
 {
@@ -15,15 +19,17 @@ exports.createStockTx = async (req, res, next) =>
             stock_price,
             quantity } = req.body;
 
-        const newStockTx = await StockTransaction.createTransaction({
-            stock_id,
-            wallet_tx_id,
-            portfolio_id,
-            is_buy,
-            order_type,
-            stock_price,
-            quantity,
-        });
+				const newStockTx = new StockTransaction({
+					stock_id,
+					wallet_tx_id,
+					portfolio_id,
+					is_buy,
+					order_type,
+					stock_price,
+					quantity,
+				})
+			
+			await redis.createStockTransaction(newStockTx);
 
         return successReturn(res, newStockTx, STATUS_CODE.CREATED);
     } catch (error)
@@ -41,14 +47,15 @@ exports.updateStockTxStatus = async (req, res, next) =>
         const { order_status } = req.body;
 
         // Check if the transaction exists
-        const existingStockTx = await StockTransaction.fetchTransaction(stockTxId);
+        const existingStockTx = await redis.fetchStockTransaction(stockTxId);
 
         if (!existingStockTx) 
         {
             return errorReturn(res, 'Stock transaction not found');
         }
 
-        await StockTransaction.updateOrderStatus(stockTxId, order_status);
+				const updatedStockTx = {...existingStockTx, order_status}
+        await redis.updateStockTransaction(updatedStockTx)
 
         return successReturn(res, existingStockTx);
     }
@@ -66,7 +73,7 @@ exports.deleteStockTx = async (req, res, next) =>
         const stockTxId = req.params.stock_tx_id;
 
         // Check if the transaction exists
-        const existingStockTx = await StockTransaction.fetchTransaction(stockTxId);
+        const existingStockTx = await redis.fetchStockTransaction(stockTxId);
 
         if (!existingStockTx)
         {
@@ -74,7 +81,10 @@ exports.deleteStockTx = async (req, res, next) =>
         }
 
         // update is_deleted flag
-        await StockTransaction.softDeleteTransaction();
+
+        const updatedStockTx = {...existingStockTx, deleted: true}
+
+				redis.updateStockTransaction(updatedStockTx)
 
         return successReturn(res, existingStockTx);
     }
@@ -91,7 +101,7 @@ exports.getStockTransactions = async (req, res, next) =>
     try 
     {
         // get all stock transaction that are not deleted. Sort by time stamp, 1 for ascending.  
-        const stockTx = await StockTransaction.fetchAllTransactions(
+        const stockTx = await redis.fetchAllStockTransactionFromParams(
             { user_id: req.user?.userId, is_deleted: false }, // Filter criteria
             { time_stamp: 1 } // Sort function
         ) || {};
@@ -126,7 +136,7 @@ exports.getAllStockTransactions = async (req, res, next) =>
 
     try 
     {
-        const stockTx = await StockTransaction.fetchAllTransactions({}, { time_stamp: 1 }) || {};
+        const stockTx = await StockTransaction.redis.fetchAllStockTransactionFromParams({}, { time_stamp: 1 }) || {};
         return successReturn(res, stockTx);
     }
     catch (error) 

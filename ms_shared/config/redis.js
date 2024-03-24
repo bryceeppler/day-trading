@@ -8,6 +8,7 @@ const modelOperations = require("../models/modelOperations")
 let redisCLient;
 let redisGet
 let redisSet
+let redisDelete
 exports.connect = () => {
 	return new Promise((resolve, reject) => {
 		redisCLient = redis.createClient('6379', 'redis_cache')
@@ -20,6 +21,8 @@ exports.connect = () => {
 			console.log("            - Getter Created")
 			redisSet = promisify(redisCLient.set).bind(redisCLient)	
 			console.log("            - Setter Created")
+			redisDelete = promisify(redisCLient.del).bind(redisCLient)
+			console.log("            - Delete Created")
 		})
 
 		return redisCLient
@@ -189,6 +192,9 @@ exports.fetchStockTransaction = async (stockTxId) => {
 	return data
 }
 
+exports.fetchAllStockTransactionFromParams = async (params, sortBy = {}) => {
+	return await modelOperations.findAll(COLLECTIONS.STOCK_TRANSACTION, params, sortBy)
+}
 
 exports.fetchStockTransactionFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.STOCK_TRANSACTION, params)
@@ -212,6 +218,15 @@ exports.createStockTransaction = async (data) => {
 }
 
 
+exports.fetchWalletTransaction = async (walletTxId) => {
+	const key = this.getWalletTranstionRedisKey(walletTxId)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findById(COLLECTIONS.WALLET_TRANSACTION, walletTxId)
+	await this.setJson(key, data)
+	return data
+}
 
 exports.fetchWalletTransactionFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.WALLET_TRANSACTION, params)
@@ -221,6 +236,11 @@ exports.fetchWalletTransactionFromParams = async (params) => {
 	}
 	return data
 }
+
+exports.fetchAllWalletTransactionFromParams = async (params, sortBy = {}) => {
+	return await modelOperations.findAll(COLLECTIONS.WALLET_TRANSACTION, params, sortBy)
+}
+
 
 exports.updateWalletTransaction = async (data) => {
 	const key = this.getWalletTranstionRedisKey(data._id)
@@ -232,6 +252,14 @@ exports.createWalletTransaction = async (data) => {
 	const key = this.getWalletTranstionRedisKey(data._id);
 	await modelOperations.createOne(COLLECTIONS.WALLET_TRANSACTION, data);
 	await this.setJson(key, data)
+}
+
+exports.deleteWalletTransaction = async (walletTxId) => {
+	if (this.fetchWalletTransaction(walletTxId)) {
+		this.redisDelete(key)
+	}
+	modelOperations.softDeleteTransaction(walletTxId)
+
 }
 
 

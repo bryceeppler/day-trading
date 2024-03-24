@@ -1,10 +1,12 @@
 const express = require("express");
 const env = require('dotenv').config();
 const cors = require("cors");
+const morgan = require("morgan");
 
 const app = express();
 
 app.use(express.json());
+app.use(morgan("tiny"));
 app.use(cors());
 const connectDB = require("../config/database");
 connectDB();

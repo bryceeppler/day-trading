@@ -1,8 +1,8 @@
 const User = require('../shared/models/userModel');
 const Stock = require('../shared/models/stockModel');
 const StockPortfolio = require('../shared/models/portfolioModel');
-const { STATUS_CODE } = require('../lib/enums');
-const { handleError, successReturn, createError } = require('../lib/apiHandling');
+const { STATUS_CODE } = require('../shared/lib/enums');
+const { handleError, successReturn, createError } = require('../shared/lib/apiHandling');
 const { cleanReq }  = require('../middleware/formatting')
 
 const { authenticateToken } = require('../middleware/authenticateToken');

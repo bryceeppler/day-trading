@@ -6,7 +6,10 @@ const { connectToRabbitMQ } = require("./shared/config/rabbitmq");
 const StockTransaction = require("./shared/models/stockTransactionModel");
 const WalletTransaction = require("./shared/models/walletTransactionModel");
 const { ORDER_STATUS } = require("./shared/lib/enums");
-const localModelOperations = require("./modelOperations")
+
+const redis = require("./shared/config/redis");
+
+redis.connect()
 
 
 const app = express();
@@ -66,7 +69,7 @@ const executeOrder = async (message) =>
 
     console.log("checking existingStockTx");
 
-		const existingStockTx = await localModelOperations.fetchStockTransaction(stockTxId)
+		const existingStockTx = await redis.fetchStockTransaction(stockTxId)
 
 
     if (!existingStockTx)
@@ -76,9 +79,9 @@ const executeOrder = async (message) =>
     } else
     {
       console.log("StockTx EXISTS!");
-      const existingPortfolioDocumentAndStockId = await localModelOperations.fetchPortfolio(existingStockTx.user_id, existingStockTx.stock_id );
+      const existingPortfolioDocumentAndStockId = await redis.fetchPortfolio(existingStockTx.user_id, existingStockTx.stock_id );
 
-			const stockUpdate = await localModelOperations.fetchStock(existingStockTx.stock_id);
+			const stockUpdate = await redis.fetchStock(existingStockTx.stock_id);
 
       //if stock transaction is complete AND a BUY order AND FULFILLED COMPLETELY
       if (action === "COMPLETED" && existingStockTx.is_buy === true && quantityStockInTransit === existingStockTx.quantity)
@@ -108,9 +111,9 @@ const executeOrder = async (message) =>
 						
 
 						const promises = [
-							localModelOperations.updatePortfolio(existingPortfolioDocumentAndStockId),
-							localModelOperations.updateStockTransaction(existingStockTx),
-							localModelOperations.updateStock(stockUpdate),
+							redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+							redis.updateStockTransaction(existingStockTx),
+							redis.updateStock(stockUpdate),
 						]
 
 						await Promise.all(promises)
@@ -156,9 +159,9 @@ const executeOrder = async (message) =>
             existingPortfolioDocumentAndStockId.quantity_owned = newQuantity;
 
           
-						const user = await localModelOperations.fetchUser(existingStockTx.user_id)
+						const user = await redis.fetchUser(existingStockTx.user_id)
 
-						const existingWalletTx = await localModelOperations.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
+						const existingWalletTx = await redis.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
        
             existingWalletTx.is_deleted = true;
 
@@ -198,12 +201,12 @@ const executeOrder = async (message) =>
             newWalletTransaction.stock_tx_id = newStockTransaction._id
 
 						const promises = [
-							localModelOperations.updateWalletTransaction(existingWalletTx),
-							localModelOperations.createStockTransaction(newStockTransaction),
-							localModelOperations.createWalletTransaction(newWalletTransaction),
-							localModelOperations.updatePortfolio(existingPortfolioDocumentAndStockId),
-							localModelOperations.updateStockTransaction(existingStockTx),
-							localModelOperations.updateStock(stockUpdate),
+							redis.updateWalletTransaction(existingWalletTx),
+							redis.createStockTransaction(newStockTransaction),
+							redis.createWalletTransaction(newWalletTransaction),
+							redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+							redis.updateStockTransaction(existingStockTx),
+							redis.updateStock(stockUpdate),
 						]
 
 						await Promise.all(promises)
@@ -234,7 +237,7 @@ const executeOrder = async (message) =>
           {
             // check if there is a stockTx with this stockTxId in the parent_stock_tx_id field
             // if yes, this order was partially filled and should be marked "PARTIAL_FULFILLED"
-						const parentStockTx = await localModelOperations.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
+						const parentStockTx = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
@@ -243,9 +246,9 @@ const executeOrder = async (message) =>
               existingStockTx.order_status = 'EXPIRED';
             };
           }
-					const existingWalletTx = await localModelOperations.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
+					const existingWalletTx = await redis.fetchWalletTransactionFromParams({ stock_tx_id: stockTxId });
 
-					const user = await localModelOperations.fetchUser(existingStockTx.user_id)
+					const user = await redis.fetchUser(existingStockTx.user_id)
           let newBalance = existingWalletTx.amount + user.balance;
 
 
@@ -259,9 +262,9 @@ const executeOrder = async (message) =>
           existingWalletTx.is_deleted = true;
 
 					const promises = [
-						localModelOperations.updateWalletTransaction(existingWalletTx),
-						localModelOperations.updateStockTransaction(existingStockTx),
-						localModelOperations.updateUser(user)
+						redis.updateWalletTransaction(existingWalletTx),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateUser(user)
 					]
 
 					await Promise.all(promises)
@@ -291,7 +294,7 @@ const executeOrder = async (message) =>
 
           //add money to user's wallet
 
-					const user = await localModelOperations.fetchUser(existingStockTx.user_id)
+					const user = await redis.fetchUser(existingStockTx.user_id)
 
           let profit = existingStockTx.quantity * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
@@ -315,10 +318,10 @@ const executeOrder = async (message) =>
           existingStockTx.wallet_tx_id = newWalletTransaction._id;
 
 					const promises = [
-						localModelOperations.createWalletTransaction(newWalletTransaction),
-						localModelOperations.updateStockTransaction(existingStockTx),
-						localModelOperations.updateStock(stockUpdate),
-						localModelOperations.updateUser(user)
+						redis.createWalletTransaction(newWalletTransaction),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateStock(stockUpdate),
+						redis.updateUser(user)
 					]
 
 					await Promise.all(promises)
@@ -351,7 +354,7 @@ const executeOrder = async (message) =>
           stockUpdate.current_price = existingStockTx.stock_price;
 
           //add profit money to user's wallet
-          const user = await localModelOperations.fetchUser(existingStockTx.user_id)
+          const user = await redis.fetchUser(existingStockTx.user_id)
 
           let profit = quantityStockInTransit * existingStockTx.stock_price;
           let newBalance = profit + user.balance;
@@ -396,12 +399,12 @@ const executeOrder = async (message) =>
 
 
 					const promises = [
-						localModelOperations.createStockTransaction(newStockTransaction),
-						localModelOperations.updatePortfolio(existingPortfolioDocumentAndStockId),
-						localModelOperations.createWalletTransaction(newWalletTransaction),
-						localModelOperations.updateStockTransaction(existingStockTx),
-						localModelOperations.updateStock(stockUpdate),
-						localModelOperations.updateUser(user)
+						redis.createStockTransaction(newStockTransaction),
+						redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+						redis.createWalletTransaction(newWalletTransaction),
+						redis.updateStockTransaction(existingStockTx),
+						redis.updateStock(stockUpdate),
+						redis.updateUser(user)
 					]
 
 					await Promise.all(promises)
@@ -425,7 +428,7 @@ const executeOrder = async (message) =>
           if (action === "CANCELED") { existingStockTx.order_status = 'CANCELED'; }
           if (action === "EXPIRED")
           {
-            const parentStockTx = await localModelOperations.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
+            const parentStockTx = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId });
             if (parentStockTx)
             {
               existingStockTx.order_status = 'PARTIAL_FULFILLED';
@@ -435,8 +438,11 @@ const executeOrder = async (message) =>
             };
           }
 
+					console.log("Fetiching Child Transactions--------")
+					console.log(stockTxId)
 
-					const childTransactions = await localModelOperations.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
+
+					const childTransactions = await redis.fetchStockTransactionFromParams({ parent_stock_tx_id: stockTxId })
           let completedQuantity = existingStockTx.quantity;
 
           childTransactions.forEach(tx =>
@@ -461,8 +467,8 @@ const executeOrder = async (message) =>
           }
 
 					const promises = [
-						localModelOperations.updatePortfolio(existingPortfolioDocumentAndStockId),
-						localModelOperations.updateStockTransaction(existingStockTx),
+						redis.updatePortfolio(existingPortfolioDocumentAndStockId),
+						redis.updateStockTransaction(existingStockTx),
 					]
 
 					await Promise.all(promises)

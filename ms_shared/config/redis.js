@@ -1,6 +1,8 @@
 
 const redis = require('redis');
 const { promisify } = require('util')
+const { COLLECTIONS } = require("../models/baseModel")
+const modelOperations = require("../models/modelOperations")
 
 
 let redisCLient;
@@ -76,3 +78,162 @@ exports.getUserPortfolioRedisKey = (user_id, stock_id) => {
 exports.getStockRedisKey = (id) => {
 	return `S${id}`
 }
+
+
+
+
+
+exports.fetchPortfolio = async (user_id, stock_id) => {
+	const key = this.getUserPortfolioRedisKey(user_id, stock_id)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findOne(COLLECTIONS.PORTFOLIO, {user_id, stock_id})
+	await this.setJson(key, data)
+	return data
+}
+exports.updatePortfolio = async (data) => {
+	const key = this.getUserPortfolioRedisKey(data.user_id, data.stock_id)
+	await modelOperations.updateOneById(COLLECTIONS.PORTFOLIO, data._id, data);
+	await this.setJson(key, data)
+}
+
+exports.createPortfolio = async (data) => {
+	const key = this.getUserPortfolioRedisKey(data.user_id, data.stock_id);
+	await modelOperations.createOne(COLLECTIONS.PORTFOLIO, data);
+	await this.setJson(key, data)
+}
+
+
+
+exports.fetchUserFromParams = async (params) => {
+	const data = await modelOperations.findOne(COLLECTIONS.USER, params)
+	if (data) {
+		const key = this.getUserBalanceRedisKey(data._id)
+		await this.setJson(key, data)
+	}
+	return data
+}
+
+exports.fetchUser = async (user_id) => {
+	const key = this.getUserBalanceRedisKey(user_id)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findById(COLLECTIONS.USER, user_id)
+	await this.setJson(key, data)
+	return data
+}
+
+exports.updateUser = async (data) => {
+	const key = this.getUserBalanceRedisKey(data._id)
+	await modelOperations.updateOneById(COLLECTIONS.USER, data._id, data);
+	await this.setJson(key, data)
+}
+
+
+exports.createUser = async (data) => {
+	const key = this.getUserBalanceRedisKey(data._id);
+	await modelOperations.createOne(COLLECTIONS.USER, data);
+	await this.setJson(key, data)
+}
+
+
+
+
+exports.fetchStock = async (stock_id) => {
+	const key = this.getStockRedisKey(stock_id)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findById(COLLECTIONS.STOCK, stock_id)
+	await this.setJson(key, data)
+	return data
+}
+
+exports.fetchAllStocks = async () => {
+	return await modelOperations.findAll(COLLECTIONS.STOCK)
+}
+
+exports.fetchStockFromParams = async (params) => {
+	const data = await modelOperations.findOne(COLLECTIONS.STOCK, params)
+	if (data) {
+		const key = this.getStockRedisKey(data._id)
+		await this.setJson(key, data)
+	}
+	return data
+}
+
+
+exports.createStock = async (data) => {
+	const key = this.getStockRedisKey(data._id);
+	await modelOperations.createOne(COLLECTIONS.STOCK, data);
+	await this.setJson(key, data)
+}
+
+exports.updateStock = async (data) => {
+	const key = this.getStockRedisKey(data._id)
+	await modelOperations.updateOneById(COLLECTIONS.STOCK, data._id, data);
+	await this.setJson(key, data)
+}
+
+
+
+exports.fetchStockTransaction = async (stockTxId) => {
+	const key = this.getStockTranstionRedisKey(stockTxId)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findById(COLLECTIONS.STOCK_TRANSACTION, stockTxId)
+	await this.setJson(key, data)
+	return data
+}
+
+
+exports.fetchStockTransactionFromParams = async (params) => {
+	const data = await modelOperations.findOne(COLLECTIONS.STOCK_TRANSACTION, params)
+	if (data) {
+		const key = this.getStockTranstionRedisKey(data._id)
+		await this.setJson(key, data)
+	}
+	return data
+}
+
+exports.updateStockTransaction = async (data) => {
+	const key = this.getStockTranstionRedisKey(data._id)
+	await modelOperations.updateOneById(COLLECTIONS.STOCK_TRANSACTION, data._id, data);
+	await this.setJson(key, data)
+}
+
+exports.createStockTransaction = async (data) => {
+	const key = this.getStockTranstionRedisKey(data._id)
+	await modelOperations.createOne(COLLECTIONS.STOCK_TRANSACTION, data);
+	await this.setJson(key, data)
+}
+
+
+
+exports.fetchWalletTransactionFromParams = async (params) => {
+	const data = await modelOperations.findOne(COLLECTIONS.WALLET_TRANSACTION, params)
+	if (data) {
+		const key = this.getWalletTranstionRedisKey(data._id)
+		await this.setJson(key, data)
+	}
+	return data
+}
+
+exports.updateWalletTransaction = async (data) => {
+	const key = this.getWalletTranstionRedisKey(data._id)
+	await modelOperations.updateOneById(COLLECTIONS.WALLET_TRANSACTION, data._id, data);
+	await this.setJson(key, data)
+}
+
+exports.createWalletTransaction = async (data) => {
+	const key = this.getWalletTranstionRedisKey(data._id);
+	await modelOperations.createOne(COLLECTIONS.WALLET_TRANSACTION, data);
+	await this.setJson(key, data)
+}
+
+
+
+

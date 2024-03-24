@@ -82,6 +82,9 @@ services:
   ms_user:
     container_name: user
     build: ./ms_user
+    depends_on:
+      redis_cache:
+        condition:  service_healthy
     env_file:
       - .env
     volumes:
@@ -90,6 +93,9 @@ services:
   ms_authentication:
     container_name: authentication
     build: ./ms_authentication
+    depends_on:
+      redis_cache:
+        condition:  service_healthy
     env_file:
       - .env
     volumes:
@@ -102,6 +108,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis_cache:
+        condition:  service_healthy
     env_file:
       - .env
     volumes:
@@ -141,6 +149,9 @@ services:
   ms_market_data:
     container_name: market_data
     build: ./ms_market_data
+    depends_on:
+      redis_cache:
+        condition:  service_healthy
     env_file:
       - .env
     volumes:
@@ -150,6 +161,9 @@ services:
   ms_transaction_manager:
     container_name: transaction_manager
     build: ./ms_transaction_manager
+    depends_on:
+      redis_cache:
+        condition:  service_healthy
     env_file:
       - .env
     volumes:

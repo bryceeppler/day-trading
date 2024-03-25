@@ -58,6 +58,7 @@ router.post('/login', async (req, res) =>
 });
 
 // Register route
+router.route('/register').get(authenticateToken(acccessToken), stockController.getStockPrices);
 router.post('/register', async (req, res) =>
 {
   try

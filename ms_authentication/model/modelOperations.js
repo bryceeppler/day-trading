@@ -1,6 +1,3 @@
-
-
-
 const redisCache = require("../shared/config/redis");
 const { COLLECTIONS } = require("../shared/models/baseModel")
 const modelOperations = require("../shared/models/modelOperations")
@@ -27,10 +24,6 @@ exports.createPortfolio = async (data) => {
 	await modelOperations.createOne(COLLECTIONS.PORTFOLIO, data);
 	await redisCache.setJson(key, data)
 }
-
-
-
-
 
 exports.fetchUserFromParams = async (params) => {
 	const data = await modelOperations.findOne(COLLECTIONS.USER, params)

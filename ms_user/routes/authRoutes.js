@@ -36,7 +36,8 @@ router.post('/login', async (req, res) =>
   {
     const { user_name, password } = req.body;
     const userName = user_name.trim();
-    let user = await redis.fetchUserFromParams({  user_name: userName });
+    let user = await redis.fetchByUserName(userName);
+    
     if (!user) {
       return res.status(200).json({ success: false, data: {error: 'User does not exist'}});
     }
@@ -54,44 +55,44 @@ router.post('/login', async (req, res) =>
   }
 });
 
-// Register route
-router.post('/register', async (req, res) =>
-{
-  try
-  {
-    const { user_name, password, name } = req.body;
-     // Validate username
-    if (!validateUsername(user_name)) {
-      return res.status(200).json({ success: false, data: {error: 'Username must have more than 8 characters and only contain letters, numbers, or underscores' }});
-    }
+// // Register route
+// router.post('/register', async (req, res) =>
+// {
+//   try
+//   {
+//     const { user_name, password, name } = req.body;
+//      // Validate username
+//     if (!validateUsername(user_name)) {
+//       return res.status(200).json({ success: false, data: {error: 'Username must have more than 8 characters and only contain letters, numbers, or underscores' }});
+//     }
 
-    // Validate password
-    if (!validatePassword(password)) {
-      return res.status(200).json({ success: false, data: {error: 'Password must be at least 6 characters long and should not contain spaces' }});
-    }
+//     // Validate password
+//     if (!validatePassword(password)) {
+//       return res.status(200).json({ success: false, data: {error: 'Password must be at least 6 characters long and should not contain spaces' }});
+//     }
 
-    // Validate name
-    if (!validateName(name)) {
-      return res.status(200).json({ success: false, data: {error: 'Name is required and should only contain letters' }});
-    }
+//     // Validate name
+//     if (!validateName(name)) {
+//       return res.status(200).json({ success: false, data: {error: 'Name is required and should only contain letters' }});
+//     }
 
-    const existingUser = await User.findOne({ user_name });
-    if (existingUser) {
-      return res.status(200).json({success: false, data: {error: 'User already exists'}});
-    }
+//     const existingUser = await User.findOne({ user_name });
+//     if (existingUser) {
+//       return res.status(200).json({success: false, data: {error: 'User already exists'}});
+//     }
 
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-    let hashedPassword = await bcrypt.hash(password, saltRounds);
-    const newUser = new User({ user_name, password: hashedPassword, name, balance:0 });
-    await newUser.save();
+//     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+//     let hashedPassword = await bcrypt.hash(password, saltRounds);
+//     const newUser = new User({ user_name, password: hashedPassword, name, balance:0 });
+//     await newUser.save();
 
-    // Respond with success true and data containing user details
-    res.status(200).json({ success: true, data: null });
-  } catch (error)
-  {
-    console.error(error);
-    res.status(500).json({ success: false, data: {error: 'Server error' }});
-  }
-});
+//     // Respond with success true and data containing user details
+//     res.status(200).json({ success: true, data: null });
+//   } catch (error)
+//   {
+//     console.error(error);
+//     res.status(500).json({ success: false, data: {error: 'Server error' }});
+//   }
+// });
 
 module.exports = router;

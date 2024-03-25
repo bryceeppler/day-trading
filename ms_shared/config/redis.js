@@ -39,7 +39,7 @@ exports.setJson = async (key, value) => {
 		if (!redisCLient) {
 			throw new Error('REdis Connection Not Established');
 		}
-		await redisSet(key, JSON.stringify(value))
+				await redisSet(key, JSON.stringify(value))
 		
 	} catch (error) {
 		console.log(error)
@@ -74,6 +74,10 @@ exports.getUserBalanceRedisKey = (id) => {
 	return `UB${id}`
 }
 
+exports.getUserRedisKey = (user_name) => {
+	return `U${user_name}`
+}
+
 exports.getUserPortfolioRedisKey = (user_id, stock_id) => {
 	return `UP${user_id}${stock_id}`
 }
@@ -81,9 +85,6 @@ exports.getUserPortfolioRedisKey = (user_id, stock_id) => {
 exports.getStockRedisKey = (id) => {
 	return `S${id}`
 }
-
-
-
 
 
 exports.fetchPortfolio = async (user_id, stock_id) => {
@@ -133,6 +134,16 @@ exports.fetchUser = async (user_id) => {
 	return data
 }
 
+exports.fetchByUserName = async (user_name) => {
+	const key = this.getUserRedisKey(user_name)
+	let data = await this.getJson(key);
+	if (data) return data
+
+	data = await modelOperations.findOne(COLLECTIONS.USER, params)
+	this.setJson(key, data)
+	return data
+}
+
 exports.updateUser = async (data) => {
 	const key = this.getUserBalanceRedisKey(data._id)
 	modelOperations.updateOneById(COLLECTIONS.USER, data._id, data);
@@ -141,9 +152,11 @@ exports.updateUser = async (data) => {
 
 
 exports.createUser = async (data) => {
-	const key = this.getUserBalanceRedisKey(data._id);
+	const balanceKey = this.getUserBalanceRedisKey(data._id);
+	const userKey = this.getUserRedisKey(data.user_name);
 	modelOperations.createOne(COLLECTIONS.USER, data);
-	await this.setJson(key, data)
+	await this.setJson(balanceKey, data);
+	await this.setJson(userKey, data);
 }
 
 

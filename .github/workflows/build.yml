@@ -55,7 +55,7 @@ jobs:
     - name: Check JMeter Test Results
       run: |
         # Check if any JMeter tests failed
-        if grep -q "Err:" test.jtl; then
+        if grep -q "Err:" tests/1user_pr.jtl; then
           echo "Some JMeter tests failed"
           exit 1
         else

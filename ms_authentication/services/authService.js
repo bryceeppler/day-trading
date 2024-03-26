@@ -19,25 +19,25 @@ exports.login = async (data) =>
         let user = await redis.fetchByUserName(data.user_name);
         if (!user)
         {
-            return createError('User does not exist', STATUS_CODE.OK);
+            return {success: false, data: 'User does not exist'};
         }
         // Compare the plaintext password with the hashed password stored in the database
         const isMatch = await bcrypt.compare(data.password, user.password);
         if (!isMatch)
         {
-            return createError('Invalid Credentials', STATUS_CODE.OK);
+            return {success: false, data: 'Invalid Credentials'};
         }
 
         const token = jwt.sign({ userId: user._id, user_name: user.user_name, name: user.name }, process.env.JWT_SECRET, { expiresIn: '1h' });
         if (!token)
         {
-            return createError('error creating token');
+            return {success: false, data:'error creating token'};
         }
-        return token;
+        return {success: true, data: token };
     } catch (error)
     {
         console.error(error);
-        return createError("Error Logging In");
+        throw createError("Error Logging In");
     }
 };
 
@@ -50,7 +50,7 @@ exports.register = async (data) =>
         if (existingUser)
         {
             console.log('user already exists', existingUser.user_name);
-            return createError('User already exists', STATUS_CODE.OK);
+            return 'User already exists';
         }
 
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
@@ -62,7 +62,7 @@ exports.register = async (data) =>
     } catch (error)
     {
         console.error(error);
-        return createError("Error Registering User");
+        throw createError("Error Registering User");
     }
 }
 

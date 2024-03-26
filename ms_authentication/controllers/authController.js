@@ -20,8 +20,12 @@ exports.register = async (req, res, next) =>
 
         console.log(registerDetails);
 
-        await authService.register(registerDetails);
-        console.log("register made it here"); 
+        const error = await authService.register(registerDetails);
+
+        if(error)
+        {
+            return errorReturn(res, error);
+        }
         return successReturn(res);
 
     } catch (error)
@@ -39,14 +43,9 @@ exports.login = async (req, res, next) =>
             user_name: req.body.user_name,
             password: req.body.password
         };
+        const result = await authService.login(userDetails);
 
-        const token = await authService.login(userDetails);
-        if (!token)
-        {
-            return errorReturn(res, error);
-        }
-
-        return successReturn(res, token);
+        return result.success ? successReturn(res, {token: result.data}) : errorReturn(res, result.data);
 
     } catch (error)
     {

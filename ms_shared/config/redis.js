@@ -139,7 +139,7 @@ exports.fetchByUserName = async (user_name) => {
 	let data = await this.getJson(key);
 	if (data) return data
 
-	data = await modelOperations.findOne(COLLECTIONS.USER, params)
+	data = await modelOperations.findOne(COLLECTIONS.USER, user_name)
 	this.setJson(key, data)
 	return data
 }

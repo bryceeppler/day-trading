@@ -8,11 +8,14 @@ const app = express();
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(cors());
-const connectDB = require("../config/database");
-connectDB();
+
+const redis = require("../shared/config/redis");
+const mongoDb = require("../shared/config/database");
+
+mongoDb(process.env.MONGO_URI)
+redis.connect()
 
 const authRoutes = require("../routes/authRoutes");
-
 app.use("/", authRoutes);
 
 app.get("/", (req, res) => {

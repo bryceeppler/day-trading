@@ -89,7 +89,7 @@ services:
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 5
+      replicas: 1
 
   ms_authentication:
     build: ./ms_authentication
@@ -101,7 +101,7 @@ services:
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 5
+      replicas: 1
 
   # Order Execution Microservice
   ms_order_execution:
@@ -116,7 +116,7 @@ services:
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 5
+      replicas: 1
 
   # Order Creation Microservice
   ms_order_creation:
@@ -133,7 +133,7 @@ services:
       - .env
     command: [ "npm", "start" ]
     deploy:
-      replicas: 5
+      replicas: 1
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -170,7 +170,7 @@ services:
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 5
+      replicas: 1
 
 volumes:
   db_data:

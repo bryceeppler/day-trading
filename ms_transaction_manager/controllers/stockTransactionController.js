@@ -54,7 +54,7 @@ exports.updateStockTxStatus = async (req, res, next) =>
             return errorReturn(res, 'Stock transaction not found');
         }
 
-				const updatedStockTx = {...existingStockTx, order_status}
+        const updatedStockTx = {...existingStockTx, order_status}
         await redis.updateStockTransaction(updatedStockTx)
 
         return successReturn(res, existingStockTx);
@@ -82,7 +82,6 @@ exports.deleteStockTx = async (req, res, next) =>
         }
 
         // update is_deleted flag
-
         const updatedStockTx = {...existingStockTx, deleted: true}
 
 				redis.updateStockTransaction(updatedStockTx)
@@ -103,7 +102,7 @@ exports.getStockTransactions = async (req, res, next) =>
 	
     {
         // get all stock transaction that are not deleted. Sort by time stamp, 1 for ascending.  
-				console.log({ user_id: req.user?.userId, is_deleted: false })
+        console.log({ user_id: req.user?.userId, is_deleted: false })
         const stockTx = await redis.fetchAllStockTransactionFromParams(
             { user_id: req.user?.userId, is_deleted: false }, // Filter criteria
             { time_stamp: 1 } // Sort function

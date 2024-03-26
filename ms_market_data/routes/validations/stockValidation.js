@@ -1,4 +1,4 @@
-const { body, query, check, param, validationResult } = require('express-validator');
+const { body, param } = require('express-validator');
 const { validate } = require('../../shared/middleware/base.validation');
 
 

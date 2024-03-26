@@ -8,7 +8,6 @@ const {
 } = require("../shared/lib/apiHandling");
 const redis = require("../shared/config/redis");
 const User = require('../shared/models/userModel');
-const { STATUS_CODE } = require("../shared/lib/enums");
 
 
 exports.login = async (data) =>

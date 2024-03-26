@@ -15,6 +15,7 @@ exports.login = async (data) =>
 {
     try
     {
+        console.log("Login Data: ", data);
         let user = await redis.fetchByUserName(data.user_name);
         if (!user)
         {
@@ -55,8 +56,8 @@ exports.register = async (data) =>
         const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
         let hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
-        const newUser = new User({ user_name: data.user_name, password: hashedPassword, name: data.name });
-        await redis.createUser(newUser)
+        const newUser = await new User({ user_name: data.user_name, password: hashedPassword, name: data.name });
+        await redis.createUser(newUser);
 
     } catch (error)
     {

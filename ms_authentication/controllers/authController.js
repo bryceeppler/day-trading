@@ -20,14 +20,9 @@ exports.register = async (req, res, next) =>
 
         console.log(registerDetails);
 
-        const error = await authService.register(registerDetails);
-
-        if (!error)
-        {
-            return errorReturn(res, error);
-        }
-
-        successReturn(res);
+        await authService.register(registerDetails);
+        console.log("register made it here"); 
+        return successReturn(res);
 
     } catch (error)
     {
@@ -51,7 +46,7 @@ exports.login = async (req, res, next) =>
             return errorReturn(res, error);
         }
 
-        successReturn(res, token);
+        return successReturn(res, token);
 
     } catch (error)
     {

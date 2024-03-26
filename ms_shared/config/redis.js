@@ -134,12 +134,13 @@ exports.fetchUser = async (user_id) => {
 	return data
 }
 
-exports.fetchByUserName = async (userName) => {
-	const key = this.getUserRedisKey(userName)
+
+exports.fetchByUserName = async (params) => {
+	const key = this.getUserRedisKey(params.user_name)
 	let data = await this.getJson(key);
 	if (data) return data
 
-	data = await modelOperations.findOne(COLLECTIONS.USER, {user_name: userName})
+	data = await modelOperations.findOne(COLLECTIONS.USER, params)
 	this.setJson(key, data)
 	return data
 }

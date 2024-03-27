@@ -34,7 +34,7 @@ services:
       timeout: 5s
       retries: 3
 
-  
+
   # Redis Service
   redis_cache:
     image: redis:latest
@@ -80,45 +80,46 @@ services:
 
   # User & Auth Microservice
   ms_user:
-    container_name: user
     build: ./ms_user
     depends_on:
       redis_cache:
-        condition:  service_healthy
-    env_file:
-      - .env
-    volumes:
-      - ./ms_shared:/app/shared
-
-  ms_authentication:
-    build: ./ms_authentication
-    depends_on:
-      redis_cache:
-        condition:  service_healthy
+        condition: service_healthy
     env_file:
       - .env
     volumes:
       - ./ms_shared:/app/shared
     deploy:
-      replicas: 15
+      replicas: 5
+
+  ms_authentication:
+    build: ./ms_authentication
+    depends_on:
+      redis_cache:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - ./ms_shared:/app/shared
+    deploy:
+      replicas: 10
 
   # Order Execution Microservice
   ms_order_execution:
-    container_name: order_execution
     build: ./ms_order_execution
     depends_on:
       rabbitmq:
         condition: service_healthy
       redis_cache:
-        condition:  service_healthy
+        condition: service_healthy
     env_file:
       - .env
     volumes:
       - ./ms_shared:/app/shared
+    deploy:
+      replicas: 5
 
   # Order Creation Microservice
   ms_order_creation:
-    container_name: order_creation
     build: ./ms_order_creation
     depends_on:
       rabbitmq:
@@ -130,8 +131,9 @@ services:
       - ./ms_shared:/app/shared
     env_file:
       - .env
-    command: [ "npm", "start"]
-
+    command: [ "npm", "start" ]
+    deploy:
+      replicas: 5
 
   # Matching Engine Microservice
   ms_matching_engine:
@@ -148,11 +150,10 @@ services:
 
   # Market Data Microservice
   ms_market_data:
-    container_name: market_data
     build: ./ms_market_data
     depends_on:
       redis_cache:
-        condition:  service_healthy
+        condition: service_healthy
     env_file:
       - .env
     volumes:
@@ -160,15 +161,16 @@ services:
 
   # Audit Manager Microservice
   ms_transaction_manager:
-    container_name: transaction_manager
     build: ./ms_transaction_manager
     depends_on:
       redis_cache:
-        condition:  service_healthy
+        condition: service_healthy
     env_file:
       - .env
     volumes:
       - ./ms_shared:/app/shared
+    deploy:
+      replicas: 5
 
 volumes:
   db_data:

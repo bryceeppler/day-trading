@@ -12,7 +12,7 @@ const validateUsername = (username) =>
 {
   // Check if username has more than 8 characters and doesn't contain special characters
   const usernameRegex = /^[a-zA-Z0-9_. ]+$/;
-  return username.length > 8 && usernameRegex.test(username);
+  return username.length >= 8 && usernameRegex.test(username);
 };
 
 const validatePassword = (password) =>
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) =>
   {
     const { user_name, password } = req.body;
     const userName = user_name.trim();
-    let user = await redis.fetchByUserName(userName);
+    let user = await redis.fetchByUserName({ user_name: userName });
 
     if (!user)
     {

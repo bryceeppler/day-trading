@@ -15,7 +15,7 @@ exports.login = async (data) =>
     try
     {
         console.log("Login Data: ", data);
-        let user = await redis.fetchByUserName(data.user_name);
+        let user = await redis.fetchByUserName( {user_name: data.user_name });
         if (!user)
         {
             return {success: false, data: 'User does not exist'};
@@ -44,7 +44,7 @@ exports.register = async (data) =>
 {
     try
     {
-        const existingUser = await redis.fetchByUserName(data.user_name);
+        const existingUser = await redis.fetchByUserName({user_name: data.user_name });
 
         if (existingUser)
         {

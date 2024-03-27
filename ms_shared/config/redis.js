@@ -134,6 +134,7 @@ exports.fetchUser = async (user_id) => {
 	return data
 }
 
+
 exports.fetchByUserName = async (params) => {
 	const key = this.getUserRedisKey(params.user_name)
 	let data = await this.getJson(key);

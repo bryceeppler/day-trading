@@ -189,7 +189,6 @@ exports.sellOrder = async (data, token) =>
     };
 
     await rabbitManager.publishToQueue(MESSAGE_QUEUE.PLACE_ORDER, matchingEngineData);
-
     // // Send data to matching engine
     // await axios.POST(
     //   `${config.mathingEngineUrl}/receiveOrder`,

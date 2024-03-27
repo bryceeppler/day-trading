@@ -10,9 +10,9 @@ exports.createWalletTx = async (req, res, next) =>
     try
     {
         const { user_id, is_debit, amount } = req.body;
-				const walletTx = new WalletTransaction({ user_id, is_debit, amount })
+        const walletTx = new WalletTransaction({ user_id, is_debit, amount })
 
-				await redis.createWalletTransaction(walletTx)
+        await redis.createWalletTransaction(walletTx)
 
         return successReturn(res, walletTx, STATUS_CODE.CREATED);
     } catch (error)
@@ -30,14 +30,14 @@ exports.updateStockTxId = async (req, res, next) =>
         const { stock_tx_id } = req.body;
 
         // Check if the stock exists
-				const existingWalletTx = await redis.fetchWalletTransaction(walletTxId)
+        const existingWalletTx = await redis.fetchWalletTransaction(walletTxId)
 
         if (!existingWalletTx)
         {
             return errorReturn(res, 'Wallet transaction not found');
         }
 
-				const updatedWalletTx = {...existingWalletTx, stock_tx_id: stock_tx_id}
+        const updatedWalletTx = {...existingWalletTx, stock_tx_id: stock_tx_id}
         await redis.updateStockTransaction(updatedWalletTx);
 
         return successReturn(res, existingWalletTx);

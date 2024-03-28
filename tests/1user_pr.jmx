@@ -11,7 +11,7 @@
           </elementProp>
           <elementProp name="authPort" elementType="Argument">
             <stringProp name="Argument.name">authPort</stringProp>
-            <stringProp name="Argument.value">8000</stringProp>
+            <stringProp name="Argument.value">8001</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="createStockPort" elementType="Argument">

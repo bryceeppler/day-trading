@@ -47,17 +47,21 @@ jobs:
             exit 1
         fi
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Run JMeter Tests
+      uses: rbhadti94/apache-jmeter-action@v0.5.0
       with:
-        python-version: '3.9'  
+        testFilePath: tests/1user_pr.jmx
 
-    - name: Run Python Test Script
+    - name: Check JMeter Test Results
       run: |
-        pip install --upgrade pip
-        pip install -r tests/requirements.txt
-        chmod +x tests/single_user_test_pr.py
-        python tests/single_user_test_pr.py  
+        # Check if any JMeter tests failed
+        if grep -q "Err:" tests/1user_pr.jtl; then
+          echo "Some JMeter tests failed"
+          exit 1
+        else
+          echo "All JMeter tests passed"
+          exit 0
+        fi
 
     - name: Tear down Docker Compose
       run: docker-compose down
